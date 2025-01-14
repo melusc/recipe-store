@@ -4,7 +4,13 @@
 	"devDependencies": {
 		"prettier": "^3.4.2"
 	},
+	"private": true,
 	"scripts": {
-		"fmt": "prettier -w ."
-	}
+		"fmt": "prettier -w . && yarn workspaces foreach -A run fmt",
+		"build": "yarn workspaces foreach -A --topological-dev run build",
+		"test": "yarn workspaces foreach -A run test"
+	},
+	"workspaces": [
+		"api/"
+	]
 }
