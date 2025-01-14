@@ -14,32 +14,6 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {DatabaseSync} from 'node:sqlite';
+export class ForbiddenError extends Error {}
 
-import {createUserClass} from './user.js';
-
-export * from './error.js';
-export {type User, UserRoles} from './user.js';
-
-export type ApiOptions = {
-	readonly database: DatabaseSync;
-};
-
-function initDatabase(database: DatabaseSync) {
-	database.exec(`
-		CREATE TABLE IF NOT EXISTS users (
-				userid TEXT PRIMARY KEY,
-				username TEXT NOT NULL UNIQUE,
-				password TEXT NOT NULL,
-				role INTEGER NOT NULL
-		);
-	`);
-}
-
-export function createApi(options: ApiOptions) {
-	initDatabase(options.database);
-
-	return {
-		User: createUserClass(options),
-	} as const;
-}
+export class LoggedOutError extends Error {}

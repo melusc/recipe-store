@@ -1,26 +1,28 @@
 {
 	"type": "module",
-	"name": "api",
-	"exports": "./dist/index.js",
+	"name": "backend",
 	"private": true,
 	"devDependencies": {
 		"@lusc/eslint-config": "^4.0.0",
 		"@lusc/tsconfig": "^5.1.0",
 		"@types/bcrypt": "^5",
 		"@types/node": "^22.10.6",
+		"esbuild": "^0.24.2",
 		"eslint": "^9.18.0",
 		"typescript": "^5.7.3"
 	},
 	"engines": {
 		"node": ">=22.13.0"
 	},
-	"license": "GPL-3.0-only",
 	"scripts": {
 		"fmt": "eslint --fix",
-		"build": "tsc"
+		"build": "tsc && esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=external src/index.ts",
+		"start": "node dist/index.js"
 	},
+	"license": "GPL-3.0-only",
 	"dependencies": {
 		"@lusc/util": "^1.3.2",
+		"api": "workspace:^",
 		"bcrypt": "^5.1.1"
 	}
 }

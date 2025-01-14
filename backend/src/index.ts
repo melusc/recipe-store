@@ -14,32 +14,35 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {DatabaseSync} from 'node:sqlite';
+import {parseArgs} from 'node:util';
 
-import {createUserClass} from './user.js';
+import {generatePassword} from '@lusc/util/generate-password';
+import {createApi, UserRoles} from 'api';
 
-export * from './error.js';
-export {type User, UserRoles} from './user.js';
+import {database} from './data.ts';
 
-export type ApiOptions = {
-	readonly database: DatabaseSync;
-};
+const {
+	values: {'create-owner': createOwnerUsername},
+} = parseArgs({
+	options: {
+		'create-owner': {
+			type: 'string',
+		},
+	},
+});
 
-function initDatabase(database: DatabaseSync) {
-	database.exec(`
-		CREATE TABLE IF NOT EXISTS users (
-				userid TEXT PRIMARY KEY,
-				username TEXT NOT NULL UNIQUE,
-				password TEXT NOT NULL,
-				role INTEGER NOT NULL
-		);
-	`);
-}
+const api = createApi({
+	database,
+});
 
-export function createApi(options: ApiOptions) {
-	initDatabase(options.database);
+if (createOwnerUsername) {
+	const password = generatePassword({length: 16});
 
-	return {
-		User: createUserClass(options),
-	} as const;
+	api.User.create(createOwnerUsername, password, UserRoles.Owner);
+
+	console.log(
+		'Created owner-user "%s" with password %s',
+		createOwnerUsername,
+		password,
+	);
 }
