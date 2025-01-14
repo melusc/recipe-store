@@ -16,7 +16,6 @@
 
 import {randomBytes} from 'node:crypto';
 
-import {generatePassword} from '@lusc/util/generate-password';
 import bcrypt from 'bcrypt';
 
 import {ForbiddenError, LoggedOutError} from './error.js';
@@ -162,8 +161,7 @@ export function createUserClass(options: ApiOptions) {
 				});
 		}
 
-		resetPassword() {
-			const newPassword = generatePassword({length: 16});
+		resetPassword(newPassword: string) {
 			const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
 
 			database

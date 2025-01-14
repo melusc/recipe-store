@@ -722,7 +722,6 @@ __metadata:
   dependencies:
     "@lusc/eslint-config": "npm:^4.0.0"
     "@lusc/tsconfig": "npm:^5.1.0"
-    "@lusc/util": "npm:^1.3.2"
     "@types/bcrypt": "npm:^5"
     "@types/node": "npm:^22.10.6"
     bcrypt: "npm:^5.1.1"

@@ -20,7 +20,6 @@
 		"build": "tsc"
 	},
 	"dependencies": {
-		"@lusc/util": "^1.3.2",
 		"bcrypt": "^5.1.1"
 	}
 }
