@@ -1,0 +1,16 @@
+{
+	"type": "module",
+	"name": "cooklang-wasm",
+	"private": true,
+	"exports": {
+		"./web": "./pkg/web/cooklang_wasm.js",
+		"./node": "./pkg/nodejs/cooklang_wasm.js"
+	},
+	"engines": {
+		"node": ">=23.6.0"
+	},
+	"scripts": {
+		"build": "node scripts/build.ts"
+	},
+	"license": "MIT"
+}

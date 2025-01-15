@@ -14,7 +14,8 @@
 	},
 	"workspaces": [
 		"api/",
-		"backend/"
+		"backend/",
+		"cooklang/"
 	],
 	"license": "GPL-3.0-only"
 }
