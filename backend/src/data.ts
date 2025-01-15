@@ -18,9 +18,10 @@ import {mkdir} from 'node:fs/promises';
 import {DatabaseSync} from 'node:sqlite';
 import {fileURLToPath} from 'node:url';
 
-const dataPath = new URL('../../data/', import.meta.url);
+const dataDirectory = new URL('../../data/', import.meta.url);
+export const imageDirectory = new URL('img/', dataDirectory);
 
-await mkdir(dataPath, {recursive: true});
-export const databasePath = new URL('database.db', dataPath);
+await mkdir(imageDirectory, {recursive: true});
 
+const databasePath = new URL('database.db', dataDirectory);
 export const database = new DatabaseSync(fileURLToPath(databasePath));

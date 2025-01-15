@@ -23,6 +23,7 @@ export {type User, UserRoles} from './user.js';
 
 export type ApiOptions = {
 	readonly database: DatabaseSync;
+	readonly imageDirectory: URL;
 };
 
 function initDatabase(database: DatabaseSync) {

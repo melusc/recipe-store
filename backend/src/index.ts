@@ -19,7 +19,7 @@ import {parseArgs} from 'node:util';
 import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
-import {database} from './data.ts';
+import {database, imageDirectory} from './data.ts';
 
 const {
 	values: {'create-owner': createOwnerUsername},
@@ -33,6 +33,7 @@ const {
 
 const api = createApi({
 	database,
+	imageDirectory,
 });
 
 if (createOwnerUsername) {
