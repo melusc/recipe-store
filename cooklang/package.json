@@ -7,10 +7,18 @@
 		"./node": "./pkg/nodejs/cooklang_wasm.js"
 	},
 	"engines": {
-		"node": ">=23.6.0"
+		"node": ">=22.13.0"
 	},
 	"scripts": {
-		"build": "node scripts/build.ts"
+		"build": "yarn clean && yarn build:node && yarn build:web",
+		"clean": "rimraf pkg",
+		"build:node": "wasm-pack build --release --target nodejs --out-dir pkg/nodejs",
+		"build:web": "wasm-pack build --release --target web --out-dir pkg/web",
+		"fmt": "cargo fmt"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"wasm-pack": "^0.13.1"
+	}
 }
