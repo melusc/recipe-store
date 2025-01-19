@@ -20,6 +20,7 @@
 		"build": "tsc"
 	},
 	"dependencies": {
+		"@lusc/util": "^1.4.0",
 		"bcrypt": "^5.1.1",
 		"cooklang-wasm": "workspace:^"
 	}
