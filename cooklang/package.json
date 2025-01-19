@@ -3,22 +3,34 @@
 	"name": "cooklang-wasm",
 	"private": true,
 	"exports": {
-		"./web": "./pkg/web/cooklang_wasm.js",
-		"./node": "./pkg/nodejs/cooklang_wasm.js"
+		"./web": "./dist/web.js",
+		"./node": "./dist/node.js"
+	},
+	"imports": {
+		"#wasm/web": "./dist/pkg/web/cooklang_wasm.js",
+		"#wasm/node": "./dist/pkg/nodejs/cooklang_wasm.js"
 	},
 	"engines": {
 		"node": ">=22.13.0"
 	},
 	"scripts": {
-		"build": "yarn clean && yarn build:node && yarn build:web",
-		"clean": "rimraf pkg",
-		"build:node": "wasm-pack build --release --target nodejs --out-dir pkg/nodejs",
-		"build:web": "wasm-pack build --release --target web --out-dir pkg/web",
-		"fmt": "cargo fmt"
+		"build": "yarn clean && yarn build:node && yarn build:web && tsc",
+		"clean": "rimraf dist/pkg",
+		"build:node": "wasm-pack build --release --target nodejs --out-dir dist/pkg/nodejs",
+		"build:web": "wasm-pack build --release --target web --out-dir dist/pkg/web",
+		"fmt": "cargo fmt && eslint --fix"
 	},
 	"license": "MIT",
 	"devDependencies": {
+		"@lusc/eslint-config": "^4.0.0",
+		"@lusc/tsconfig": "^5.1.0",
+		"@types/node": "^22.10.6",
+		"eslint": "^9.18.0",
 		"rimraf": "^6.0.1",
+		"typescript": "^5.7.3",
 		"wasm-pack": "^0.13.1"
+	},
+	"dependencies": {
+		"zod": "^3.24.1"
 	}
 }

@@ -26,7 +26,7 @@ impl Parser {
         let (recipe, report) = self.parser.parse(input).into_tuple();
         let value = match recipe {
             Some(r) => serde_json::to_string(&r).unwrap(),
-            None => "<no ouput>".to_string(),
+            None => "{\"error\": true}".to_string(),
         };
         FallibleResult::new(value, report, input)
     }
