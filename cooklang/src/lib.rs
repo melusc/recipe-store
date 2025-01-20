@@ -12,10 +12,9 @@ pub struct Parser {
 impl Parser {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
-        let extensions = Extensions::COMPONENT_MODIFIERS
-            .intersection(Extensions::COMPONENT_ALIAS)
-            .intersection(Extensions::ADVANCED_UNITS)
-            .intersection(Extensions::TIMER_REQUIRES_TIME);
+        let extensions = Extensions::COMPONENT_ALIAS
+            .union(Extensions::ADVANCED_UNITS)
+            .union(Extensions::TIMER_REQUIRES_TIME);
 
         Self {
             parser: CooklangParser::new(extensions, Converter::bundled()),
