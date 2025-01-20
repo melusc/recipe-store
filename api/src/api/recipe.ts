@@ -1,9 +1,6 @@
-import { fileURLToPath } from "node:url";
+import {fileURLToPath} from 'node:url';
 
-import type { ApiOptions, User } from "../index.js";
-
-
-
+import type {ApiOptions, User} from '../index.js';
 
 export type Recipe = ReturnType<typeof createRecipeClass>;
 export function createRecipeClass(options: ApiOptions) {
@@ -18,7 +15,7 @@ export function createRecipeClass(options: ApiOptions) {
 		#title: string;
 		#updatedAt: Date;
 		#image: URL;
-		
+
 		constructor(
 			readonly recipeId: number,
 			title: string,
@@ -48,5 +45,5 @@ export function createRecipeClass(options: ApiOptions) {
 		get image() {
 			return fileURLToPath(this.#image);
 		}
-	}
+	};
 }

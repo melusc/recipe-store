@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseStep("abc \\r\\n.\\r\\n def") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc\\n.\\ndef"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;
+
+exports[`parseStep("abc \\r\\n\\r\\n def") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc\\ndef"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;
+
+exports[`parseStep("abc") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;
+
+exports[`parseStep("abc\\n\\ndef") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc\\ndef"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;
+
+exports[`parseStep("abc\\ndef") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc\\ndef"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;
+
+exports[`parseStep("abc\\r\\n\\r\\ndef") 1`] = `"{"metadata":{"map":{}},"sections":[{"name":null,"content":[{"type":"step","value":{"items":[{"type":"text","value":"abc\\ndef"}],"number":1}}]}],"ingredients":[],"cookware":[],"timers":[],"inline_quantities":[],"data":null}"`;

@@ -3,8 +3,8 @@
 	"name": "cooklang-wasm",
 	"private": true,
 	"exports": {
-		"./web": "./dist/web.js",
-		"./node": "./dist/node.js"
+		"./web": "./dist/src/web.js",
+		"./node": "./dist/src/node.js"
 	},
 	"imports": {
 		"#wasm/web": "./dist/pkg/web/cooklang_wasm.js",
@@ -15,10 +15,11 @@
 	},
 	"scripts": {
 		"build": "yarn clean && yarn build:node && yarn build:web && tsc",
-		"clean": "rimraf dist/pkg",
+		"clean": "rimraf dist",
 		"build:node": "wasm-pack build --release --target nodejs --out-dir dist/pkg/nodejs",
 		"build:web": "wasm-pack build --release --target web --out-dir dist/pkg/web",
-		"fmt": "cargo fmt && eslint --fix"
+		"fmt": "cargo fmt && eslint --fix",
+		"test": "vitest run"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -28,6 +29,7 @@
 		"eslint": "^9.18.0",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.7.3",
+		"vitest": "^3.0.2",
 		"wasm-pack": "^0.13.1"
 	},
 	"dependencies": {

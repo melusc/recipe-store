@@ -1,0 +1,154 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Cookware quantity stringify("1 1/2") -> "1 1/2" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "number",
+      "value": {
+        "type": "fraction",
+        "value": {
+          "den": 2,
+          "err": 0,
+          "num": 1,
+          "whole": 1,
+        },
+      },
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;
+
+exports[`Cookware quantity stringify("1 300/401") -> "1 300/401" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "number",
+      "value": {
+        "type": "fraction",
+        "value": {
+          "den": 401,
+          "err": 0,
+          "num": 300,
+          "whole": 1,
+        },
+      },
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;
+
+exports[`Cookware quantity stringify("1/2") -> "1/2" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "number",
+      "value": {
+        "type": "fraction",
+        "value": {
+          "den": 2,
+          "err": 0,
+          "num": 1,
+          "whole": 0,
+        },
+      },
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;
+
+exports[`Cookware quantity stringify("1-2") -> "1-2" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "text",
+      "value": "1-2",
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;
+
+exports[`Cookware quantity stringify("100") -> "100" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "number",
+      "value": {
+        "type": "regular",
+        "value": 100,
+      },
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;
+
+exports[`Cookware quantity stringify("one") -> "one" 1`] = `
+{
+  "alias": null,
+  "modifiers": "",
+  "name": "a",
+  "note": null,
+  "quantity": {
+    "type": "fixed",
+    "value": {
+      "type": "text",
+      "value": "one",
+    },
+  },
+  "relation": {
+    "defined_in_step": true,
+    "referenced_from": [],
+    "type": "definition",
+  },
+}
+`;

@@ -13,24 +13,26 @@ type ParserClass = {
 	new (): Parser;
 };
 
-class ParseError extends Error {}
+export class ParseError extends Error {}
+
+let parser: Parser | undefined;
 
 export function parseStep(step: string, Parser: ParserClass) {
-	step = step.replaceAll(/\s+/g, ' ');
+	// Collapse all whitespace to single whitespace
+	// Collapse all newlines to ["\", "\n"]
+	step = step.replaceAll(/\s+/g, s => (s.includes('\n') ? '\\\n' : ' '));
 
-	console.log(JSON.stringify(step));
-
-	const parser = new Parser();
+	parser ??= new Parser();
 
 	const result = parser.parse(step);
 
 	const {error, value} = result;
-	console.error(error);
+
 	if (error.trim()) {
 		throw new ParseError(error);
 	}
+
 	result.free();
-	parser.free();
 
 	const parsedResult = JSON.parse(value) as unknown;
 	const errorResult = parsedResult as {error?: boolean};

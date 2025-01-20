@@ -1,6 +1,6 @@
 {
 	"extends": "@lusc/tsconfig",
 	"compilerOptions": {
-		"rootDir": "src"
+		"rootDir": "."
 	}
 }

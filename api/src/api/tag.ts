@@ -119,7 +119,9 @@ export function createTagClass(options: ApiOptions) {
 
 		static fromTagId(tagId: string): Tag | undefined {
 			const result = database
-				.prepare('SELECT slug, name, updated_at, created_at FROM tags WHERE tag_id = ?')
+				.prepare(
+					'SELECT slug, name, updated_at, created_at FROM tags WHERE tag_id = ?',
+				)
 				.get(tagId) as
 				| {
 						slug: string;
@@ -133,17 +135,43 @@ export function createTagClass(options: ApiOptions) {
 				return;
 			}
 
-			return new Tag(tagId, result.name, result.slug, new Date(result.created_at), new Date(result.updated_at), privateConstructorKey);
+			return new Tag(
+				tagId,
+				result.name,
+				result.slug,
+				new Date(result.created_at),
+				new Date(result.updated_at),
+				privateConstructorKey,
+			);
 		}
 
 		static all(): Tag[] {
 			const result = database
 				.prepare('SELECT tag_id, name, slug, created_at, updated_at FROM tags')
-				.all() as Array<{tag_id: string; name: string; slug: string; created_at: number, updated_at: number}>;
+				.all() as Array<{
+				tag_id: string;
+				name: string;
+				slug: string;
+				created_at: number;
+				updated_at: number;
+			}>;
 
 			return result.map(
-				({tag_id: tagId, name, slug, created_at: createdAt, updated_at: updatedAt}) =>
-					new Tag(tagId, name, slug, new Date(createdAt), new Date(updatedAt), privateConstructorKey),
+				({
+					tag_id: tagId,
+					name,
+					slug,
+					created_at: createdAt,
+					updated_at: updatedAt,
+				}) =>
+					new Tag(
+						tagId,
+						name,
+						slug,
+						new Date(createdAt),
+						new Date(updatedAt),
+						privateConstructorKey,
+					),
 			);
 		}
 
