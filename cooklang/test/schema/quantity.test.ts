@@ -1,7 +1,7 @@
 import {test, assert, expect} from 'vitest';
 
 import {ParseError} from '../../src/common.js';
-import {parseStep} from '../../src/node.js';
+import {parseSection} from '../../src/node.js';
 import {
 	stringifyQuantity,
 	quantitySchema,
@@ -28,7 +28,7 @@ test.for([
 	['1-2%tbsp', '1-2 tbsp'],
 ])('Ingredient quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `@ingredient{${input}}`;
-	const parsed = parseStep(cooklangSource) as {
+	const parsed = parseSection(cooklangSource) as {
 		ingredients: Array<{quantity: Quantity}>;
 	};
 	assert('ingredients' in parsed);
@@ -50,7 +50,7 @@ test.for([
 	['1 300/401%d', '1 300/401 d'],
 ])('Timer quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `~{${input}}`;
-	const parsed = parseStep(cooklangSource) as {
+	const parsed = parseSection(cooklangSource) as {
 		timers: Array<{quantity: Quantity}>;
 	};
 	assert('timers' in parsed);
@@ -75,7 +75,7 @@ test.for([
 ])('Invalid timer quantity %j', timerInput => {
 	const cooklangSource = `~{${timerInput}}`;
 	assert.throws(() => {
-		parseStep(cooklangSource);
+		parseSection(cooklangSource);
 	}, ParseError);
 });
 
@@ -88,7 +88,7 @@ test.for([
 	['1-2', '1-2'],
 ])('Cookware quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `#a{${input}}`;
-	const parsed = parseStep(cooklangSource) as {
+	const parsed = parseSection(cooklangSource) as {
 		cookware: Array<{quantity: UnitlessQuantity}>;
 	};
 	assert('cookware' in parsed);
@@ -100,16 +100,12 @@ test.for([
 		quantity = unitlessQuantitySchema.parse(parsed.cookware[0]!.quantity);
 	});
 
-	if (input === '1-2') {
-		console.log(parsed.cookware[0]!);
-	}
-
 	assert.equal(stringifyQuantity(quantity), output);
 });
 
 test.for(['1%g', 'one%g'])('Invalid cookware quantity %j', cookwareInput => {
 	const cooklangSource = `#a{${cookwareInput}}`;
 	assert.throws(() => {
-		parseStep(cooklangSource);
+		parseSection(cooklangSource);
 	}, ParseError);
 });

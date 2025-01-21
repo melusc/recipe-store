@@ -1,6 +1,6 @@
 import {test, expect} from 'vitest';
 
-import {parseStep} from '../src/node.js';
+import {parseSection, stringifySection} from '../src/node.js';
 
 test.for([
 	'abc',
@@ -9,12 +9,59 @@ test.for([
 	'abc\r\n\r\ndef',
 	'abc \r\n\r\n def',
 	'abc \r\n.\r\n def',
+	'> abc',
+	String.raw`\> abc`,
+	`= abc =`,
+	String.raw`\= abc =`,
 ])('parseStep(%j)', input => {
-	const parsed = parseStep(input) as {sections: Array<{content: unknown[]}>};
-	expect(parsed.sections).toHaveLength(1);
-	expect(parsed.sections[0]!.content).toHaveLength(1);
-	expect(JSON.stringify(parseStep(input))).toMatchSnapshot();
-	// @ts-expect-error Didn't type it this deeply
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	expect(parsed.sections[0]!.content[0]!.value.items).toHaveLength(1);
+	expect(JSON.stringify(parseSection(input))).toMatchSnapshot();
+});
+
+test.for([
+	['Then add @salt and @ground pepper{}.', 'Then add salt and ground pepper.'],
+	['--', ''],
+	['> Abc', '> Abc'],
+	['= Abc =\nDEF', '= Abc =\nDEF'],
+	['Add [- comment -] @milk', 'Add  milk'],
+	['Add @milk{1%meter}', 'Add milk'],
+	['Use #oven{}.', 'Use oven.'],
+	['Cook ~{10%minutes}', 'Cook 10 minutes'],
+	['Cook ~eggs{10%minutes}', 'Cook 10 minutes'],
+	[
+		`Preheat oven to 180 °C.
+		
+Place in oven.`,
+		`Preheat oven to 180 °C.
+Place in oven.`,
+	],
+	[
+		'Place @bacon strips{1%kg} on a baking sheet and glaze with @syrup{1/2%tbsp}.',
+		'Place bacon strips on a baking sheet and glaze with syrup.',
+	],
+	[
+		`A step,
+the same step.
+
+A different step.`,
+		'A step,\nthe same step.\nA different step.',
+	],
+	[
+		`-- Don't burn the roux!
+
+Mash @potato{2%kg} until smooth -- alternatively, boil 'em first, then mash 'em, then stick 'em in a stew.`,
+		'Mash potato until smooth',
+	],
+	[
+		'Slowly add @milk{4%cup} [- TODO change units to litres -], keep mixing',
+		'Slowly add milk , keep mixing',
+	],
+	[
+		`Place the potatoes into a #pot.
+Mash the potatoes with a #potato masher{}.`,
+		`Place the potatoes into a pot.
+Mash the potatoes with a potato masher.`,
+	],
+] as const)('stringify(%j)', ([input, output]) => {
+	const parsedSection = parseSection(input);
+	expect(stringifySection(parsedSection)).to.equal(output);
 });

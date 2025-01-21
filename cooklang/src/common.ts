@@ -1,3 +1,10 @@
+import {
+	stringifyCookware,
+	stringifyIngredient,
+	stringifyTimer,
+} from './schema/cooking-items.js';
+import {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
+
 type FallibleResult = {
 	free(): void;
 	value: string;
@@ -17,14 +24,19 @@ export class ParseError extends Error {}
 
 let parser: Parser | undefined;
 
-export function parseStep(step: string, Parser: ParserClass) {
+export function parseSection(section: string, Parser: ParserClass) {
 	// Collapse all whitespace to single whitespace
 	// Collapse all newlines to ["\", "\n"]
-	step = step.replaceAll(/\s+/g, s => (s.includes('\n') ? '\\\n' : ' '));
+	section = section.replaceAll(/\s+/g, s => (s.includes('\n') ? '\\\n' : ' '));
+
+	// No need for these features, escaping with backslash disables them
+	// `=` is used to indicate section titles
+	// `>` is used for notes
+	section = section.replaceAll(/[=>]/g, String.raw`\$&`);
 
 	parser ??= new Parser();
 
-	const result = parser.parse(step);
+	const result = parser.parse(section);
 
 	const {error, value} = result;
 
@@ -40,5 +52,33 @@ export function parseStep(step: string, Parser: ParserClass) {
 		throw new ParseError('Unknown error');
 	}
 
-	return parsedResult;
+	return cooklangSectionSchema.parse(parsedResult);
+}
+
+export function stringifySection(section: CooklangSection) {
+	const result: string[] = [];
+	const {cookware, ingredients, timers} = section;
+
+	for (const item of section.steps) {
+		switch (item.type) {
+			case 'text': {
+				result.push(item.value);
+				break;
+			}
+			case 'cookware': {
+				result.push(stringifyCookware(cookware[item.index]!));
+				break;
+			}
+			case 'timer': {
+				result.push(stringifyTimer(timers[item.index]!));
+				break;
+			}
+			case 'ingredient': {
+				result.push(stringifyIngredient(ingredients[item.index]!));
+				break;
+			}
+		}
+	}
+
+	return result.join('').trim();
 }

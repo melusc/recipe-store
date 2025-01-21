@@ -1,9 +1,10 @@
 import {test, expect} from 'vitest';
 
-import {parseStep} from '../../src/node.js';
+import {parseSection} from '../../src/node.js';
 import {
 	// cookwareSchema,
 	ingredientSchema,
+	stringifyTimer,
 	timerSchema,
 	type Ingredient,
 	type Timer,
@@ -68,7 +69,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 		},
 	],
 ])('Parse ingredients %j', ([ingredientsInput, expected]) => {
-	const parsed = parseStep(`Add ${ingredientsInput}.`) as {
+	const parsed = parseSection(`Add ${ingredientsInput}.`) as {
 		ingredients: Ingredient[];
 	};
 	expect(parsed.ingredients).to.have.length(1);
@@ -87,7 +88,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 test.for<[string, string | null]>([['~{10 minutes}', null]])(
 	'Parse timer %j',
 	([timerInput, expected]) => {
-		const parsed = parseStep(`Cook for ${timerInput}.`) as {
+		const parsed = parseSection(`Cook for ${timerInput}.`) as {
 			timers: Timer[];
 		};
 
@@ -102,3 +103,12 @@ test.for<[string, string | null]>([['~{10 minutes}', null]])(
 		expect(name).to.equal(expected);
 	},
 );
+
+test.for([
+	['~oven{10%minutes}', '10 minutes'],
+	['~{10%minutes}', '10 minutes'],
+] as const)('stringifyTimer(%j)', ([input, output]) => {
+	const parsed = parseSection(input);
+	const timer = parsed.timers[0]!;
+	expect(stringifyTimer(timer)).to.equal(output);
+});

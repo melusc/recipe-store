@@ -3,7 +3,6 @@
 exports[`Cookware quantity stringify("1 1/2") -> "1 1/2" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -21,18 +20,12 @@ exports[`Cookware quantity stringify("1 1/2") -> "1 1/2" 1`] = `
       },
     },
   },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
-  },
 }
 `;
 
 exports[`Cookware quantity stringify("1 300/401") -> "1 300/401" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -50,18 +43,12 @@ exports[`Cookware quantity stringify("1 300/401") -> "1 300/401" 1`] = `
       },
     },
   },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
-  },
 }
 `;
 
 exports[`Cookware quantity stringify("1/2") -> "1/2" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -79,18 +66,12 @@ exports[`Cookware quantity stringify("1/2") -> "1/2" 1`] = `
       },
     },
   },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
-  },
 }
 `;
 
 exports[`Cookware quantity stringify("1-2") -> "1-2" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -100,18 +81,12 @@ exports[`Cookware quantity stringify("1-2") -> "1-2" 1`] = `
       "value": "1-2",
     },
   },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
-  },
 }
 `;
 
 exports[`Cookware quantity stringify("100") -> "100" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -124,18 +99,12 @@ exports[`Cookware quantity stringify("100") -> "100" 1`] = `
       },
     },
   },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
-  },
 }
 `;
 
 exports[`Cookware quantity stringify("one") -> "one" 1`] = `
 {
   "alias": null,
-  "modifiers": "",
   "name": "a",
   "note": null,
   "quantity": {
@@ -144,11 +113,6 @@ exports[`Cookware quantity stringify("one") -> "one" 1`] = `
       "type": "text",
       "value": "one",
     },
-  },
-  "relation": {
-    "defined_in_step": true,
-    "referenced_from": [],
-    "type": "definition",
   },
 }
 `;
