@@ -13,31 +13,70 @@
 	You should have received a copy of the GNU General Public
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-import {fileURLToPath} from 'node:url';
 
-import type {ApiOptions, User} from '../index.js';
+import type {Buffer} from 'node:buffer';
+import {randomBytes} from 'node:crypto';
+import {unlink, writeFile} from 'node:fs/promises';
+
+import {parseSection, type CooklangSection} from 'cooklang-wasm/node';
+import {fileTypeFromBuffer} from 'file-type';
+
+import {
+	ApiError,
+	UserRoles,
+	type InternalApiOptions,
+	type User,
+} from './index.js';
+
+const allowedImageMimes: ReadonlySet<string> = new Set([
+	'image/jpeg',
+	'image/png',
+	'image/webp',
+]);
+async function validateImageType(image: Buffer): Promise<string> {
+	if (image.byteLength > 10e6) {
+		throw new ApiError('Image is too large. Maximum of 10 MB is allowed.');
+	}
+
+	const fileType = await fileTypeFromBuffer(image);
+	if (fileType && allowedImageMimes.has(fileType.mime)) {
+		return fileType.ext;
+	}
+
+	throw new ApiError(
+		'Unknown image type. Allowed image types are .jpg, .jpeg, .png, and .webp.',
+	);
+}
+
+function randomImageName(extension: string) {
+	const name = randomBytes(30).toString('base64url');
+	return `${name}.${extension}`;
+}
 
 export type Recipe = ReturnType<typeof createRecipeClass>;
-export function createRecipeClass(options: ApiOptions) {
+export function createRecipeClass(options: InternalApiOptions) {
 	const {database} = options;
 	// InstanceType<Tag> only works if constructor is public
 	// constructor should still only be used internally
 	const privateConstructorKey = Symbol();
 
-	void database;
-
 	return class Recipe {
 		#title: string;
+		#createdAt: Date;
 		#updatedAt: Date;
-		#image: URL;
+		#image: string | undefined;
+		#tags: readonly string[];
+		#sections: readonly CooklangSection[];
 
 		constructor(
 			readonly recipeId: number,
 			title: string,
-			readonly author: User,
-			readonly createdAt: Date,
+			readonly author: InstanceType<User> | undefined,
+			createdAt: Date,
 			updatedAt: Date,
-			image: URL,
+			image: string | undefined,
+			tags: readonly string[],
+			sections: readonly CooklangSection[],
 			constructorKey: symbol,
 		) {
 			if (constructorKey !== privateConstructorKey) {
@@ -45,20 +84,330 @@ export function createRecipeClass(options: ApiOptions) {
 			}
 
 			this.#title = title;
+			this.#createdAt = createdAt;
 			this.#updatedAt = updatedAt;
 			this.#image = image;
+			this.#tags = tags;
+			this.#sections = sections;
 		}
 
 		get title() {
 			return this.#title;
 		}
 
+		get createdAt() {
+			return new Date(this.#createdAt);
+		}
+
 		get updatedAt() {
-			return this.#updatedAt;
+			return new Date(this.#updatedAt);
 		}
 
 		get image() {
-			return fileURLToPath(this.#image);
+			return this.#image
+				? new URL(this.#image, options.imageDirectory)
+				: undefined;
+		}
+
+		get tags() {
+			return this.#tags;
+		}
+
+		get sections() {
+			return this.#sections;
+		}
+
+		#triggerUpdated() {
+			this.#updatedAt = new Date();
+			database
+				.prepare(
+					`UPDATE recipes
+					SET updated_at = :updatedAt
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					updatedAt: this.#updatedAt.getTime(),
+					recipeId: this.recipeId,
+				});
+		}
+
+		static async create(
+			title: string,
+			author: InstanceType<User>,
+			image: Buffer | undefined,
+			tags: readonly string[],
+			sections: readonly string[],
+		) {
+			const createdAt = new Date();
+
+			const sectionsParsed = sections.map(s => parseSection(s));
+
+			const {recipe_id: recipeId} = database
+				.prepare(
+					`INSERT INTO recipes
+					(title, author, created_at, updated_at, sections, image)
+					VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath)
+					RETURNING recipe_id`,
+				)
+				.get({
+					title,
+					author: author.userId,
+					createdAt: createdAt.getTime(),
+					sections: JSON.stringify(sectionsParsed),
+					imagePath: null,
+				}) as {recipe_id: number};
+
+			const recipe = new Recipe(
+				recipeId,
+				title,
+				author,
+				createdAt,
+				createdAt,
+				undefined,
+				tags,
+				sectionsParsed,
+				privateConstructorKey,
+			);
+
+			// These below require more than just a single SQL query
+			// so take advantage of the methods for those
+			for (const tag of tags) {
+				recipe.addTag(tag);
+			}
+
+			await recipe.updateImage(image);
+
+			return recipe;
+		}
+
+		static all(): ReadonlyArray<Recipe> {
+			const recipes = database
+				.prepare('SELECT recipe_id from recipes')
+				.all() as Array<{recipe_id: number}>;
+
+			return recipes.map(
+				({recipe_id: recipeId}) => this.fromRecipeId(recipeId)!,
+			);
+		}
+
+		static fromRecipeId(recipeId: number) {
+			const result = database
+				.prepare(
+					`SELECT title, author, created_at, updated_at, sections, image
+					WHERE recipe_id = :recipeId`,
+				)
+				.get({recipeId}) as
+				| {
+						title: string;
+						author: number;
+						created_at: number;
+						updated_at: number;
+						sections: string;
+						image: string | null;
+				  }
+				| undefined;
+
+			if (!result) {
+				return;
+			}
+
+			const tags = database
+				.prepare(
+					`SELECT tag_name FROM recipe_tags
+					WHERE recipe_id = :recipeId`,
+				)
+				.all({recipeId}) as Array<{
+				tag_name: string;
+			}>;
+
+			const parsedSections = JSON.parse(
+				result.sections,
+			) as readonly CooklangSection[];
+
+			return new Recipe(
+				recipeId,
+				result.title,
+				result.author === -1
+					? undefined
+					: options.User.fromUserid(result.author),
+				new Date(result.created_at),
+				new Date(result.updated_at),
+				result.image ?? undefined,
+				tags.map(s => s.tag_name),
+				parsedSections,
+				privateConstructorKey,
+			);
+		}
+
+		addTag(tag: string) {
+			const result = database
+				.prepare(
+					`INSERT INTO recipe_tags
+					SELECT :recipeId, :tagName
+					WHERE NOT EXISTS (
+						SELECT 1 FROM recipe_tags
+						WHERE recipe_id = :recipeId
+							AND tag_slug = sluggify(:tagName)
+					)`,
+				)
+				.run({
+					recipeId: this.recipeId,
+					tagName: tag,
+				});
+
+			if (result.changes > 0) {
+				this.#tags = [...this.#tags, tag];
+				this.#triggerUpdated();
+			}
+		}
+
+		removeTag(tag: string) {
+			database
+				.prepare(
+					`DELETE FROM recipe_tags
+					WHERE recipe_id = :recipeId
+				  AND tag_slug = sluggify(:tagName)`,
+				)
+				.run({
+					recipeId: this.recipeId,
+					tagName: tag,
+				});
+
+			this.#syncTags();
+			this.#triggerUpdated();
+		}
+
+		clearTags() {
+			database
+				.prepare(
+					`DELETE FROM recipe_tags
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({recipeId: this.recipeId});
+
+			this.#triggerUpdated();
+			this.#tags = [];
+		}
+
+		// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
+		// that means it is possible `a !== b`
+		// For simplicity just requery the tags
+		#syncTags() {
+			const tags = database
+				.prepare(
+					`SELECT tag_name FROM recipe_tags
+					WHERE recipe_id = :recipeId`,
+				)
+				.all({recipeId: this.recipeId}) as Array<{
+				tag_name: string;
+			}>;
+
+			this.#tags = tags.map(({tag_name: tagName}) => tagName);
+		}
+
+		async updateImage(image: Buffer | undefined) {
+			let imagePath: string | undefined;
+
+			if (image) {
+				const imageExtension = await validateImageType(image);
+				imagePath = randomImageName(imageExtension);
+				await writeFile(new URL(imagePath, options.imageDirectory), image);
+			}
+
+			// Update database first to prevent
+			// race condition where image doesn't exist anymore
+			// but database points to it still
+			database
+				.prepare(
+					`UPDATE recipes
+					SET image = :image
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: this.recipeId,
+					image: imagePath ?? null,
+				});
+
+			if (this.#image) {
+				await unlink(new URL(this.#image, options.imageDirectory));
+			}
+
+			this.#image = imagePath;
+
+			this.#triggerUpdated();
+		}
+
+		updateSections(sections: readonly string[]) {
+			const sectionsParsed = sections.map(s => parseSection(s));
+
+			database
+				.prepare(
+					`UPDATE recipes
+					SET sections = :sections
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: this.recipeId,
+					sections: JSON.stringify(sectionsParsed),
+				});
+
+			this.#triggerUpdated();
+		}
+
+		changeTitle(newTitle: string) {
+			database
+				.prepare(
+					`UPDATE recipes
+					SET title = :title
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: this.recipeId,
+					title: newTitle,
+				});
+
+			this.#triggerUpdated();
+		}
+
+		async delete() {
+			if (this.#image) {
+				await unlink(new URL(this.#image, options.imageDirectory));
+			}
+
+			database
+				.prepare(
+					`DELETE FROM recipes
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: this.recipeId,
+				});
+		}
+
+		dissociateOwner() {
+			database
+				.prepare(
+					`UPDATE users
+					SET author = -1
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: this.recipeId,
+				});
+
+			this.#triggerUpdated();
+		}
+
+		static permissionToCreateRecipe(other: InstanceType<User>) {
+			return other.role >= UserRoles.User;
+		}
+
+		permissionToModifyRecipe(other: InstanceType<User>) {
+			if (other.userId === this.author?.userId) {
+				return true;
+			}
+
+			return other.role >= UserRoles.Admin;
 		}
 	};
 }

@@ -608,6 +608,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tokenizer/inflate@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "@tokenizer/inflate@npm:0.2.6"
+  dependencies:
+    debug: "npm:^4.3.7"
+    fflate: "npm:^0.8.2"
+    token-types: "npm:^6.0.0"
+  checksum: 10c0/7c0e5e85c86fd3dbe4210d26fa16a2121d04ca053eeb2c42826846e85650c585621ca80e587107410a1e664b50ba37fd645e973863aafa9dee594efbab104619
+  languageName: node
+  linkType: hard
+
+"@tokenizer/token@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@tokenizer/token@npm:0.3.0"
+  checksum: 10c0/7ab9a822d4b5ff3f5bca7f7d14d46bdd8432528e028db4a52be7fbf90c7f495cc1af1324691dda2813c6af8dc4b8eb29de3107d4508165f9aa5b53e7d501f155
+  languageName: node
+  linkType: hard
+
 "@types/bcrypt@npm:^5.0.2":
   version: 5.0.2
   resolution: "@types/bcrypt@npm:5.0.2"
@@ -949,6 +967,7 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     cooklang-wasm: "workspace:^"
     eslint: "npm:^9.18.0"
+    file-type: "npm:^20.0.0"
     typescript: "npm:^5.7.3"
   languageName: unknown
   linkType: soft
@@ -1847,12 +1866,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fflate@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "fflate@npm:0.8.2"
+  checksum: 10c0/03448d630c0a583abea594835a9fdb2aaf7d67787055a761515bf4ed862913cfd693b4c4ffd5c3f3b355a70cf1e19033e9ae5aedcca103188aaff91b8bd6e293
+  languageName: node
+  linkType: hard
+
 "file-entry-cache@npm:^8.0.0":
   version: 8.0.0
   resolution: "file-entry-cache@npm:8.0.0"
   dependencies:
     flat-cache: "npm:^4.0.0"
   checksum: 10c0/9e2b5938b1cd9b6d7e3612bdc533afd4ac17b2fc646569e9a8abbf2eb48e5eb8e316bc38815a3ef6a1b456f4107f0d0f055a614ca613e75db6bf9ff4d72c1638
+  languageName: node
+  linkType: hard
+
+"file-type@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "file-type@npm:20.0.0"
+  dependencies:
+    "@tokenizer/inflate": "npm:^0.2.6"
+    strtok3: "npm:^10.0.1"
+    token-types: "npm:^6.0.0"
+    uint8array-extras: "npm:^1.4.0"
+  checksum: 10c0/4238d528d7f3e1a7ad9b99aed84e9fd720dea051a19d101e8e607e713507dd9cde154a1773d07b9c4a7bf9e39b67dfd26dffa6d25c329bf1e799432596a9a432
   languageName: node
   linkType: hard
 
@@ -2164,6 +2202,13 @@ __metadata:
   dependencies:
     safer-buffer: "npm:>= 2.1.2 < 3.0.0"
   checksum: 10c0/98102bc66b33fcf5ac044099d1257ba0b7ad5e3ccd3221f34dd508ab4070edff183276221684e1e0555b145fce0850c9f7d2b60a9fcac50fbb4ea0d6e845a3b1
+  languageName: node
+  linkType: hard
+
+"ieee754@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "ieee754@npm:1.2.1"
+  checksum: 10c0/b0782ef5e0935b9f12883a2e2aa37baa75da6e66ce6515c168697b42160807d9330de9a32ec1ed73149aea02e0d822e572bca6f1e22bdcbd2149e13b050b17bb
   languageName: node
   linkType: hard
 
@@ -2971,6 +3016,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"peek-readable@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "peek-readable@npm:5.3.1"
+  checksum: 10c0/49f628e4728887230c158699e422ebb10747f5e02aee930ec10634fa7142e74e67d3fb3a780e7a9b9f092c61bf185f07d167c099b2359b22a58cee3dbfe0e43b
+  languageName: node
+  linkType: hard
+
 "picocolors@npm:^1.0.0, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
@@ -3567,6 +3619,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"strtok3@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "strtok3@npm:10.0.1"
+  dependencies:
+    "@tokenizer/token": "npm:^0.3.0"
+    peek-readable: "npm:^5.3.1"
+  checksum: 10c0/476ccea29feebef1659d825e71a5e054b80486617139966217f53fd197d9d78d2d6f1e3be52cad7bc7ff71e164d38696adc60f883705fb440be1162a3ce6cb9b
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^7.1.0":
   version: 7.2.0
   resolution: "supports-color@npm:7.2.0"
@@ -3662,6 +3724,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"token-types@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "token-types@npm:6.0.0"
+  dependencies:
+    "@tokenizer/token": "npm:^0.3.0"
+    ieee754: "npm:^1.2.1"
+  checksum: 10c0/5bf5eba51d63f71f301659ff70ce10ca43e7038364883437d8b4541cc98377e3e56109b11720e25fe51047014efaccdff90eaf6de9a78270483578814b838ab9
+  languageName: node
+  linkType: hard
+
 "tr46@npm:~0.0.3":
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
@@ -3739,6 +3811,13 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/6fd7e0ed3bf23a81246878c613423730c40e8bdbfec4c6e4d7bf1b847cbb39076e56ad5f50aa9d7ebd89877999abaee216002d3f2818885e41c907caaa192cc4
+  languageName: node
+  linkType: hard
+
+"uint8array-extras@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "uint8array-extras@npm:1.4.0"
+  checksum: 10c0/eaffd3388634b7e5e1496073b878dd19136043137d3e7e0d2a453e37f566a5a551e640819e1a6596c6df9b9d1f7b70884cc29db6a357bdd424811f3598d504dd
   languageName: node
   linkType: hard
 

@@ -14,6 +14,4 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export class ForbiddenError extends Error {}
-
-export class LoggedOutError extends Error {}
+export class ApiError extends Error {}

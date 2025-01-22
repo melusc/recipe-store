@@ -16,8 +16,10 @@
 
 import bcrypt from 'bcrypt';
 
-import {ForbiddenError, LoggedOutError} from '../error.js';
-import type {ApiOptions} from '../index.js';
+import {ApiError} from './error.js';
+import type {Recipe} from './recipe.js';
+
+import type {InternalApiOptions} from './index.js';
 
 // Use integers to indicate hierarchy
 // Allows comparison of level using lt and gt operator
@@ -34,7 +36,7 @@ const HASH_ROUNDS = 11;
 
 export type User = ReturnType<typeof createUserClass>;
 
-export function createUserClass(options: ApiOptions) {
+export function createUserClass(options: InternalApiOptions) {
 	const {database} = options;
 	// InstanceType<Tag> only works if constructor is public
 	// constructor should still only be used internally
@@ -77,7 +79,7 @@ export function createUserClass(options: ApiOptions) {
 
 		static create(username: string, password: string, role: UserRoles) {
 			if (this.fromUsername(username)) {
-				throw new ForbiddenError('User already exists. Use another username.');
+				throw new ApiError('User already exists. Use another username.');
 			}
 
 			const passwordHash = bcrypt.hashSync(password, HASH_ROUNDS);
@@ -109,9 +111,8 @@ export function createUserClass(options: ApiOptions) {
 		static login(username: string, password: string): User {
 			const result = database
 				.prepare(
-					`
-				SELECT user_id, role, password, created_at, updated_at FROM users
-				WHERE username = ?`,
+					`SELECT user_id, role, password, created_at, updated_at FROM users
+					WHERE username = ?`,
 				)
 				.get(username) as
 				| {
@@ -126,7 +127,7 @@ export function createUserClass(options: ApiOptions) {
 			const passwordMatch =
 				!!result && bcrypt.compareSync(password, result.password);
 			if (!passwordMatch) {
-				throw new ForbiddenError('Invalid credentials. Please try again.');
+				throw new ApiError('Invalid credentials. Please try again.');
 			}
 
 			return new User(
@@ -142,7 +143,8 @@ export function createUserClass(options: ApiOptions) {
 		static fromUsername(username: string): User | undefined {
 			const result = database
 				.prepare(
-					'SELECT user_id, role, updated_at, created_at FROM users WHERE username = ?',
+					`SELECT user_id, role, updated_at, created_at
+					FROM users WHERE username = ?`,
 				)
 				.get(username) as
 				| {
@@ -170,8 +172,7 @@ export function createUserClass(options: ApiOptions) {
 		static fromUserid(userId: number): User | undefined {
 			const result = database
 				.prepare(
-					`
-					SELECT username, role, updated_at, created_at FROM users
+					`SELECT username, role, updated_at, created_at FROM users
 					WHERE user_id = ?`,
 				)
 				.get(userId) as
@@ -197,10 +198,11 @@ export function createUserClass(options: ApiOptions) {
 			);
 		}
 
-		static all(): User[] {
+		static all(): readonly User[] {
 			const result = database
 				.prepare(
-					'SELECT username, role, user_id, created_at, updated_at FROM users',
+					`SELECT username, role, user_id, created_at, updated_at
+					FROM users`,
 				)
 				.all() as Array<{
 				username: string;
@@ -254,13 +256,30 @@ export function createUserClass(options: ApiOptions) {
 			return false;
 		}
 
+		#triggerUpdated() {
+			this.#updatedAt = new Date();
+			database
+				.prepare(
+					`UPDATE recipes
+					SET updated_at = :updatedAt
+					WHERE user_id = :userId`,
+				)
+				.run({
+					updatedAt: this.#updatedAt.getTime(),
+					userId: this.userId,
+				});
+		}
+
 		changePassword(oldPassword: string, newPassword: string) {
 			const oldHash = database
-				.prepare('SELECT password FROM users WHERE user_id = :userId')
+				.prepare(
+					`SELECT password FROM users
+					WHERE user_id = :userId`,
+				)
 				.get({userId: this.userId}) as {password: string} | undefined;
 
 			if (!oldHash) {
-				throw new LoggedOutError();
+				throw new ApiError('Internal error! Try refreshing the page.');
 			}
 
 			const oldPasswordMatches = bcrypt.compareSync(
@@ -269,72 +288,108 @@ export function createUserClass(options: ApiOptions) {
 			);
 
 			if (!oldPasswordMatches) {
-				throw new ForbiddenError('Incorrect password.');
+				throw new ApiError('Incorrect password.');
 			}
 
 			const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
-			this.#updatedAt = new Date();
 			database
 				.prepare(
-					`
-					UPDATE users
-					SET
-						password = :newHash,
-						updated_at = :updatedAt
+					`UPDATE users
+					SET password = :newHash
 					WHERE user_id = :userId`,
 				)
 				.run({
 					newHash,
 					userId: this.userId,
-					updatedAt: this.#updatedAt.getTime(),
 				});
+
+			this.#triggerUpdated();
 		}
 
 		resetPassword(newPassword: string) {
 			const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
-			this.#updatedAt = new Date();
 
 			database
 				.prepare(
-					'UPDATE users SET password = :newHash, updated_at = :updatedAt WHERE user_id = :userId',
+					`UPDATE users
+					SET password = :newHash
+					WHERE user_id = :userId`,
 				)
 				.run({
 					newHash: newHash,
 					userId: this.userId,
-					updatedAt: this.#updatedAt.getTime(),
 				});
+
+			this.#triggerUpdated();
+		}
+
+		listRecipes(): ReadonlyArray<InstanceType<Recipe>> {
+			const recipeIds = database
+				.prepare(
+					`SELECT recipe_id FROM recipes
+					WHERE author = :userId`,
+				)
+				.all({
+					userId: this.userId,
+				}) as Array<{recipe_id: number}>;
+
+			return recipeIds.map(
+				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
+			);
 		}
 
 		changeUsername(newUsername: string) {
-			this.#updatedAt = new Date();
-
 			database
 				.prepare(
-					'UPDATE users SET username = :newUsername, updated_at = :updatedAt WHERE user_id = :userId',
+					`UPDATE users
+					SET username = :newUsername
+					WHERE user_id = :userId`,
 				)
 				.run({
 					newUsername,
 					userId: this.userId,
-					updatedAt: this.#updatedAt.getTime(),
 				});
+
+			this.#triggerUpdated();
 
 			this.#username = newUsername;
 		}
 
 		changeRole(newRole: UserRoles) {
-			this.#updatedAt = new Date();
-
 			database
 				.prepare(
-					'UPDATE users SET role = :newRole, updated_at = :updatedAt WHERE user_id = :userId',
+					`UPDATE users
+					SET role = :newRole
+					WHERE user_id = :userId`,
 				)
 				.run({
 					newRole,
 					userId: this.userId,
-					updatedAt: this.#updatedAt.getTime(),
 				});
 
+			this.#triggerUpdated();
 			this.#role = newRole;
+		}
+
+		async deleteUser(deleteRecipes: boolean) {
+			if (deleteRecipes) {
+				for (const recipe of this.listRecipes()) {
+					await recipe.delete();
+				}
+			} else {
+				for (const recipe of this.listRecipes()) {
+					recipe.dissociateOwner();
+				}
+			}
+
+			database
+				.prepare(
+					`DELETE FROM users
+					WHERE user_id = :userId`,
+				)
+				.run({
+					userId: this.userId,
+				});
 		}
 	};
 }
