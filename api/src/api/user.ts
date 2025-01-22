@@ -26,13 +26,12 @@ import type {InternalApiOptions} from './index.js';
 // Allow for theoretical future roles with fewer permissions
 // than admin but more than user, though unlikely
 export enum UserRoles {
-	LoggedOut = 0,
-	User = 1,
-	Admin = 9,
-	Owner = 10,
+	User = 0,
+	Admin = 4,
+	Owner = 5,
 }
 
-const HASH_ROUNDS = 11;
+const HASH_ROUNDS = 10;
 
 export type User = ReturnType<typeof createUserClass>;
 
@@ -256,11 +255,18 @@ export function createUserClass(options: InternalApiOptions) {
 			return false;
 		}
 
+		permissionToChangeRole(other: User): boolean {
+			// Doesn't matter who other person is
+			// Only owner
+			void other;
+			return this.role === UserRoles.Owner;
+		}
+
 		#triggerUpdated() {
 			this.#updatedAt = new Date();
 			database
 				.prepare(
-					`UPDATE recipes
+					`UPDATE users
 					SET updated_at = :updatedAt
 					WHERE user_id = :userId`,
 				)

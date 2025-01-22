@@ -17,6 +17,7 @@
 export {
 	type Recipe,
 	type User,
+	type Api,
 	UserRoles,
 	createApi,
 	ApiError,

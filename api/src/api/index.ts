@@ -35,6 +35,11 @@ export type InternalApiOptions = {
 	readonly User: User;
 } & ApiOptions;
 
+export type Api = {
+	readonly Recipe: Recipe;
+	readonly User: User;
+};
+
 function initDatabase(database: DatabaseSync) {
 	database.exec('PRAGMA journal_mode=WAL;');
 
@@ -79,11 +84,24 @@ function initDatabase(database: DatabaseSync) {
 	`);
 }
 
-export function createApi(options: ApiOptions) {
+export function createApi(options: ApiOptions): Api {
 	initDatabase(options.database);
 
-	// @ts-expect-error Cannot set `Recipe` etc because they don't exist yet
-	const internalApiOptions: InternalApiOptions = {...options};
+	const {database} = options;
+	let {imageDirectory} = options;
+	if (!imageDirectory.href.endsWith('/')) {
+		imageDirectory = new URL(imageDirectory);
+		imageDirectory.href += '/';
+	}
+
+	const internalApiOptions: InternalApiOptions = {
+		database,
+		imageDirectory,
+		// Cyclical dependency
+		// passing object by reference so it will be fine :)
+		Recipe: undefined!,
+		User: undefined!,
+	};
 
 	const Recipe = createRecipeClass(internalApiOptions);
 	const User = createUserClass(internalApiOptions);
