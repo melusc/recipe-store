@@ -11,7 +11,7 @@
 		"#wasm/node": "./dist/pkg/nodejs/cooklang_wasm.js"
 	},
 	"engines": {
-		"node": ">=22.13.0"
+		"node": ">=22.13.1"
 	},
 	"scripts": {
 		"build": "yarn clean && yarn build:node && yarn build:web && tsc",
@@ -25,11 +25,11 @@
 	"devDependencies": {
 		"@lusc/eslint-config": "^4.0.0",
 		"@lusc/tsconfig": "^5.1.0",
-		"@types/node": "^22.10.6",
+		"@types/node": "^22.10.8",
 		"eslint": "^9.18.0",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.7.3",
-		"vitest": "^3.0.2",
+		"vitest": "^3.0.3",
 		"wasm-pack": "^0.13.1"
 	},
 	"dependencies": {
