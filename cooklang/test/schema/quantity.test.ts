@@ -1,4 +1,4 @@
-import {test, assert, expect} from 'vitest';
+import {test, expect} from 'vitest';
 
 import {ParseError} from '../../src/common.js';
 import {parseSection} from '../../src/node.js';
@@ -31,15 +31,14 @@ test.for([
 	const parsed = parseSection(cooklangSource) as {
 		ingredients: Array<{quantity: Quantity}>;
 	};
-	assert('ingredients' in parsed);
-	assert.containsAllKeys(parsed, ['ingredients']);
-	assert.lengthOf(parsed.ingredients, 1);
+	expect(parsed).toHaveProperty('ingredients');
+	expect(parsed.ingredients).toHaveLength(1);
 	let quantity!: Quantity;
-	assert.doesNotThrow(() => {
+	expect(() => {
 		quantity = quantitySchema.parse(parsed.ingredients[0]!.quantity);
-	});
+	}).not.to.throw();
 
-	assert.equal(stringifyQuantity(quantity), output);
+	expect(stringifyQuantity(quantity)).toStrictEqual(output);
 });
 
 test.for([
@@ -53,15 +52,16 @@ test.for([
 	const parsed = parseSection(cooklangSource) as {
 		timers: Array<{quantity: Quantity}>;
 	};
-	assert('timers' in parsed);
-	assert.containsAllKeys(parsed, ['timers']);
-	assert.lengthOf(parsed.timers, 1);
-	let quantity!: Quantity;
-	assert.doesNotThrow(() => {
-		quantity = quantitySchema.parse(parsed.timers[0]!.quantity);
-	});
 
-	assert.equal(stringifyQuantity(quantity), output);
+	expect(parsed).toHaveProperty('timers');
+	expect(parsed.timers).toHaveLength(1);
+
+	let quantity!: Quantity;
+	expect(() => {
+		quantity = quantitySchema.parse(parsed.timers[0]!.quantity);
+	}).not.to.throw();
+
+	expect(stringifyQuantity(quantity)).toStrictEqual(output);
 });
 
 test.for([
@@ -74,9 +74,9 @@ test.for([
 	'1-2%minute',
 ])('Invalid timer quantity %j', timerInput => {
 	const cooklangSource = `~{${timerInput}}`;
-	assert.throws(() => {
+	expect(() => {
 		parseSection(cooklangSource);
-	}, ParseError);
+	}).to.throw(ParseError);
 });
 
 test.for([
@@ -91,21 +91,21 @@ test.for([
 	const parsed = parseSection(cooklangSource) as {
 		cookware: Array<{quantity: UnitlessQuantity}>;
 	};
-	assert('cookware' in parsed);
-	assert.containsAllKeys(parsed, ['cookware']);
-	assert.lengthOf(parsed.cookware, 1);
+
+	expect(parsed).toHaveProperty('cookware');
+	expect(parsed.cookware).toHaveLength(1);
 	expect(parsed.cookware[0]).toMatchSnapshot();
 	let quantity!: UnitlessQuantity;
-	assert.doesNotThrow(() => {
+	expect(() => {
 		quantity = unitlessQuantitySchema.parse(parsed.cookware[0]!.quantity);
-	});
+	}).not.to.throw();
 
-	assert.equal(stringifyQuantity(quantity), output);
+	expect(stringifyQuantity(quantity)).toStrictEqual(output);
 });
 
 test.for(['1%g', 'one%g'])('Invalid cookware quantity %j', cookwareInput => {
 	const cooklangSource = `#a{${cookwareInput}}`;
-	assert.throws(() => {
+	expect(() => {
 		parseSection(cooklangSource);
-	}, ParseError);
+	}).to.throw(ParseError);
 });
