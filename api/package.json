@@ -7,14 +7,14 @@
 		"@lusc/eslint-config": "^4.0.0",
 		"@lusc/tsconfig": "^5.1.0",
 		"@types/bcrypt": "^5.0.2",
-		"@types/node": "^22.10.6",
+		"@types/node": "^22.10.8",
 		"@vitest/runner": "^3.0.3",
 		"eslint": "^9.18.0",
 		"typescript": "^5.7.3",
 		"vitest": "^3.0.3"
 	},
 	"engines": {
-		"node": ">=22.13.0"
+		"node": ">=22.13.1"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
