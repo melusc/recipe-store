@@ -21,6 +21,8 @@ import {unlink, writeFile} from 'node:fs/promises';
 import {parseSection, type CooklangSection} from 'cooklang-wasm/node';
 import {fileTypeFromBuffer} from 'file-type';
 
+import type {ReadonlyDate} from './util.js';
+
 import {
 	ApiError,
 	UserRoles,
@@ -44,7 +46,7 @@ async function validateImageType(image: Buffer): Promise<string> {
 	}
 
 	throw new ApiError(
-		'Unknown image type. Allowed image types are .jpg, .jpeg, .png, and .webp.',
+		'Unknown image type. Allowed image types are JPG, PNG, and WEBP.',
 	);
 }
 
@@ -62,18 +64,19 @@ export function createRecipeClass(options: InternalApiOptions) {
 
 	return class Recipe {
 		#title: string;
-		#createdAt: Date;
-		#updatedAt: Date;
+		readonly #createdAt: ReadonlyDate;
+		#updatedAt: ReadonlyDate;
 		#image: string | undefined;
 		#tags: readonly string[];
 		#sections: readonly CooklangSection[];
+		#author: InstanceType<User> | undefined;
 
 		constructor(
 			readonly recipeId: number,
 			title: string,
-			readonly author: InstanceType<User> | undefined,
-			createdAt: Date,
-			updatedAt: Date,
+			author: InstanceType<User> | undefined,
+			createdAt: ReadonlyDate,
+			updatedAt: ReadonlyDate,
 			image: string | undefined,
 			tags: readonly string[],
 			sections: readonly CooklangSection[],
@@ -84,6 +87,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 			}
 
 			this.#title = title;
+			this.#author = author;
 			this.#createdAt = createdAt;
 			this.#updatedAt = updatedAt;
 			this.#image = image;
@@ -95,12 +99,16 @@ export function createRecipeClass(options: InternalApiOptions) {
 			return this.#title;
 		}
 
-		get createdAt() {
-			return new Date(this.#createdAt);
+		get author() {
+			return this.#author;
 		}
 
-		get updatedAt() {
-			return new Date(this.#updatedAt);
+		get createdAt(): ReadonlyDate {
+			return new Date(this.#createdAt as Date);
+		}
+
+		get updatedAt(): ReadonlyDate {
+			return new Date(this.#updatedAt as Date);
 		}
 
 		get image() {
@@ -164,7 +172,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 				createdAt,
 				createdAt,
 				undefined,
-				tags,
+				[],
 				sectionsParsed,
 				privateConstructorKey,
 			);
@@ -182,7 +190,10 @@ export function createRecipeClass(options: InternalApiOptions) {
 
 		static all(): ReadonlyArray<Recipe> {
 			const recipes = database
-				.prepare('SELECT recipe_id from recipes')
+				.prepare(
+					`SELECT recipe_id FROM recipes
+					ORDER BY recipe_id ASC;`,
+				)
 				.all() as Array<{recipe_id: number}>;
 
 			return recipes.map(
@@ -190,10 +201,33 @@ export function createRecipeClass(options: InternalApiOptions) {
 			);
 		}
 
+		static paginate(limit: number, after: number | undefined) {
+			const parameters: Record<string, number> = {
+				limit,
+			};
+
+			let query = 'SELECT recipe_id FROM recipes';
+
+			if (after !== undefined) {
+				query += ' WHERE recipe_id > :after';
+				parameters['after'] = after;
+			}
+
+			query += ' ORDER BY recipe_id ASC LIMIT :limit';
+
+			const recipes = database.prepare(query).all(parameters) as Array<{
+				recipe_id: number;
+			}>;
+
+			return recipes.map(
+				({recipe_id: recipeId}) => Recipe.fromRecipeId(recipeId)!,
+			);
+		}
+
 		static fromRecipeId(recipeId: number) {
 			const result = database
 				.prepare(
-					`SELECT title, author, created_at, updated_at, sections, image
+					`SELECT title, author, created_at, updated_at, sections, image FROM recipes
 					WHERE recipe_id = :recipeId`,
 				)
 				.get({recipeId}) as
@@ -256,13 +290,13 @@ export function createRecipeClass(options: InternalApiOptions) {
 				});
 
 			if (result.changes > 0) {
-				this.#tags = [...this.#tags, tag];
 				this.#triggerUpdated();
+				this.#syncTags();
 			}
 		}
 
 		removeTag(tag: string) {
-			database
+			const result = database
 				.prepare(
 					`DELETE FROM recipe_tags
 					WHERE recipe_id = :recipeId
@@ -273,19 +307,24 @@ export function createRecipeClass(options: InternalApiOptions) {
 					tagName: tag,
 				});
 
-			this.#syncTags();
-			this.#triggerUpdated();
+			if (result.changes > 0) {
+				this.#triggerUpdated();
+				this.#syncTags();
+			}
 		}
 
 		clearTags() {
-			database
+			const result = database
 				.prepare(
 					`DELETE FROM recipe_tags
 					WHERE recipe_id = :recipeId`,
 				)
 				.run({recipeId: this.recipeId});
 
-			this.#triggerUpdated();
+			if (result.changes > 0) {
+				this.#triggerUpdated();
+			}
+
 			this.#tags = [];
 		}
 
@@ -296,7 +335,8 @@ export function createRecipeClass(options: InternalApiOptions) {
 			const tags = database
 				.prepare(
 					`SELECT tag_name FROM recipe_tags
-					WHERE recipe_id = :recipeId`,
+					WHERE recipe_id = :recipeId
+					ORDER BY tag_slug ASC`,
 				)
 				.all({recipeId: this.recipeId}) as Array<{
 				tag_name: string;
@@ -351,10 +391,12 @@ export function createRecipeClass(options: InternalApiOptions) {
 					sections: JSON.stringify(sectionsParsed),
 				});
 
+			this.#sections = sectionsParsed;
+
 			this.#triggerUpdated();
 		}
 
-		changeTitle(newTitle: string) {
+		updateTitle(newTitle: string) {
 			database
 				.prepare(
 					`UPDATE recipes
@@ -366,12 +408,16 @@ export function createRecipeClass(options: InternalApiOptions) {
 					title: newTitle,
 				});
 
+			this.#title = newTitle;
+
 			this.#triggerUpdated();
 		}
 
 		async delete() {
 			if (this.#image) {
 				await unlink(new URL(this.#image, options.imageDirectory));
+				// If `.delete` is called twice
+				this.#image = undefined;
 			}
 
 			database
@@ -395,6 +441,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 					recipeId: this.recipeId,
 				});
 
+			this.#author = undefined;
 			this.#triggerUpdated();
 		}
 

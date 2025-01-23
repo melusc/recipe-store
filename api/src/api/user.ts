@@ -18,6 +18,7 @@ import bcrypt from 'bcrypt';
 
 import {ApiError} from './error.js';
 import type {Recipe} from './recipe.js';
+import type {ReadonlyDate} from './util.js';
 
 import type {InternalApiOptions} from './index.js';
 
@@ -45,14 +46,16 @@ export function createUserClass(options: InternalApiOptions) {
 		// Internally r/w, externally readonly
 		#username: string;
 		#role: UserRoles;
-		#updatedAt: Date;
+		#updatedAt: ReadonlyDate;
+
+		readonly #createdAt: ReadonlyDate;
 
 		constructor(
 			readonly userId: number,
 			username: string,
 			role: UserRoles,
-			readonly createdAt: Date,
-			updatedAt: Date,
+			createdAt: ReadonlyDate,
+			updatedAt: ReadonlyDate,
 			constructorKey: symbol,
 		) {
 			if (constructorKey !== privateConstructorKey) {
@@ -61,6 +64,7 @@ export function createUserClass(options: InternalApiOptions) {
 
 			this.#username = username;
 			this.#role = role;
+			this.#createdAt = createdAt;
 			this.#updatedAt = updatedAt;
 		}
 
@@ -72,8 +76,12 @@ export function createUserClass(options: InternalApiOptions) {
 			return this.#role;
 		}
 
-		get updatedAt() {
-			return this.#updatedAt;
+		get updatedAt(): ReadonlyDate {
+			return new Date(this.#updatedAt as Date);
+		}
+
+		get createdAt(): ReadonlyDate {
+			return new Date(this.#createdAt as Date);
 		}
 
 		static create(username: string, password: string, role: UserRoles) {

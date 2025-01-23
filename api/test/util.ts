@@ -1,5 +1,6 @@
-import {randomBytes} from 'node:crypto';
-import {mkdir, rm, writeFile} from 'node:fs/promises';
+import {createHash, randomBytes, type BinaryLike} from 'node:crypto';
+import {createReadStream} from 'node:fs';
+import {readdir, mkdir, rm, writeFile} from 'node:fs/promises';
 import {DatabaseSync} from 'node:sqlite';
 
 import type {Use} from '@vitest/runner';
@@ -8,14 +9,52 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
-await mkdir(parentTemporaryDirectory);
+await mkdir(parentTemporaryDirectory, {recursive: true});
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
+
+type UtilApi = Api & {
+	listImages(): Promise<readonly URL[]>;
+};
+
+const fixtureDirectory = new URL('fixtures/', import.meta.url);
+
+export const sampleImagePaths = {
+	jpg: new URL('image1.jpg', fixtureDirectory),
+	webp: new URL('image2.webp', fixtureDirectory),
+	png: new URL('image3.png', fixtureDirectory),
+	gif: new URL('image4.gif', fixtureDirectory),
+} as const;
+
+export const sampleImageHashes = Object.fromEntries(
+	await Promise.all(
+		Object.entries(sampleImagePaths).map(([name, path]) =>
+			hashFile(path).then(hash => [name, hash]),
+		),
+	),
+) as {
+	jpg: string;
+	webp: string;
+	png: string;
+	gif: string;
+};
+
+export async function hashFile(path: URL) {
+	const hash = createHash('sha1');
+
+	const stream = createReadStream(path);
+
+	for await (const chunk of stream) {
+		hash.update(chunk as BinaryLike);
+	}
+
+	return hash.digest('hex');
+}
 
 export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
-	async api({}, use: Use<Api>) {
+	async api({}, use: Use<UtilApi>) {
 		const temporaryDirectory = new URL(
-			randomBytes(20).toString('base64url'),
+			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
 		);
 		await mkdir(temporaryDirectory);
@@ -26,7 +65,15 @@ export const apiTest = test.extend({
 			database,
 		});
 
-		await use(api);
+		const utilApi = {
+			...api,
+			async listImages() {
+				const names = await readdir(temporaryDirectory);
+				return names.map(name => new URL(name, temporaryDirectory));
+			},
+		};
+
+		await use(utilApi);
 
 		database.close();
 		await rm(temporaryDirectory, {recursive: true});
