@@ -3,7 +3,7 @@
 	"name": "backend",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^4.0.0",
+		"@lusc/eslint-config": "^4.1.0",
 		"@lusc/tsconfig": "^5.1.0",
 		"@types/node": "^22.10.8",
 		"esbuild": "^0.24.2",

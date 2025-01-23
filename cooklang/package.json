@@ -23,7 +23,7 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@lusc/eslint-config": "^4.0.0",
+		"@lusc/eslint-config": "^4.1.0",
 		"@lusc/tsconfig": "^5.1.0",
 		"@types/node": "^22.10.8",
 		"eslint": "^9.18.0",
