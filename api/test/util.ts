@@ -8,6 +8,7 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
+await mkdir(parentTemporaryDirectory);
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
 export const apiTest = test.extend({
@@ -17,7 +18,7 @@ export const apiTest = test.extend({
 			randomBytes(20).toString('base64url'),
 			parentTemporaryDirectory,
 		);
-		await mkdir(temporaryDirectory, {recursive: true});
+		await mkdir(temporaryDirectory);
 
 		const database = new DatabaseSync(':memory:');
 		const api = createApi({
