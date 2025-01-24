@@ -217,7 +217,7 @@ export function createUserClass(options: InternalApiOptions) {
 					FROM users
 					ORDER BY user_id ASC`,
 				)
-				.all() as Array<{
+				.all() as ReadonlyArray<{
 				username: string;
 				role: UserRoles;
 				user_id: number;
@@ -352,7 +352,7 @@ export function createUserClass(options: InternalApiOptions) {
 				)
 				.all({
 					userId: this.userId,
-				}) as Array<{recipe_id: number}>;
+				}) as ReadonlyArray<{recipe_id: number}>;
 
 			return recipeIds.map(
 				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,

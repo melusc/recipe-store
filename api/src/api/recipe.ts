@@ -194,7 +194,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 					`SELECT recipe_id FROM recipes
 					ORDER BY recipe_id ASC`,
 				)
-				.all() as Array<{recipe_id: number}>;
+				.all() as ReadonlyArray<{recipe_id: number}>;
 
 			return recipes.map(
 				({recipe_id: recipeId}) => this.fromRecipeId(recipeId)!,
@@ -211,7 +211,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 				.all({
 					limit,
 					skip,
-				}) as Array<{
+				}) as ReadonlyArray<{
 				recipe_id: number;
 			}>;
 
@@ -248,7 +248,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 					`SELECT tag_name FROM recipe_tags
 					WHERE recipe_id = :recipeId`,
 				)
-				.all({recipeId}) as Array<{
+				.all({recipeId}) as ReadonlyArray<{
 				tag_name: string;
 			}>;
 
@@ -336,7 +336,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 					WHERE recipe_id = :recipeId
 					ORDER BY tag_slug ASC`,
 				)
-				.all({recipeId: this.recipeId}) as Array<{
+				.all({recipeId: this.recipeId}) as ReadonlyArray<{
 				tag_name: string;
 			}>;
 

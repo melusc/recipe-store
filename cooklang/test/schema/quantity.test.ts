@@ -44,9 +44,7 @@ test.for([
 	['1-2%tbsp', '1-2 tbsp'],
 ])('Ingredient quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `@ingredient{${input}}`;
-	const parsed = parseSection(cooklangSource) as {
-		ingredients: Array<{quantity: Quantity}>;
-	};
+	const parsed = parseSection(cooklangSource);
 	expect(parsed).toHaveProperty('ingredients');
 	expect(parsed.ingredients).toHaveLength(1);
 	let quantity!: Quantity;
@@ -65,10 +63,7 @@ test.for([
 	['1 300/401%d', '1 300/401 d'],
 ])('Timer quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `~{${input}}`;
-	const parsed = parseSection(cooklangSource) as {
-		timers: Array<{quantity: Quantity}>;
-	};
-
+	const parsed = parseSection(cooklangSource);
 	expect(parsed).toHaveProperty('timers');
 	expect(parsed.timers).toHaveLength(1);
 
@@ -92,7 +87,7 @@ test.for([
 	const cooklangSource = `~{${timerInput}}`;
 	expect(() => {
 		parseSection(cooklangSource);
-	}).to.throw(ParseError);
+	}).toThrow(ParseError);
 });
 
 test.for([
@@ -104,9 +99,7 @@ test.for([
 	['1-2', '1-2'],
 ])('Cookware quantity stringify("%s") -> "%s"', ([input, output]) => {
 	const cooklangSource = `#a{${input}}`;
-	const parsed = parseSection(cooklangSource) as {
-		cookware: Array<{quantity: UnitlessQuantity}>;
-	};
+	const parsed = parseSection(cooklangSource);
 
 	expect(parsed).toHaveProperty('cookware');
 	expect(parsed.cookware).toHaveLength(1);
@@ -123,5 +116,5 @@ test.for(['1%g', 'one%g'])('Invalid cookware quantity %j', cookwareInput => {
 	const cooklangSource = `#a{${cookwareInput}}`;
 	expect(() => {
 		parseSection(cooklangSource);
-	}).to.throw(ParseError);
+	}).toThrow(ParseError);
 });

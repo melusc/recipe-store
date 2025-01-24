@@ -18,21 +18,20 @@ import {test, expect} from 'vitest';
 
 import {parseSection} from '../../src/node.js';
 import {
-	// cookwareSchema,
 	ingredientSchema,
 	stringifyTimer,
 	timerSchema,
 	type Ingredient,
-	type Timer,
 } from '../../src/schema/cooking-items.js';
 
-test.for<[string, Omit<Ingredient, 'quantity'>]>([
+test.for<[string, Ingredient]>([
 	[
 		'@chili',
 		{
 			name: 'chili',
 			alias: null,
 			note: null,
+			quantity: null,
 		},
 	],
 	[
@@ -41,6 +40,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'chili',
 			alias: null,
 			note: null,
+			quantity: null,
 		},
 	],
 	[
@@ -50,6 +50,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'abc',
 			alias: null,
 			note: null,
+			quantity: null,
 		},
 	],
 	[
@@ -58,6 +59,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'abc',
 			alias: 'def',
 			note: null,
+			quantity: null,
 		},
 	],
 	[
@@ -66,6 +68,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'abc',
 			alias: null,
 			note: 'def',
+			quantity: null,
 		},
 	],
 	[
@@ -74,6 +77,7 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'abc',
 			alias: null,
 			note: 'def',
+			quantity: null,
 		},
 	],
 	[
@@ -82,33 +86,28 @@ test.for<[string, Omit<Ingredient, 'quantity'>]>([
 			name: 'abc',
 			alias: 'ghi',
 			note: 'def',
+			quantity: null,
 		},
 	],
 ])('Parse ingredients %j', ([ingredientsInput, expected]) => {
-	const parsed = parseSection(`Add ${ingredientsInput}.`) as {
-		ingredients: Ingredient[];
-	};
-	expect(parsed.ingredients).to.have.length(1);
+	const parsed = parseSection(`Add ${ingredientsInput}.`);
+	expect(parsed.ingredients).toHaveLength(1);
 
 	let ingredientsOut!: Omit<Ingredient, 'quantity'>;
 	expect(() => {
-		ingredientsOut = ingredientSchema
-			.omit({quantity: true})
-			.parse(parsed.ingredients[0]);
+		ingredientsOut = ingredientSchema.parse(parsed.ingredients[0]);
 	}).not.to.throw();
 
-	expect(ingredientsOut).to.deep.equal(expected);
+	expect(ingredientsOut).toStrictEqual(expected);
 });
 
 // only test .name. .quantity is tested in quantity.test.ts
 test.for<[string, string | null]>([['~{10 minutes}', null]])(
 	'Parse timer %j',
 	([timerInput, expected]) => {
-		const parsed = parseSection(`Cook for ${timerInput}.`) as {
-			timers: Timer[];
-		};
+		const parsed = parseSection(`Cook for ${timerInput}.`);
 
-		expect(parsed.timers).to.have.length(1);
+		expect(parsed.timers).toHaveLength(1);
 
 		let name!: string | null;
 
@@ -116,7 +115,7 @@ test.for<[string, string | null]>([['~{10 minutes}', null]])(
 			name = timerSchema.parse(parsed.timers[0]!).name;
 		}).not.to.throw();
 
-		expect(name).to.equal(expected);
+		expect(name).toStrictEqual(expected);
 	},
 );
 
@@ -126,5 +125,5 @@ test.for([
 ] as const)('stringifyTimer(%j)', ([input, output]) => {
 	const parsed = parseSection(input);
 	const timer = parsed.timers[0]!;
-	expect(stringifyTimer(timer)).to.equal(output);
+	expect(stringifyTimer(timer)).toStrictEqual(output);
 });

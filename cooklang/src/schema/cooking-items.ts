@@ -28,7 +28,7 @@ export const ingredientSchema = object({
 	alias: string().nullable(),
 	quantity: quantitySchema.nullable(),
 	note: string().nullable(),
-});
+}).readonly();
 
 export type Ingredient = z.infer<typeof ingredientSchema>;
 
@@ -38,7 +38,7 @@ export const cookwareSchema = object({
 	alias: string().nullable(),
 	quantity: unitlessQuantitySchema.nullable(),
 	note: string().nullable(),
-});
+}).readonly();
 
 export type Cookware = z.infer<typeof cookwareSchema>;
 
@@ -46,7 +46,7 @@ export type Cookware = z.infer<typeof cookwareSchema>;
 export const timerSchema = object({
 	name: string().nullable(),
 	quantity: quantitySchema,
-});
+}).readonly();
 
 export type Timer = z.infer<typeof timerSchema>;
 

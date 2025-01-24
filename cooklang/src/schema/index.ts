@@ -28,15 +28,19 @@ export const cooklangSectionSchema = object({
 	sections: array(
 		object({
 			name: string().nullable(),
-			content: array(stepSchema).length(1),
-		}),
-	).max(1),
-	ingredients: array(ingredientSchema),
-	cookware: array(cookwareSchema),
-	timers: array(timerSchema),
-}).transform(({sections, ...rest}) => ({
-	...rest,
-	steps: sections[0]?.content[0]!.value.items ?? [],
-}));
+			content: array(stepSchema).length(1).readonly(),
+		}).readonly(),
+	)
+		.max(1)
+		.readonly(),
+	ingredients: array(ingredientSchema).readonly(),
+	cookware: array(cookwareSchema).readonly(),
+	timers: array(timerSchema).readonly(),
+})
+	.transform(({sections, ...rest}) => ({
+		...rest,
+		steps: sections[0]?.content[0]!.value.items ?? [],
+	}))
+	.readonly();
 
 export type CooklangSection = z.infer<typeof cooklangSectionSchema>;

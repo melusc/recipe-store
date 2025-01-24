@@ -20,25 +20,25 @@ import type z from 'zod';
 const textItem = object({
 	type: literal('text'),
 	value: string(),
-});
+}).readonly();
 
 /* @__PURE__ */
 const timerReference = object({
 	type: literal('timer'),
 	index: number().int().gte(0),
-});
+}).readonly();
 
 /* @__PURE__ */
 const cookwareReference = object({
 	type: literal('cookware'),
 	index: number().int().gte(0),
-});
+}).readonly();
 
 /* @__PURE__ */
 const ingredientReference = object({
 	type: literal('ingredient'),
 	index: number().int().gte(0),
-});
+}).readonly();
 
 /* @__PURE__ */
 export const stepSchema = object({
@@ -46,8 +46,8 @@ export const stepSchema = object({
 	value: object({
 		items: array(
 			union([textItem, timerReference, cookwareReference, ingredientReference]),
-		),
-	}),
-});
+		).readonly(),
+	}).readonly(),
+}).readonly();
 
 export type Step = z.infer<typeof stepSchema>;

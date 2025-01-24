@@ -29,8 +29,8 @@ apiTest('User creation', ({api: {User}}) => {
 	const userById = User.fromUserid(user.userId);
 	const userByUsername = User.fromUsername(user.username);
 
-	expect(userById).to.deep.equal(user);
-	expect(userByUsername).to.deep.equal(user);
+	expect(userById).toStrictEqual(user);
+	expect(userByUsername).toStrictEqual(user);
 
 	expect(user).not.toStrictEqual(other);
 
@@ -63,15 +63,15 @@ apiTest('Change password of user', ({api: {User}}) => {
 
 	expect(() => {
 		user.changePassword('wrong-old-password', newPassword);
-	}).to.throw(ApiError);
+	}).toThrow(ApiError);
 
 	user.changePassword(password, newPassword);
 
 	expect(() => {
 		User.login(username, password);
-	}).to.throw(ApiError);
+	}).toThrow(ApiError);
 
-	expect(User.login(username, newPassword)).to.deep.equal(user);
+	expect(User.login(username, newPassword)).toStrictEqual(user);
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
 });
 
@@ -87,9 +87,9 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 
 	expect(() => {
 		User.login(username, password);
-	}).to.throw(ApiError);
+	}).toThrow(ApiError);
 
-	expect(User.login(username, newPassword)).to.deep.equal(user);
+	expect(User.login(username, newPassword)).toStrictEqual(user);
 
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
 });

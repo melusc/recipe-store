@@ -20,7 +20,7 @@ import type z from 'zod';
 const regularNumberQuantity = object({
 	type: literal('regular'),
 	value: number(),
-});
+}).readonly();
 
 /* @__PURE__ */
 const fractionNumberQuantity = object({
@@ -31,13 +31,13 @@ const fractionNumberQuantity = object({
 		den: number().int(),
 		err: number(),
 	}),
-});
+}).readonly();
 
 /* @__PURE__ */
 const numberQuantity = object({
 	type: literal('number'),
 	value: regularNumberQuantity.or(fractionNumberQuantity),
-});
+}).readonly();
 
 type NumberQuantity = z.infer<typeof numberQuantity>;
 
@@ -45,19 +45,19 @@ type NumberQuantity = z.infer<typeof numberQuantity>;
 const textQuantity = object({
 	type: literal('text'),
 	value: string(),
-});
+}).readonly();
 
 /* @__PURE__ */
 const fixedQuantity = object({
 	type: literal('fixed'),
 	value: textQuantity.or(numberQuantity),
-});
+}).readonly();
 
 /* @__PURE__ */
 const linearQuantity = object({
 	type: literal('linear'),
 	value: numberQuantity,
-});
+}).readonly();
 
 /* @__PURE__ */
 export const unitlessQuantitySchema = fixedQuantity.or(linearQuantity);
@@ -66,7 +66,7 @@ export const unitlessQuantitySchema = fixedQuantity.or(linearQuantity);
 export const quantitySchema = object({
 	unit: string().nullable(),
 	value: unitlessQuantitySchema,
-});
+}).readonly();
 
 export type UnitlessQuantity = z.infer<typeof unitlessQuantitySchema>;
 export type Quantity = z.infer<typeof quantitySchema>;

@@ -79,5 +79,5 @@ Mash the potatoes with a potato masher.`,
 	],
 ] as const)('stringify(%j)', ([input, output]) => {
 	const parsedSection = parseSection(input);
-	expect(stringifySection(parsedSection)).to.equal(output);
+	expect(stringifySection(parsedSection)).toStrictEqual(output);
 });
