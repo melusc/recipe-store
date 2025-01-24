@@ -192,7 +192,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 			const recipes = database
 				.prepare(
 					`SELECT recipe_id FROM recipes
-					ORDER BY recipe_id ASC;`,
+					ORDER BY recipe_id ASC`,
 				)
 				.all() as Array<{recipe_id: number}>;
 
@@ -226,7 +226,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 					`SELECT
 						title, author, created_at,
 						updated_at, sections, image FROM recipes
-						WHERE recipe_id = :recipeId`,
+					WHERE recipe_id = :recipeId`,
 				)
 				.get({recipeId}) as
 				| {

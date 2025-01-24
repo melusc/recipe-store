@@ -124,9 +124,9 @@ export function createUserClass(options: InternalApiOptions) {
 			const result = database
 				.prepare(
 					`SELECT user_id, role, password, created_at, updated_at FROM users
-					WHERE username = ?`,
+					WHERE username = :username`,
 				)
-				.get(username) as
+				.get({username}) as
 				| {
 						user_id: number;
 						role: UserRoles;
@@ -156,9 +156,9 @@ export function createUserClass(options: InternalApiOptions) {
 			const result = database
 				.prepare(
 					`SELECT user_id, role, updated_at, created_at
-					FROM users WHERE username = ?`,
+					FROM users WHERE username = :username`,
 				)
-				.get(username) as
+				.get({username}) as
 				| {
 						user_id: number;
 						role: UserRoles;
@@ -185,9 +185,9 @@ export function createUserClass(options: InternalApiOptions) {
 			const result = database
 				.prepare(
 					`SELECT username, role, updated_at, created_at FROM users
-					WHERE user_id = ?`,
+					WHERE user_id = :userId`,
 				)
-				.get(userId) as
+				.get({userId}) as
 				| {
 						username: string;
 						role: UserRoles;
@@ -214,7 +214,8 @@ export function createUserClass(options: InternalApiOptions) {
 			const result = database
 				.prepare(
 					`SELECT username, role, user_id, created_at, updated_at
-					FROM users`,
+					FROM users
+					ORDER BY user_id ASC`,
 				)
 				.all() as Array<{
 				username: string;
