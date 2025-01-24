@@ -23,7 +23,7 @@ import {createUserClass, type User} from './user.js';
 
 export {ApiError} from './error.js';
 export {type User, UserRoles} from './user.js';
-export {type Recipe} from './recipe.js';
+export type {Recipe, RecipeSection} from './recipe.js';
 
 export type ApiOptions = {
 	readonly database: DatabaseSync;

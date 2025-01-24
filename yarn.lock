@@ -1031,6 +1031,7 @@ __metadata:
     file-type: "npm:^20.0.0"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.3"
+    zod: "npm:^3.24.1"
   languageName: unknown
   linkType: soft
 

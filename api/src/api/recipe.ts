@@ -18,8 +18,13 @@ import type {Buffer} from 'node:buffer';
 import {randomBytes} from 'node:crypto';
 import {unlink, writeFile} from 'node:fs/promises';
 
-import {parseSection, type CooklangSection} from 'cooklang-wasm/node';
+import {
+	cooklangSectionSchema,
+	parseSection,
+	type CooklangSection,
+} from 'cooklang-wasm/node';
 import {fileTypeFromBuffer} from 'file-type';
+import {array, object, string} from 'zod';
 
 import type {ReadonlyDate} from './util.js';
 
@@ -29,6 +34,11 @@ import {
 	type InternalApiOptions,
 	type User,
 } from './index.js';
+
+export type RecipeSection = {
+	source: string;
+	parsed: CooklangSection;
+};
 
 const allowedImageMimes: ReadonlySet<string> = new Set([
 	'image/jpeg',
@@ -68,7 +78,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 		#updatedAt: ReadonlyDate;
 		#image: string | undefined;
 		#tags: readonly string[];
-		#sections: readonly CooklangSection[];
+		#sections: readonly RecipeSection[];
 		#author: InstanceType<User> | undefined;
 
 		constructor(
@@ -79,7 +89,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 			updatedAt: ReadonlyDate,
 			image: string | undefined,
 			tags: readonly string[],
-			sections: readonly CooklangSection[],
+			sections: readonly RecipeSection[],
 			constructorKey: symbol,
 		) {
 			if (constructorKey !== privateConstructorKey) {
@@ -148,7 +158,13 @@ export function createRecipeClass(options: InternalApiOptions) {
 		) {
 			const createdAt = new Date();
 
-			const sectionsParsed = sections.map(s => parseSection(s));
+			const sectionsParsed = sections.map(
+				source =>
+					({
+						source,
+						parsed: parseSection(source),
+					}) satisfies RecipeSection,
+			);
 
 			const {recipe_id: recipeId} = database
 				.prepare(
@@ -252,9 +268,14 @@ export function createRecipeClass(options: InternalApiOptions) {
 				tag_name: string;
 			}>;
 
-			const parsedSections = JSON.parse(
-				result.sections,
-			) as readonly CooklangSection[];
+			const parsedSections = array(
+				object({
+					source: string(),
+					parsed: cooklangSectionSchema,
+				}).readonly(),
+			)
+				.readonly()
+				.parse(JSON.parse(result.sections));
 
 			return new Recipe(
 				recipeId,
@@ -376,7 +397,13 @@ export function createRecipeClass(options: InternalApiOptions) {
 		}
 
 		updateSections(sections: readonly string[]) {
-			const sectionsParsed = sections.map(s => parseSection(s));
+			const sectionsParsed = sections.map(
+				source =>
+					({
+						source,
+						parsed: parseSection(source),
+					}) satisfies RecipeSection,
+			);
 
 			database
 				.prepare(

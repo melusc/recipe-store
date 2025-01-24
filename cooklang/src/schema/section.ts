@@ -41,12 +41,15 @@ const ingredientReference = object({
 }).readonly();
 
 /* @__PURE__ */
+export const stepItems = array(
+	union([textItem, timerReference, cookwareReference, ingredientReference]),
+).readonly();
+
+/* @__PURE__ */
 export const stepSchema = object({
 	type: literal('step'),
 	value: object({
-		items: array(
-			union([textItem, timerReference, cookwareReference, ingredientReference]),
-		).readonly(),
+		items: stepItems,
 	}).readonly(),
 }).readonly();
 
