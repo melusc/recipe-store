@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Updating sections 1`] = `"[{"ingredients":[{"name":"pineapple","alias":null,"quantity":null,"note":null}],"cookware":[],"timers":[],"steps":[{"type":"text","value":"Add "},{"type":"ingredient","index":0}]},{"ingredients":[],"cookware":[{"name":"mixer","alias":null,"quantity":null,"note":null}],"timers":[],"steps":[{"type":"text","value":"Stir with "},{"type":"cookware","index":0}]}]"`;
+
+exports[`Updating sections 2`] = `"[{"ingredients":[{"name":"cream","alias":null,"quantity":null,"note":null}],"cookware":[],"timers":[],"steps":[{"type":"text","value":"Fold in "},{"type":"ingredient","index":0}]},{"ingredients":[],"cookware":[{"name":"blender","alias":null,"quantity":null,"note":null}],"timers":[],"steps":[{"type":"text","value":"Blend with "},{"type":"cookware","index":0}]}]"`;

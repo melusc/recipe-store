@@ -14,8 +14,9 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {expect, test} from 'vitest';
+import {expect} from 'vitest';
 
+import {UserDeletion} from '../src/api/user.js';
 import {ApiError, UserRoles} from '../src/index.js';
 
 import {apiTest} from './util.js';
@@ -135,7 +136,7 @@ apiTest('Delete user without recipes', async ({api: {User}}) => {
 	const password = 'rftef';
 	const user = User.create(username, password, UserRoles.Admin);
 
-	await user.deleteUser(false);
+	await user.deleteUser(UserDeletion.KeepRecipes);
 
 	expect(User.fromUsername(username)).toBeUndefined();
 	expect(User.fromUserid(user.userId)).toBeUndefined();
@@ -143,9 +144,120 @@ apiTest('Delete user without recipes', async ({api: {User}}) => {
 	expect(User.fromUserid(-1)).toBeUndefined();
 });
 
-test.todo('Delete user, keep recipes');
-test.todo('Delete user, delete recipes');
-test.todo('List recipes created by user');
+apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
+	const user1 = User.create('fadus', 'fnudy', UserRoles.User);
+	const user2 = User.create('tdjdj', 'xaoyu', UserRoles.User);
+
+	await Recipe.create(
+		'recipe 1',
+		user1,
+		undefined,
+		[],
+		['add @sunflower seeds{}'],
+	);
+
+	await Recipe.create('recipe 2', user2, undefined, [], ['add @basil']);
+
+	await user1.deleteUser(UserDeletion.KeepRecipes);
+
+	expect(User.all()).toHaveLength(1);
+
+	const recipes = Recipe.all();
+	expect(recipes).toHaveLength(2);
+
+	expect(new Set(recipes.map(({author}) => author?.username))).toStrictEqual(
+		new Set([undefined, 'tdjdj']),
+	);
+});
+
+apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
+	const user1 = User.create('cnjxu', 'lskih', UserRoles.User);
+	const user2 = User.create('grnly', 'ccfqi', UserRoles.User);
+
+	await Recipe.create('recipe 1', user1, undefined, [], ['add @milk']);
+
+	const recipe2 = await Recipe.create(
+		'recipe 2',
+		user2,
+		undefined,
+		[],
+		['add @carrots'],
+	);
+
+	await user1.deleteUser(UserDeletion.DeleteRecipes);
+
+	expect(Recipe.all()).toStrictEqual([recipe2]);
+	expect(User.all()).toStrictEqual([user2]);
+});
+
+apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
+	const user1 = User.create('hoatt', 'sgghj', UserRoles.User);
+	const user2 = User.create('qhqkq', 'enhgp', UserRoles.User);
+
+	for (let index = 0; index < 20; ++index) {
+		await Recipe.create(
+			`recipe ${index}`,
+			index & 1 ? user1 : user2,
+			undefined,
+			[],
+			[`Add @salt{${index}%tbsp}`],
+		);
+	}
+
+	const user1Recipes = user1.listRecipes();
+	const user2Recipes = user2.listRecipes();
+
+	expect(user1Recipes).toHaveLength(10);
+	expect(user2Recipes).toHaveLength(10);
+
+	for (const recipe of user1Recipes) {
+		// odd recipes
+		expect(recipe.title).toMatch(/^recipe \d*[13579]$/i);
+	}
+
+	for (const recipe of user2Recipes) {
+		// even recipes
+		expect(recipe.title).toMatch(/^recipe \d*[02468]$/i);
+	}
+});
+
+apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
+	const user1 = User.create('wacws', 'gmaiu', UserRoles.User);
+	const user2 = User.create('plvsh', 'xumto', UserRoles.User);
+
+	for (let index = 0; index < 50; ++index) {
+		await Recipe.create(
+			`recipe ${index}`,
+			index & 1 ? user1 : user2,
+			undefined,
+			[],
+			[`Add @salt{${index}%tbsp}`],
+		);
+	}
+
+	const firstTen = user1.paginateRecipes(10, 0);
+	expect(firstTen).toHaveLength(10);
+	for (const recipe of firstTen) {
+		expect(recipe).toBeDefined();
+	}
+
+	const nextTen = user1.paginateRecipes(10, 10);
+	expect(nextTen).toHaveLength(10);
+	for (const recipe of nextTen) {
+		expect(recipe).toBeDefined();
+	}
+
+	const finalFive = user1.paginateRecipes(10, 20);
+	expect(finalFive).toHaveLength(5);
+	for (const recipe of finalFive) {
+		expect(recipe).toBeDefined();
+	}
+
+	const ids = [...firstTen, ...nextTen, ...finalFive].map(
+		recipe => recipe.recipeId,
+	);
+	expect(new Set(ids)).toHaveLength(25);
+});
 
 apiTest('User permissions', ({api: {User}}) => {
 	const owner1 = User.create('rbzko', 'hvfpi', UserRoles.Owner);

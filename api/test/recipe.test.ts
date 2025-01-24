@@ -17,7 +17,7 @@
 import {Buffer} from 'node:buffer';
 import {readFile} from 'node:fs/promises';
 
-import {expect, test} from 'vitest';
+import {expect} from 'vitest';
 
 import {ApiError, UserRoles} from '../src/index.js';
 
@@ -286,11 +286,11 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 
 	expect(Recipe.all()).toHaveLength(25);
 
-	const firstTen = Recipe.paginate(10, undefined);
+	const firstTen = Recipe.paginate(10, 0);
 	expect(firstTen).toHaveLength(10);
-	const nextTen = Recipe.paginate(10, firstTen.at(-1)!.recipeId);
+	const nextTen = Recipe.paginate(10, 10);
 	expect(nextTen).toHaveLength(10);
-	const lastFive = Recipe.paginate(10, nextTen.at(-1)!.recipeId);
+	const lastFive = Recipe.paginate(10, 20);
 	expect(lastFive).toHaveLength(5);
 
 	const paginatedIds = new Set(
@@ -300,6 +300,85 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	expect(paginatedIds).toStrictEqual(expectedIds);
 });
 
-test.todo('Updated sections');
-test.todo('Update title');
-test.todo('Recipe permissions');
+apiTest('Updating sections', async ({api: {User, Recipe}}) => {
+	const user = User.create('tlgwb', 'uammq', UserRoles.User);
+	const recipe = await Recipe.create(
+		'recipe 1',
+		user,
+		undefined,
+		[],
+		['Add @pineapple', 'Stir with #mixer'],
+	);
+
+	const oldSections = recipe.sections;
+	expect(JSON.stringify(oldSections)).toMatchSnapshot();
+
+	recipe.updateSections(['Fold in @cream', 'Blend with #blender']);
+
+	expect(recipe.sections).not.toStrictEqual(oldSections);
+	expect(JSON.stringify(recipe.sections)).toMatchSnapshot();
+});
+
+apiTest('Updating title', async ({api: {User, Recipe}}) => {
+	const user = User.create('vxswz', 'jiqje', UserRoles.User);
+	const recipe = await Recipe.create(
+		'recipe 1',
+		user,
+		undefined,
+		[],
+		['add @sugar'],
+	);
+
+	expect(recipe.title).toStrictEqual('recipe 1');
+
+	recipe.updateTitle('Cool Recipe');
+	expect(recipe.title).toStrictEqual('Cool Recipe');
+
+	expect(Recipe.fromRecipeId(recipe.recipeId)!.title).toStrictEqual(
+		'Cool Recipe',
+	);
+});
+
+apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
+	const user = User.create('lpxxx', 'raukq', UserRoles.User);
+	const admin = User.create('asbwf', 'taknj', UserRoles.Admin);
+	const owner = User.create('nfrpb', 'mfncj', UserRoles.Owner);
+
+	const recipeUser = await Recipe.create(
+		'recipe 1',
+		user,
+		undefined,
+		[],
+		['add @broccoli'],
+	);
+	const recipeAdmin = await Recipe.create(
+		'recipe 2',
+		admin,
+		undefined,
+		[],
+		['add @peaches'],
+	);
+	const recipeOwner = await Recipe.create(
+		'recipe 3',
+		owner,
+		undefined,
+		[],
+		['add @chocolate'],
+	);
+
+	expect(Recipe.permissionToCreateRecipe(user)).toStrictEqual(true);
+	expect(Recipe.permissionToCreateRecipe(admin)).toStrictEqual(true);
+	expect(Recipe.permissionToCreateRecipe(owner)).toStrictEqual(true);
+
+	expect(recipeUser.permissionToModifyRecipe(user)).toStrictEqual(true);
+	expect(recipeUser.permissionToModifyRecipe(admin)).toStrictEqual(true);
+	expect(recipeUser.permissionToModifyRecipe(owner)).toStrictEqual(true);
+
+	expect(recipeAdmin.permissionToModifyRecipe(user)).toStrictEqual(false);
+	expect(recipeAdmin.permissionToModifyRecipe(admin)).toStrictEqual(true);
+	expect(recipeAdmin.permissionToModifyRecipe(owner)).toStrictEqual(true);
+
+	expect(recipeOwner.permissionToModifyRecipe(user)).toStrictEqual(false);
+	expect(recipeOwner.permissionToModifyRecipe(admin)).toStrictEqual(true);
+	expect(recipeOwner.permissionToModifyRecipe(owner)).toStrictEqual(true);
+});

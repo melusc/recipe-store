@@ -431,7 +431,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 		dissociateOwner() {
 			database
 				.prepare(
-					`UPDATE users
+					`UPDATE recipes
 					SET author = -1
 					WHERE recipe_id = :recipeId`,
 				)

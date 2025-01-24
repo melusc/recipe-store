@@ -32,6 +32,11 @@ export enum UserRoles {
 	Owner = 5,
 }
 
+export enum UserDeletion {
+	DeleteRecipes = 0,
+	KeepRecipes = 1,
+}
+
 const HASH_ROUNDS = 10;
 
 export type User = ReturnType<typeof createUserClass>;
@@ -341,13 +346,38 @@ export function createUserClass(options: InternalApiOptions) {
 			const recipeIds = database
 				.prepare(
 					`SELECT recipe_id FROM recipes
-					WHERE author = :userId`,
+					WHERE author = :userId
+					ORDER BY recipe_id ASC`,
 				)
 				.all({
 					userId: this.userId,
 				}) as Array<{recipe_id: number}>;
 
 			return recipeIds.map(
+				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
+			);
+		}
+
+		paginateRecipes(
+			limit: number,
+			skip: number,
+		): ReadonlyArray<InstanceType<Recipe>> {
+			const recipes = database
+				.prepare(
+					`SELECT recipe_id FROM recipes
+					WHERE author = :userId
+					ORDER BY recipe_id ASC
+					LIMIT :limit OFFSET :skip`,
+				)
+				.all({
+					userId: this.userId,
+					limit,
+					skip,
+				}) as ReadonlyArray<{
+				recipe_id: number;
+			}>;
+
+			return recipes.map(
 				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
 			);
 		}
@@ -385,8 +415,8 @@ export function createUserClass(options: InternalApiOptions) {
 			this.#role = newRole;
 		}
 
-		async deleteUser(deleteRecipes: boolean) {
-			if (deleteRecipes) {
+		async deleteUser(deleteRecipes: UserDeletion) {
+			if (deleteRecipes === UserDeletion.DeleteRecipes) {
 				for (const recipe of this.listRecipes()) {
 					await recipe.delete();
 				}
