@@ -23,8 +23,8 @@ import {apiTest} from './util.js';
 
 apiTest('User creation', ({api: {User}}) => {
 	const timeBeforeCreation = Date.now();
-	const user = User.create('dzvfo', 'ipdmy', UserRoles.Admin);
-	const other = User.create('aogqu', 'zlqie', UserRoles.User);
+	const user = User.create('dzvfo', 'xhyzd', 'ipdmy', UserRoles.Admin);
+	const other = User.create('aogqu', 'fliwc', 'zlqie', UserRoles.User);
 
 	const userById = User.fromUserid(user.userId);
 	const userByUsername = User.fromUsername(user.username);
@@ -45,8 +45,8 @@ apiTest('User login', ({api: {User}}) => {
 	const username = 'nfdvi';
 	const password = 'nohpj';
 
-	void User.create('dasyq', 'yeadn', UserRoles.User);
-	const {userId} = User.create(username, password, UserRoles.Admin);
+	void User.create('dasyq', 'pnyyj', 'yeadn', UserRoles.User);
+	const {userId} = User.create(username, username, password, UserRoles.Admin);
 
 	const userLogin = User.login(username, password);
 
@@ -58,7 +58,7 @@ apiTest('Change password of user', ({api: {User}}) => {
 	const password = 'ylloa';
 	const newPassword = 'trywo';
 
-	const user = User.create(username, password, UserRoles.User);
+	const user = User.create(username, username, password, UserRoles.User);
 	const oldUpdatedAt = user.updatedAt;
 
 	expect(() => {
@@ -80,7 +80,7 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 	const password = 'yctfp';
 	const newPassword = 'dxhhh';
 
-	const user = User.create(username, password, UserRoles.Admin);
+	const user = User.create(username, username, password, UserRoles.Admin);
 	const oldUpdatedAt = user.updatedAt;
 
 	user.resetPassword(newPassword);
@@ -99,7 +99,7 @@ apiTest('Change username', ({api: {User}}) => {
 	const usernameNew = 'mqyzc';
 	const password = 'wtaae';
 
-	const user = User.create(usernameOld, password, UserRoles.User);
+	const user = User.create(usernameOld, usernameOld, password, UserRoles.User);
 	expect(user.username).toStrictEqual(usernameOld);
 	const oldUpdatedAt = user.updatedAt;
 
@@ -115,7 +115,7 @@ apiTest('Change username', ({api: {User}}) => {
 });
 
 apiTest('Change role of user', ({api: {User}}) => {
-	const user = User.create('emjsd', 'ribvw', UserRoles.User);
+	const user = User.create('emjsd', 'wabjh', 'ribvw', UserRoles.User);
 	const oldUpdatedAt = user.updatedAt;
 
 	expect(user.role).toStrictEqual(UserRoles.User);
@@ -134,7 +134,7 @@ apiTest('Change role of user', ({api: {User}}) => {
 apiTest('Delete user without recipes', async ({api: {User}}) => {
 	const username = 'prrmx';
 	const password = 'rftef';
-	const user = User.create(username, password, UserRoles.Admin);
+	const user = User.create(username, username, password, UserRoles.Admin);
 
 	await user.deleteUser(UserDeletion.KeepRecipes);
 
@@ -145,8 +145,8 @@ apiTest('Delete user without recipes', async ({api: {User}}) => {
 });
 
 apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('fadus', 'fnudy', UserRoles.User);
-	const user2 = User.create('tdjdj', 'xaoyu', UserRoles.User);
+	const user1 = User.create('fadus', 'abccm', 'fnudy', UserRoles.User);
+	const user2 = User.create('tdjdj', 'paqfn', 'xaoyu', UserRoles.User);
 
 	await Recipe.create(
 		'recipe 1',
@@ -171,8 +171,8 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('cnjxu', 'lskih', UserRoles.User);
-	const user2 = User.create('grnly', 'ccfqi', UserRoles.User);
+	const user1 = User.create('cnjxu', 'pzypq', 'lskih', UserRoles.User);
+	const user2 = User.create('grnly', 'kfksr', 'ccfqi', UserRoles.User);
 
 	await Recipe.create('recipe 1', user1, undefined, [], ['add @milk']);
 
@@ -191,8 +191,8 @@ apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('hoatt', 'sgghj', UserRoles.User);
-	const user2 = User.create('qhqkq', 'enhgp', UserRoles.User);
+	const user1 = User.create('hoatt', 'zhvkn', 'sgghj', UserRoles.User);
+	const user2 = User.create('qhqkq', 'bhwod', 'enhgp', UserRoles.User);
 
 	for (let index = 0; index < 20; ++index) {
 		await Recipe.create(
@@ -222,8 +222,8 @@ apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('wacws', 'gmaiu', UserRoles.User);
-	const user2 = User.create('plvsh', 'xumto', UserRoles.User);
+	const user1 = User.create('wacws', 'tejci', 'gmaiu', UserRoles.User);
+	const user2 = User.create('plvsh', 'yajsk', 'xumto', UserRoles.User);
 
 	for (let index = 0; index < 50; ++index) {
 		await Recipe.create(
@@ -259,15 +259,33 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 	expect(new Set(ids)).toHaveLength(25);
 });
 
+apiTest('Change display name', ({api: {User}}) => {
+	const nameOld = 'yycek';
+	const nameNew = 'ndiqo';
+
+	const user = User.create(nameOld, nameOld, 'ituej', UserRoles.Owner);
+	const beforeUpdated = Date.now();
+
+	expect(user.displayName).toStrictEqual(nameOld);
+	expect(User.fromUserid(user.userId)!.displayName).toStrictEqual(nameOld);
+
+	user.changeDisplayName(nameNew);
+	expect(user.displayName).toStrictEqual(nameNew);
+	expect(User.fromUserid(user.userId)!.displayName).toStrictEqual(nameNew);
+
+	expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeUpdated);
+	expect(user.updatedAt.getTime()).toBeLessThanOrEqual(Date.now());
+});
+
 apiTest('User permissions', ({api: {User}}) => {
-	const owner1 = User.create('rbzko', 'hvfpi', UserRoles.Owner);
-	const owner2 = User.create('lllwz', 'dzqzt', UserRoles.Owner);
+	const owner1 = User.create('rbzko', 'ciwdu', 'hvfpi', UserRoles.Owner);
+	const owner2 = User.create('lllwz', 'ehhzf', 'dzqzt', UserRoles.Owner);
 
-	const admin1 = User.create('xtwss', 'gzrep', UserRoles.Admin);
-	const admin2 = User.create('vdzgf', 'pfkyl', UserRoles.Admin);
+	const admin1 = User.create('xtwss', 'sfyps', 'gzrep', UserRoles.Admin);
+	const admin2 = User.create('vdzgf', 'agwbg', 'pfkyl', UserRoles.Admin);
 
-	const user1 = User.create('tmztj', 'ziydr', UserRoles.User);
-	const user2 = User.create('tudcu', 'mkbbg', UserRoles.User);
+	const user1 = User.create('tmztj', 'dcufr', 'ziydr', UserRoles.User);
+	const user2 = User.create('tudcu', 'nogqf', 'mkbbg', UserRoles.User);
 
 	// I think this is the most readable even though it is verbose AF
 	// No need for some abstraction

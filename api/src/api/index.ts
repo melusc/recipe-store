@@ -55,12 +55,13 @@ function initDatabase(database: DatabaseSync) {
 
 	database.exec(`
 		CREATE TABLE IF NOT EXISTS users (
-			user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-			username    TEXT NOT NULL UNIQUE,
-			password    TEXT NOT NULL,
-			role        INTEGER NOT NULL,
-			created_at  INTEGER NOT NULL,
-			updated_at  INTEGER NOT NULL
+			user_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+			username     TEXT NOT NULL UNIQUE,
+			displayname  TEXT NOT NULL,
+			password     TEXT NOT NULL,
+			role         INTEGER NOT NULL,
+			created_at   INTEGER NOT NULL,
+			updated_at   INTEGER NOT NULL
 		);
 
 		CREATE TABLE IF NOT EXISTS recipes (

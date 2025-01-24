@@ -50,6 +50,7 @@ export function createUserClass(options: InternalApiOptions) {
 	return class User {
 		// Internally r/w, externally readonly
 		#username: string;
+		#displayName: string;
 		#role: UserRoles;
 		#updatedAt: ReadonlyDate;
 
@@ -58,6 +59,7 @@ export function createUserClass(options: InternalApiOptions) {
 		constructor(
 			readonly userId: number,
 			username: string,
+			displayName: string,
 			role: UserRoles,
 			createdAt: ReadonlyDate,
 			updatedAt: ReadonlyDate,
@@ -68,6 +70,7 @@ export function createUserClass(options: InternalApiOptions) {
 			}
 
 			this.#username = username;
+			this.#displayName = displayName;
 			this.#role = role;
 			this.#createdAt = createdAt;
 			this.#updatedAt = updatedAt;
@@ -75,6 +78,10 @@ export function createUserClass(options: InternalApiOptions) {
 
 		get username() {
 			return this.#username;
+		}
+
+		get displayName() {
+			return this.#displayName;
 		}
 
 		get role() {
@@ -89,7 +96,12 @@ export function createUserClass(options: InternalApiOptions) {
 			return new Date(this.#createdAt as Date);
 		}
 
-		static create(username: string, password: string, role: UserRoles) {
+		static create(
+			username: string,
+			displayName: string,
+			password: string,
+			role: UserRoles,
+		) {
 			if (this.fromUsername(username)) {
 				throw new ApiError('User already exists. Use another username.');
 			}
@@ -99,12 +111,13 @@ export function createUserClass(options: InternalApiOptions) {
 
 			const {user_id: userId} = database
 				.prepare(
-					`INSERT INTO users (username, password, role, created_at, updated_at)
-					 VALUES (:username, :passwordHash, :role, :createdAt, :createdAt)
+					`INSERT INTO users (username, displayname, password, role, created_at, updated_at)
+					 VALUES (:username, :displayName, :passwordHash, :role, :createdAt, :createdAt)
 					 RETURNING user_id`,
 				)
 				.get({
 					username,
+					displayName,
 					passwordHash,
 					role,
 					createdAt: createdAt.getTime(),
@@ -113,6 +126,7 @@ export function createUserClass(options: InternalApiOptions) {
 			return new User(
 				userId,
 				username,
+				displayName,
 				role,
 				createdAt,
 				createdAt,
@@ -123,13 +137,14 @@ export function createUserClass(options: InternalApiOptions) {
 		static login(username: string, password: string): User {
 			const result = database
 				.prepare(
-					`SELECT user_id, role, password, created_at, updated_at FROM users
+					`SELECT user_id, role, displayname, password, created_at, updated_at FROM users
 					WHERE username = :username`,
 				)
 				.get({username}) as
 				| {
 						user_id: number;
 						role: UserRoles;
+						displayname: string;
 						password: string;
 						created_at: number;
 						updated_at: number;
@@ -145,6 +160,7 @@ export function createUserClass(options: InternalApiOptions) {
 			return new User(
 				result.user_id,
 				username,
+				result.displayname,
 				result.role,
 				new Date(result.created_at),
 				new Date(result.updated_at),
@@ -155,12 +171,13 @@ export function createUserClass(options: InternalApiOptions) {
 		static fromUsername(username: string): User | undefined {
 			const result = database
 				.prepare(
-					`SELECT user_id, role, updated_at, created_at
+					`SELECT user_id, displayname, role, updated_at, created_at
 					FROM users WHERE username = :username`,
 				)
 				.get({username}) as
 				| {
 						user_id: number;
+						displayname: string;
 						role: UserRoles;
 						updated_at: number;
 						created_at: number;
@@ -174,6 +191,7 @@ export function createUserClass(options: InternalApiOptions) {
 			return new User(
 				result.user_id,
 				username,
+				result.displayname,
 				result.role,
 				new Date(result.created_at),
 				new Date(result.updated_at),
@@ -184,12 +202,13 @@ export function createUserClass(options: InternalApiOptions) {
 		static fromUserid(userId: number): User | undefined {
 			const result = database
 				.prepare(
-					`SELECT username, role, updated_at, created_at FROM users
+					`SELECT username, displayname, role, updated_at, created_at FROM users
 					WHERE user_id = :userId`,
 				)
 				.get({userId}) as
 				| {
 						username: string;
+						displayname: string;
 						role: UserRoles;
 						updated_at: number;
 						created_at: number;
@@ -203,6 +222,7 @@ export function createUserClass(options: InternalApiOptions) {
 			return new User(
 				userId,
 				result.username,
+				result.displayname,
 				result.role,
 				new Date(result.created_at),
 				new Date(result.updated_at),
@@ -213,12 +233,13 @@ export function createUserClass(options: InternalApiOptions) {
 		static all(): readonly User[] {
 			const result = database
 				.prepare(
-					`SELECT username, role, user_id, created_at, updated_at
+					`SELECT username, displayname, role, user_id, created_at, updated_at
 					FROM users
 					ORDER BY user_id ASC`,
 				)
 				.all() as ReadonlyArray<{
 				username: string;
+				displayname: string;
 				role: UserRoles;
 				user_id: number;
 				created_at: number;
@@ -228,6 +249,7 @@ export function createUserClass(options: InternalApiOptions) {
 			return result.map(
 				({
 					username,
+					displayname: displayName,
 					role,
 					user_id: userId,
 					created_at: createdAt,
@@ -236,6 +258,7 @@ export function createUserClass(options: InternalApiOptions) {
 					new User(
 						userId,
 						username,
+						displayName,
 						role,
 						new Date(createdAt),
 						new Date(updatedAt),
@@ -398,6 +421,22 @@ export function createUserClass(options: InternalApiOptions) {
 			this.#triggerUpdated();
 
 			this.#username = newUsername;
+		}
+
+		changeDisplayName(newDisplayName: string) {
+			database
+				.prepare(
+					`UPDATE users
+					SET displayname = :displayName
+					WHERE user_id = :userId`,
+				)
+				.run({
+					displayName: newDisplayName,
+					userId: this.userId,
+				});
+
+			this.#triggerUpdated();
+			this.#displayName = newDisplayName;
 		}
 
 		changeRole(newRole: UserRoles) {

@@ -39,7 +39,12 @@ const api = createApi({
 if (createOwnerUsername) {
 	const password = generatePassword({length: 16});
 
-	api.User.create(createOwnerUsername, password, UserRoles.Owner);
+	api.User.create(
+		createOwnerUsername,
+		createOwnerUsername,
+		password,
+		UserRoles.Owner,
+	);
 
 	console.log(
 		'Created owner-user "%s" with password %s',
