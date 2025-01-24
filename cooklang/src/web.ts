@@ -18,7 +18,7 @@ import * as common from './common.js';
 import init, {Parser} from '#wasm/web';
 
 export {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
-export {stringifySection} from './common.js';
+export {sectionToText} from './common.js';
 
 await init();
 

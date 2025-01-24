@@ -19,7 +19,7 @@ import {test, expect} from 'vitest';
 import {parseSection} from '../../src/node.js';
 import {
 	ingredientSchema,
-	stringifyTimer,
+	timerToText,
 	timerSchema,
 	type Ingredient,
 } from '../../src/schema/cooking-items.js';
@@ -125,5 +125,5 @@ test.for([
 ] as const)('stringifyTimer(%j)', ([input, output]) => {
 	const parsed = parseSection(input);
 	const timer = parsed.timers[0]!;
-	expect(stringifyTimer(timer)).toStrictEqual(output);
+	expect(timerToText(timer)).toStrictEqual(output);
 });

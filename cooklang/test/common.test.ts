@@ -16,7 +16,7 @@
 
 import {test, expect} from 'vitest';
 
-import {parseSection, stringifySection} from '../src/node.js';
+import {parseSection, sectionToText} from '../src/node.js';
 
 test.for([
 	'abc',
@@ -79,5 +79,5 @@ Mash the potatoes with a potato masher.`,
 	],
 ] as const)('stringify(%j)', ([input, output]) => {
 	const parsedSection = parseSection(input);
-	expect(stringifySection(parsedSection)).toStrictEqual(output);
+	expect(sectionToText(parsedSection)).toStrictEqual(output);
 });

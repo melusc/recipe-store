@@ -15,9 +15,9 @@
 */
 
 import {
-	stringifyCookware,
-	stringifyIngredient,
-	stringifyTimer,
+	cookwareToText,
+	ingredientToText,
+	timerToText,
 } from './schema/cooking-items.js';
 import {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
 
@@ -71,6 +71,34 @@ export function parseSection(section: string, Parser: ParserClass) {
 	return cooklangSectionSchema.parse(parsedResult);
 }
 
+export function sectionToText(section: CooklangSection) {
+	const result: string[] = [];
+	const {cookware, ingredients, timers} = section;
+
+	for (const item of section.steps) {
+		switch (item.type) {
+			case 'text': {
+				result.push(item.value);
+				break;
+			}
+			case 'cookware': {
+				result.push(cookwareToText(cookware[item.index]!));
+				break;
+			}
+			case 'timer': {
+				result.push(timerToText(timers[item.index]!));
+				break;
+			}
+			case 'ingredient': {
+				result.push(ingredientToText(ingredients[item.index]!));
+				break;
+			}
+		}
+	}
+
+	return result.join('').trim();
+}
+
 export function stringifySection(section: CooklangSection) {
 	const result: string[] = [];
 	const {cookware, ingredients, timers} = section;
@@ -82,15 +110,15 @@ export function stringifySection(section: CooklangSection) {
 				break;
 			}
 			case 'cookware': {
-				result.push(stringifyCookware(cookware[item.index]!));
+				result.push(cookwareToText(cookware[item.index]!));
 				break;
 			}
 			case 'timer': {
-				result.push(stringifyTimer(timers[item.index]!));
+				result.push(timerToText(timers[item.index]!));
 				break;
 			}
 			case 'ingredient': {
-				result.push(stringifyIngredient(ingredients[item.index]!));
+				result.push(ingredientToText(ingredients[item.index]!));
 				break;
 			}
 		}

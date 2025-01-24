@@ -50,7 +50,7 @@ export const timerSchema = object({
 
 export type Timer = z.infer<typeof timerSchema>;
 
-function stringifyIngredientOrCookware(item: Ingredient | Cookware) {
+function ingredientOrCookwareToText(item: Ingredient | Cookware) {
 	const result: string[] = [];
 
 	if (item.alias) {
@@ -66,14 +66,14 @@ function stringifyIngredientOrCookware(item: Ingredient | Cookware) {
 	return result.join('');
 }
 
-export function stringifyIngredient(item: Ingredient) {
-	return stringifyIngredientOrCookware(item);
+export function ingredientToText(item: Ingredient) {
+	return ingredientOrCookwareToText(item);
 }
 
-export function stringifyCookware(item: Cookware) {
-	return stringifyIngredientOrCookware(item);
+export function cookwareToText(item: Cookware) {
+	return ingredientOrCookwareToText(item);
 }
 
-export function stringifyTimer(item: Timer) {
+export function timerToText(item: Timer) {
 	return stringifyQuantity(item.quantity);
 }
