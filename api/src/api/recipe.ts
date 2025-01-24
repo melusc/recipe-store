@@ -201,21 +201,17 @@ export function createRecipeClass(options: InternalApiOptions) {
 			);
 		}
 
-		static paginate(limit: number, after: number | undefined) {
-			const parameters: Record<string, number> = {
-				limit,
-			};
-
-			let query = 'SELECT recipe_id FROM recipes';
-
-			if (after !== undefined) {
-				query += ' WHERE recipe_id > :after';
-				parameters['after'] = after;
-			}
-
-			query += ' ORDER BY recipe_id ASC LIMIT :limit';
-
-			const recipes = database.prepare(query).all(parameters) as Array<{
+		static paginate(limit: number, skip: number) {
+			const recipes = database
+				.prepare(
+					`SELECT recipe_id FROM recipes
+					ORDER BY recipe_id ASC
+					LIMIT :limit OFFSET :skip`,
+				)
+				.all({
+					limit,
+					skip,
+				}) as Array<{
 				recipe_id: number;
 			}>;
 
@@ -227,8 +223,10 @@ export function createRecipeClass(options: InternalApiOptions) {
 		static fromRecipeId(recipeId: number) {
 			const result = database
 				.prepare(
-					`SELECT title, author, created_at, updated_at, sections, image FROM recipes
-					WHERE recipe_id = :recipeId`,
+					`SELECT
+						title, author, created_at,
+						updated_at, sections, image FROM recipes
+						WHERE recipe_id = :recipeId`,
 				)
 				.get({recipeId}) as
 				| {
