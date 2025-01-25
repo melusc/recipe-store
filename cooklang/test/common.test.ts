@@ -17,7 +17,7 @@
 import {test, expect} from 'vitest';
 
 import {sectionToText} from '../src/common.js';
-import {parseSection} from '../src/node.js';
+import {parseSection, ParseError} from '../src/node.js';
 
 test.for([
 	'abc',
@@ -82,3 +82,12 @@ Mash the potatoes with a potato masher.`,
 	const parsedSection = parseSection(input);
 	expect(sectionToText(parsedSection)).toStrictEqual(output);
 });
+
+test.for(['~{', '@abc{1%}', '#abc{1%def}'])(
+	'parseSection(%j) should throw',
+	input => {
+		expect(() => {
+			parseSection(input);
+		}).toThrow(ParseError);
+	},
+);

@@ -18,6 +18,8 @@ import {parseSection as parseSectionCommon} from './common.js';
 
 import {Parser} from '#wasm/node';
 
+export {ParseError} from './common.js';
+
 export function parseSection(step: string) {
 	return parseSectionCommon(step, Parser);
 }
