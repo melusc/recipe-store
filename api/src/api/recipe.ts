@@ -20,9 +20,11 @@ import {unlink, writeFile} from 'node:fs/promises';
 
 import {
 	cooklangSectionSchema,
-	parseSection,
 	type CooklangSection,
-} from 'cooklang-wasm/node';
+} from 'cooklang';
+import {
+	parseSection,
+} from 'cooklang/wasm/node'
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 

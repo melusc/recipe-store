@@ -1,10 +1,11 @@
 {
 	"type": "module",
-	"name": "cooklang-wasm",
+	"name": "cooklang",
 	"private": true,
 	"exports": {
-		"./web": "./dist/src/web.js",
-		"./node": "./dist/src/node.js"
+		".": "./dist/src/common.js",
+		"./wasm/web": "./dist/src/web.js",
+		"./wasm/node": "./dist/src/node.js"
 	},
 	"imports": {
 		"#wasm/web": "./dist/pkg/web/cooklang_wasm.js",

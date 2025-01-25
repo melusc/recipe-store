@@ -21,6 +21,8 @@ import {
 } from './schema/cooking-items.js';
 import {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
 
+export {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
+
 type FallibleResult = {
 	free(): void;
 	value: string;
@@ -72,34 +74,6 @@ export function parseSection(section: string, Parser: ParserClass) {
 }
 
 export function sectionToText(section: CooklangSection) {
-	const result: string[] = [];
-	const {cookware, ingredients, timers} = section;
-
-	for (const item of section.steps) {
-		switch (item.type) {
-			case 'text': {
-				result.push(item.value);
-				break;
-			}
-			case 'cookware': {
-				result.push(cookwareToText(cookware[item.index]!));
-				break;
-			}
-			case 'timer': {
-				result.push(timerToText(timers[item.index]!));
-				break;
-			}
-			case 'ingredient': {
-				result.push(ingredientToText(ingredients[item.index]!));
-				break;
-			}
-		}
-	}
-
-	return result.join('').trim();
-}
-
-export function stringifySection(section: CooklangSection) {
 	const result: string[] = [];
 	const {cookware, ingredients, timers} = section;
 

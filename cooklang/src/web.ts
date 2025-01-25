@@ -13,15 +13,13 @@
 	You should have received a copy of the GNU General Public
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-import * as common from './common.js';
+
+import {parseSection as parseSectionCommon} from './common.js';
 
 import init, {Parser} from '#wasm/web';
-
-export {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
-export {sectionToText} from './common.js';
 
 await init();
 
 export function parseSection(step: string) {
-	return common.parseSection(step, Parser);
+	return parseSectionCommon(step, Parser);
 }

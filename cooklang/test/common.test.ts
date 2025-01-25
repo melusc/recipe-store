@@ -16,7 +16,8 @@
 
 import {test, expect} from 'vitest';
 
-import {parseSection, sectionToText} from '../src/node.js';
+import {sectionToText} from '../src/common.js';
+import {parseSection} from '../src/node.js';
 
 test.for([
 	'abc',
