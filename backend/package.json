@@ -5,6 +5,8 @@
 	"devDependencies": {
 		"@lusc/eslint-config": "^4.1.0",
 		"@lusc/tsconfig": "^5.1.0",
+		"@types/express": "^4",
+		"@types/multer": "^1",
 		"@types/node": "^22.10.8",
 		"esbuild": "^0.24.2",
 		"eslint": "^9.18.0",
@@ -15,12 +17,17 @@
 	},
 	"scripts": {
 		"fmt": "eslint --fix",
-		"build": "tsc && esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=external src/index.ts",
-		"start": "node dist/index.js"
+		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=external src/index.ts",
+		"build": "tsc && node --run esbuild",
+		"start": "node dist/index.js",
+		"dev": "node --run esbuild && node --run start"
 	},
 	"license": "GPL-3.0-only",
 	"dependencies": {
 		"@lusc/util": "^1.4.0",
-		"api": "workspace:^"
+		"api": "workspace:^",
+		"express": "^4.21.2",
+		"frontend": "workspace:^",
+		"multer": "^1.4.5-lts.1"
 	}
 }

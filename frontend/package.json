@@ -1,0 +1,28 @@
+{
+	"type": "module",
+	"name": "frontend",
+	"exports": "./dist/index.js",
+	"private": true,
+	"devDependencies": {
+		"@lusc/eslint-config": "^4.1.0",
+		"@lusc/tsconfig": "^5.1.0",
+		"@types/express": "^5.0.0",
+		"@types/he": "^1",
+		"api": "workspace:^",
+		"eslint": "^9.18.0",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=22.13.1"
+	},
+	"license": "GPL-3.0-only",
+	"scripts": {
+		"fmt": "eslint --fix",
+		"build": "tsc",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"cooklang": "workspace:^",
+		"he": "^1.2.0"
+	}
+}

@@ -20,6 +20,7 @@ import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
 import {database, imageDirectory} from './data.ts';
+import {setupServer} from './server.js';
 
 const {
 	values: {'create-owner': createOwnerUsername},
@@ -52,3 +53,26 @@ if (createOwnerUsername) {
 		password,
 	);
 }
+
+await api.Recipe.create(
+	'recipe 1',
+	api.User.all()[0]!,
+	undefined,
+	[],
+	['Add @milk'],
+);
+
+await api.Recipe.create(
+	'recipe 1',
+	api.User.all()[0]!,
+	undefined,
+	[],
+	['Add @pineapple'],
+);
+
+const app = setupServer(api);
+const port = 3108;
+
+app.listen(port, () => {
+	console.log('Server listening on http://localhost:%s', port);
+});

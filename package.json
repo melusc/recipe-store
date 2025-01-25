@@ -15,7 +15,12 @@
 	"workspaces": [
 		"api/",
 		"backend/",
-		"cooklang/"
+		"cooklang/",
+		"frontend/"
 	],
-	"license": "GPL-3.0-only"
+	"license": "GPL-3.0-only",
+	"resolutions": {
+		"@types/express": "^4",
+		"@types/express-static-core": "^4"
+	}
 }
