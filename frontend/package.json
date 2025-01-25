@@ -18,8 +18,7 @@
 	"license": "GPL-3.0-only",
 	"scripts": {
 		"fmt": "eslint --fix",
-		"build": "tsc",
-		"test": "vitest run"
+		"build": "tsc"
 	},
 	"dependencies": {
 		"cooklang": "workspace:^",
