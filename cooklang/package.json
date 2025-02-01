@@ -17,8 +17,9 @@
 	"scripts": {
 		"build": "yarn clean && yarn build:node && yarn build:web && tsc",
 		"clean": "rimraf dist",
-		"build:node": "wasm-pack build --release --target nodejs --out-dir dist/pkg/nodejs",
-		"build:web": "wasm-pack build --release --target web --out-dir dist/pkg/web",
+		"wasm-pack": "wasm-pack build --release --no-pack",
+		"build:node": "node --run wasm-pack -- --target nodejs --out-dir dist/pkg/nodejs",
+		"build:web": "node --run wasm-pack -- --target web --out-dir dist/pkg/web",
 		"fmt": "cargo fmt && eslint --fix",
 		"test": "vitest run"
 	},
