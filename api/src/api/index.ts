@@ -14,7 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {DatabaseSync} from 'node:sqlite';
+import {DatabaseSync, type SupportedValueType} from 'node:sqlite';
 
 import {makeSlug} from '@lusc/util/slug';
 
@@ -43,14 +43,20 @@ export type Api = {
 function initDatabase(database: DatabaseSync) {
 	database.exec('PRAGMA journal_mode=WAL;');
 
-	// @ts-expect-error @types/node hasn't added #function yet
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 	database.function(
 		'sluggify',
 		{
 			deterministic: true,
 		},
-		(s: string) => makeSlug(s, {appendRandomHex: false}),
+		(s: SupportedValueType) => {
+			if (typeof s !== 'string') {
+				throw new TypeError(
+					`Unexpected value "${String(s)}" passed to sluggify(). Only strings are supported.`,
+				);
+			}
+
+			return makeSlug(s, {appendRandomHex: false});
+		},
 	);
 
 	database.exec(`
