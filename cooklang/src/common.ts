@@ -66,7 +66,7 @@ export function parseSection(section: string, Parser: ParserClass) {
 
 	const parsedResult = JSON.parse(value) as unknown;
 	const errorResult = parsedResult as {error?: boolean};
-	if ('error' in errorResult && errorResult['error'] === true) {
+	if (errorResult.error) {
 		throw new ParseError('Unknown error');
 	}
 
