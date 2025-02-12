@@ -26,7 +26,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@lusc/eslint-config": "^4.1.0",
-		"@lusc/tsconfig": "^5.1.0",
+		"@lusc/tsconfig": "^6.0.2",
 		"@types/node": "^22.13.1",
 		"eslint": "^9.20.1",
 		"rimraf": "^6.0.1",
