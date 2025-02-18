@@ -18,7 +18,7 @@ import bcrypt from 'bcrypt';
 
 import {ApiError} from './error.js';
 import type {Recipe} from './recipe.js';
-import type {ReadonlyDate} from './util.js';
+import type {ReadonlyDate} from './utilities.js';
 
 import type {InternalApiOptions} from './index.js';
 

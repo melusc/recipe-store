@@ -23,7 +23,7 @@ import {parseSection} from 'cooklang/wasm/node';
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
-import type {ReadonlyDate} from './util.js';
+import type {ReadonlyDate} from './utilities.js';
 
 import {
 	ApiError,

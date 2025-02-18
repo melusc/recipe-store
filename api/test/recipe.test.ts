@@ -26,7 +26,7 @@ import {
 	hashFile,
 	sampleImageHashes,
 	sampleImagePaths,
-} from './util.js';
+} from './utilities.js';
 
 apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	const timeBeforeCreation = Date.now();

@@ -28,7 +28,7 @@ const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
 await mkdir(parentTemporaryDirectory, {recursive: true});
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
-type UtilApi = Api & {
+type UtilityApi = Api & {
 	listImages(): Promise<readonly URL[]>;
 };
 
@@ -68,7 +68,7 @@ export async function hashFile(path: URL) {
 
 export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
-	async api({}, use: Use<UtilApi>) {
+	async api({}, use: Use<UtilityApi>) {
 		const temporaryDirectory = new URL(
 			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
@@ -81,7 +81,7 @@ export const apiTest = test.extend({
 			database,
 		});
 
-		const utilApi = {
+		const utilityApi = {
 			...api,
 			async listImages() {
 				const names = await readdir(temporaryDirectory);
@@ -89,7 +89,7 @@ export const apiTest = test.extend({
 			},
 		};
 
-		await use(utilApi);
+		await use(utilityApi);
 
 		database.close();
 		await rm(temporaryDirectory, {recursive: true});
