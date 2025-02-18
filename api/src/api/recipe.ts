@@ -367,6 +367,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 			if (image) {
 				const imageExtension = await validateImageType(image);
 				imagePath = randomImageName(imageExtension);
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
 				await writeFile(new URL(imagePath, options.imageDirectory), image);
 			}
 
@@ -385,6 +386,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 				});
 
 			if (this.#image) {
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
 				await unlink(new URL(this.#image, options.imageDirectory));
 			}
 
@@ -437,6 +439,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 
 		async delete() {
 			if (this.#image) {
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
 				await unlink(new URL(this.#image, options.imageDirectory));
 				// If `.delete` is called twice
 				this.#image = undefined;

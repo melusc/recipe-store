@@ -21,6 +21,7 @@ import {fileURLToPath} from 'node:url';
 const dataDirectory = new URL('../../data/', import.meta.url);
 export const imageDirectory = new URL('img/', dataDirectory);
 
+// eslint-disable-next-line security/detect-non-literal-fs-filename
 await mkdir(imageDirectory, {recursive: true});
 
 const databasePath = new URL('database.db', dataDirectory);
