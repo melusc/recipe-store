@@ -25,10 +25,12 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
+// eslint-disable-next-line security/detect-non-literal-fs-filename
 await mkdir(parentTemporaryDirectory, {recursive: true});
+// eslint-disable-next-line security/detect-non-literal-fs-filename
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
-type UtilApi = Api & {
+type UtilityApi = Api & {
 	listImages(): Promise<readonly URL[]>;
 };
 
@@ -57,6 +59,7 @@ export const sampleImageHashes = Object.fromEntries(
 export async function hashFile(path: URL) {
 	const hash = createHash('sha1');
 
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const stream = createReadStream(path);
 
 	for await (const chunk of stream) {
@@ -68,11 +71,12 @@ export async function hashFile(path: URL) {
 
 export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
-	async api({}, use: Use<UtilApi>) {
+	async api({}, use: Use<UtilityApi>) {
 		const temporaryDirectory = new URL(
 			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
 		);
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		await mkdir(temporaryDirectory);
 
 		const database = new DatabaseSync(':memory:');
@@ -81,15 +85,16 @@ export const apiTest = test.extend({
 			database,
 		});
 
-		const utilApi = {
+		const utilityApi = {
 			...api,
 			async listImages() {
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
 				const names = await readdir(temporaryDirectory);
 				return names.map(name => new URL(name, temporaryDirectory));
 			},
 		};
 
-		await use(utilApi);
+		await use(utilityApi);
 
 		database.close();
 		await rm(temporaryDirectory, {recursive: true});

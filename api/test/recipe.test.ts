@@ -26,7 +26,7 @@ import {
 	hashFile,
 	sampleImageHashes,
 	sampleImagePaths,
-} from './util.js';
+} from './utilities.js';
 
 apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	const timeBeforeCreation = Date.now();
@@ -124,6 +124,7 @@ apiTest('Adding image', async ({api: {User, Recipe, listImages}}) => {
 		recipe.image,
 	);
 
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const newImage = await readFile(sampleImagePaths.jpg);
 	await recipe.updateImage(newImage);
 
@@ -139,6 +140,7 @@ apiTest('Adding image', async ({api: {User, Recipe, listImages}}) => {
 
 apiTest('Replacing image', async ({api: {User, Recipe, listImages}}) => {
 	const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User);
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const firstImage = await readFile(sampleImagePaths.webp);
 
 	const recipe = await Recipe.create(
@@ -158,6 +160,7 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages}}) => {
 	);
 	await expect(listImages()).resolves.toStrictEqual([recipe.image]);
 
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const secondImage = await readFile(sampleImagePaths.png);
 	await recipe.updateImage(secondImage);
 
@@ -173,6 +176,7 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages}}) => {
 
 apiTest('Deleting image', async ({api: {User, Recipe, listImages}}) => {
 	const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User);
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const image = await readFile(sampleImagePaths.png);
 
 	const recipe = await Recipe.create('recipe', user, image, [], ['add @pasta']);
@@ -213,6 +217,7 @@ apiTest(
 			sampleImagePaths.png,
 			sampleImagePaths.webp,
 		]) {
+			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			const image = await readFile(path);
 			await recipe.updateImage(image);
 		}
@@ -231,6 +236,7 @@ apiTest(
 			['add @apples'],
 		);
 
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const gifImage = await readFile(sampleImagePaths.gif);
 		await expect(
 			(async () => {
@@ -260,6 +266,7 @@ apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 		['add @tofu'],
 	);
 
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	let buffer = await readFile(sampleImagePaths.png);
 
 	// Duplicating should still leave it a valid png

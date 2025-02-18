@@ -19,7 +19,7 @@ import {expect} from 'vitest';
 import {UserDeletion} from '../src/api/user.js';
 import {ApiError, UserRoles} from '../src/index.js';
 
-import {apiTest} from './util.js';
+import {apiTest} from './utilities.js';
 
 apiTest('User creation', ({api: {User}}) => {
 	const timeBeforeCreation = Date.now();
