@@ -7,11 +7,11 @@
 		"@lusc/eslint-config": "^6.1.0",
 		"@lusc/tsconfig": "^6.0.2",
 		"@types/bcrypt": "^5.0.2",
-		"@types/node": "^22.13.1",
-		"@vitest/runner": "^3.0.5",
-		"eslint": "^9.20.1",
+		"@types/node": "^22.13.5",
+		"@vitest/runner": "^3.0.6",
+		"eslint": "^9.21.0",
 		"typescript": "^5.7.3",
-		"vitest": "^3.0.5"
+		"vitest": "^3.0.6"
 	},
 	"engines": {
 		"node": ">=22.14.0"
@@ -23,7 +23,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@lusc/util": "^1.4.0",
+		"@lusc/util": "^1.4.3",
 		"bcrypt": "^5.1.1",
 		"cooklang": "workspace:^",
 		"file-type": "^20.1.0",
