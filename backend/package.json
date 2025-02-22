@@ -7,9 +7,9 @@
 		"@lusc/tsconfig": "^6.0.2",
 		"@types/express": "^4.17.21",
 		"@types/multer": "^1.4.12",
-		"@types/node": "^22.13.1",
+		"@types/node": "^22.13.5",
 		"esbuild": "^0.25.0",
-		"eslint": "^9.20.1",
+		"eslint": "^9.21.0",
 		"typescript": "^5.7.3"
 	},
 	"engines": {
@@ -24,7 +24,7 @@
 	},
 	"license": "GPL-3.0-only",
 	"dependencies": {
-		"@lusc/util": "^1.4.0",
+		"@lusc/util": "^1.4.3",
 		"api": "workspace:^",
 		"express": "^4.21.2",
 		"frontend": "workspace:^",
