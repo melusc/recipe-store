@@ -14,7 +14,7 @@
 	},
 	"scripts": {
 		"build": "yarn clean && yarn build:wasm && tsc",
-		"build:wasm": "wasm-pack build --release --no-pack --target nodejs --out-dir dist/wasm && node --run postbuild:wasm",
+		"build:wasm": "wasm-pack build --release --no-pack --target nodejs --out-dir dist/wasm && yarn postbuild:wasm",
 		"postbuild:wasm": "node scripts/postbuild-wasm.ts",
 		"clean": "rimraf dist",
 		"fmt": "cargo fmt && eslint --fix",
