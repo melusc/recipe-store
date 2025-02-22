@@ -3,23 +3,20 @@
 	"name": "cooklang",
 	"private": true,
 	"exports": {
-		".": "./dist/src/common.js",
-		"./wasm/web": "./dist/src/web.js",
-		"./wasm/node": "./dist/src/node.js"
+		".": "./dist/src/index.js",
+		"./wasm": "./dist/wasm/cooklang_wasm.cjs"
 	},
 	"imports": {
-		"#wasm/web": "./dist/pkg/web/cooklang_wasm.js",
-		"#wasm/node": "./dist/pkg/nodejs/cooklang_wasm.js"
+		"#wasm": "./dist/wasm/cooklang_wasm.cjs"
 	},
 	"engines": {
-		"node": ">=22.14.0"
+		"node": "^23.8.0"
 	},
 	"scripts": {
-		"build": "yarn clean && yarn build:node && yarn build:web && tsc",
+		"build": "yarn clean && yarn build:wasm && tsc",
+		"build:wasm": "wasm-pack build --release --no-pack --target nodejs --out-dir dist/wasm && node --run postbuild:wasm",
+		"postbuild:wasm": "node scripts/postbuild-wasm.ts",
 		"clean": "rimraf dist",
-		"wasm-pack": "wasm-pack build --release --no-pack",
-		"build:node": "node --run wasm-pack -- --target nodejs --out-dir dist/pkg/nodejs",
-		"build:web": "node --run wasm-pack -- --target web --out-dir dist/pkg/web",
 		"fmt": "cargo fmt && eslint --fix",
 		"test": "vitest run"
 	},

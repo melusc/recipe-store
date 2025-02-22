@@ -16,8 +16,7 @@
 
 import {test, expect} from 'vitest';
 
-import {ParseError} from '../../src/common.js';
-import {parseSection} from '../../src/node.js';
+import {ParseError, parseSection} from '../../src/index.js';
 import {
 	stringifyQuantity,
 	quantitySchema,

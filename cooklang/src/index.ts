@@ -14,6 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 import {
 	cookwareToText,
 	ingredientToText,
@@ -21,28 +22,15 @@ import {
 } from './schema/cooking-items.js';
 import {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
 
+import {Parser} from '#wasm';
+
 export {cooklangSectionSchema, type CooklangSection} from './schema/index.js';
-
-type FallibleResult = {
-	free(): void;
-	value: string;
-	error: string;
-};
-
-type Parser = {
-	free(this: Parser): void;
-	parse(this: Parser, input: string): FallibleResult;
-};
-
-type ParserClass = {
-	new (): Parser;
-};
 
 export class ParseError extends Error {}
 
 let parser: Parser | undefined;
 
-export function parseSection(section: string, Parser: ParserClass) {
+export function parseSection(section: string) {
 	// Collapse all whitespace to single whitespace
 	// Collapse all newlines to ["\", "\n"]
 	section = section.replaceAll(/\s+/g, s => (s.includes('\n') ? '\\\n' : ' '));

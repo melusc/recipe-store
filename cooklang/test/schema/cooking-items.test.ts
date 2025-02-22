@@ -16,7 +16,7 @@
 
 import {test, expect} from 'vitest';
 
-import {parseSection} from '../../src/node.js';
+import {parseSection} from '../../src/index.js';
 import {
 	ingredientSchema,
 	timerToText,
