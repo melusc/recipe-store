@@ -1262,7 +1262,7 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     cooklang: "workspace:^"
     eslint: "npm:^9.21.0"
-    file-type: "npm:^20.1.0"
+    file-type: "npm:^20.2.0"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.6"
     zod: "npm:^3.24.2"
@@ -2538,15 +2538,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-type@npm:^20.1.0":
-  version: 20.1.0
-  resolution: "file-type@npm:20.1.0"
+"file-type@npm:^20.2.0":
+  version: 20.2.0
+  resolution: "file-type@npm:20.2.0"
   dependencies:
     "@tokenizer/inflate": "npm:^0.2.6"
     strtok3: "npm:^10.2.0"
     token-types: "npm:^6.0.0"
     uint8array-extras: "npm:^1.4.0"
-  checksum: 10c0/bd7b36358ad515b42b44832c3f4db58523347f18181dcffb00b2ebb4420a843b306cd3045f2b9bcd6613503c612f7b986ebd091b6792d64afee58c6b695f8468
+  checksum: 10c0/b9324a02deba021e4c653ffc7e8d7c9e626eeb0c3fe76538ad88215cccc3736f4a5415d466189d9863be7f20c1993041c2dd2ae0031a1c34fac78c5557a0f9dc
   languageName: node
   linkType: hard
 
@@ -3936,12 +3936,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "prettier@npm:3.5.1"
+"prettier@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "prettier@npm:3.5.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/9f6f810eae455d6e4213845151a484a2338f2e0d6a8b84ee8e13a83af8a2421ef6c1e31e61e4b135671fb57b9541f6624648880cc2061ac803e243ac898c0123
+  checksum: 10c0/d7b597ed33f39c32ace675896ad187f06a3e48dc8a1e80051b5c5f0dae3586d53981704b8fda5ac3b080e6c2e0e197d239131b953702674f044351621ca5e1ac
   languageName: node
   linkType: hard
 
@@ -4274,7 +4274,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    prettier: "npm:^3.5.1"
+    prettier: "npm:^3.5.2"
   languageName: unknown
   linkType: soft
 
