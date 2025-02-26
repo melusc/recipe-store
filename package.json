@@ -2,7 +2,7 @@
 	"type": "module",
 	"packageManager": "yarn@4.6.0",
 	"devDependencies": {
-		"prettier": "^3.5.1"
+		"prettier": "^3.5.2"
 	},
 	"private": true,
 	"scripts": {
