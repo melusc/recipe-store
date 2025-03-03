@@ -1,4 +1,4 @@
-import { rename } from "node:fs/promises";
+import {rename} from 'node:fs/promises';
 
 const baseDirectory = new URL('../dist/wasm/', import.meta.url);
 
@@ -9,5 +9,8 @@ const fileRenames = {
 
 for (const [oldName, newName] of Object.entries(fileRenames)) {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	await rename(new URL(oldName, baseDirectory), new URL(newName, baseDirectory))
+	await rename(
+		new URL(oldName, baseDirectory),
+		new URL(newName, baseDirectory),
+	);
 }

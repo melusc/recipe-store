@@ -18,7 +18,11 @@ import type {Buffer} from 'node:buffer';
 import {randomBytes} from 'node:crypto';
 import {unlink, writeFile} from 'node:fs/promises';
 
-import {cooklangSectionSchema, parseSection, type CooklangSection} from 'cooklang';
+import {
+	cooklangSectionSchema,
+	parseSection,
+	type CooklangSection,
+} from 'cooklang';
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 

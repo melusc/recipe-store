@@ -1,7 +1,10 @@
 {
 	"type": "module",
 	"name": "frontend",
-	"exports": "./dist/index.js",
+	"exports": {
+		".": "./dist/index.js",
+		"./css": "./static/css"
+	},
 	"private": true,
 	"devDependencies": {
 		"@lusc/eslint-config": "^6.1.0",
