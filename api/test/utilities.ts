@@ -30,9 +30,12 @@ await mkdir(parentTemporaryDirectory, {recursive: true});
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
-type UtilityApi = Api & {
-	listImages(): Promise<readonly URL[]>;
-};
+type UtilityApi = Readonly<
+	Api & {
+		listImages(): Promise<readonly string[]>;
+		imageDirectory: URL;
+	}
+>;
 
 const fixtureDirectory = new URL('fixtures/', import.meta.url);
 
@@ -87,10 +90,10 @@ export const apiTest = test.extend({
 
 		const utilityApi = {
 			...api,
+			imageDirectory: temporaryDirectory,
 			async listImages() {
 				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				const names = await readdir(temporaryDirectory);
-				return names.map(name => new URL(name, temporaryDirectory));
+				return readdir(temporaryDirectory);
 			},
 		};
 

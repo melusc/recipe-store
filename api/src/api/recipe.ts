@@ -122,9 +122,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 		}
 
 		get image() {
-			return this.#image
-				? new URL(this.#image, options.imageDirectory)
-				: undefined;
+			return this.#image;
 		}
 
 		get tags() {

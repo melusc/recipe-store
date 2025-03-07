@@ -107,98 +107,113 @@ apiTest('Removing tags', async ({api: {User, Recipe}}) => {
 	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual([]);
 });
 
-apiTest('Adding image', async ({api: {User, Recipe, listImages}}) => {
-	const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User);
-	const recipe = await Recipe.create(
-		'recipe 1',
-		user,
-		undefined,
-		[],
-		['add @cinnamon'],
-	);
+apiTest(
+	'Adding image',
+	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
+		const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User);
+		const recipe = await Recipe.create(
+			'recipe 1',
+			user,
+			undefined,
+			[],
+			['add @cinnamon'],
+		);
 
-	expect(recipe.image).toBeUndefined();
-	await expect(listImages()).resolves.toStrictEqual([]);
+		expect(recipe.image).toBeUndefined();
+		await expect(listImages()).resolves.toStrictEqual([]);
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	const newImage = await readFile(sampleImagePaths.jpg);
-	await recipe.updateImage(newImage);
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const newImage = await readFile(sampleImagePaths.jpg);
+		await recipe.updateImage(newImage);
 
-	await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-	await expect(hashFile(recipe.image!)).resolves.toStrictEqual(
-		sampleImageHashes.jpg,
-	);
+		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
+		await expect(
+			hashFile(new URL(recipe.image!, imageDirectory)),
+		).resolves.toStrictEqual(sampleImageHashes.jpg);
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
-});
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
+	},
+);
 
-apiTest('Replacing image', async ({api: {User, Recipe, listImages}}) => {
-	const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User);
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	const firstImage = await readFile(sampleImagePaths.webp);
+apiTest(
+	'Replacing image',
+	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
+		const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User);
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const firstImage = await readFile(sampleImagePaths.webp);
 
-	const recipe = await Recipe.create(
-		'recipe',
-		user,
-		firstImage,
-		[],
-		['add @rice'],
-	);
+		const recipe = await Recipe.create(
+			'recipe',
+			user,
+			firstImage,
+			[],
+			['add @rice'],
+		);
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
 
-	await expect(hashFile(recipe.image!)).resolves.toStrictEqual(
-		sampleImageHashes.webp,
-	);
-	await expect(listImages()).resolves.toStrictEqual([recipe.image]);
+		await expect(
+			hashFile(new URL(recipe.image!, imageDirectory)),
+		).resolves.toStrictEqual(sampleImageHashes.webp);
+		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	const secondImage = await readFile(sampleImagePaths.png);
-	await recipe.updateImage(secondImage);
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const secondImage = await readFile(sampleImagePaths.png);
+		await recipe.updateImage(secondImage);
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
 
-	await expect(hashFile(recipe.image!)).resolves.toStrictEqual(
-		sampleImageHashes.png,
-	);
-	await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-});
+		await expect(
+			hashFile(new URL(recipe.image!, imageDirectory)),
+		).resolves.toStrictEqual(sampleImageHashes.png);
+		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
+	},
+);
 
-apiTest('Deleting image', async ({api: {User, Recipe, listImages}}) => {
-	const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User);
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	const image = await readFile(sampleImagePaths.png);
+apiTest(
+	'Deleting image',
+	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
+		const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User);
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const image = await readFile(sampleImagePaths.png);
 
-	const recipe = await Recipe.create('recipe', user, image, [], ['add @pasta']);
+		const recipe = await Recipe.create(
+			'recipe',
+			user,
+			image,
+			[],
+			['add @pasta'],
+		);
 
-	await expect(hashFile(recipe.image!)).resolves.toStrictEqual(
-		sampleImageHashes.png,
-	);
-	await expect(listImages()).resolves.toStrictEqual([recipe.image]);
+		await expect(
+			hashFile(new URL(recipe.image!, imageDirectory)),
+		).resolves.toStrictEqual(sampleImageHashes.png);
+		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
 
-	await recipe.updateImage(undefined);
+		await recipe.updateImage(undefined);
 
-	expect(recipe.image).toBeUndefined();
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-		recipe.image,
-	);
+		expect(recipe.image).toBeUndefined();
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
+			recipe.image,
+		);
 
-	await expect(listImages()).resolves.toStrictEqual([]);
-});
+		await expect(listImages()).resolves.toStrictEqual([]);
+	},
+);
 
 apiTest(
 	'Accepts image/jpeg, image/png, image/webp',
