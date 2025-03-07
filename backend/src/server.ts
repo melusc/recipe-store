@@ -1,5 +1,3 @@
-import {fileURLToPath} from 'node:url';
-
 import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -7,6 +5,8 @@ import express from 'express';
 import {renderIndex} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
+
+import {staticRouter} from './routes/static.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
@@ -33,6 +33,8 @@ export function setupServer(api: Api) {
 	app.use(cors());
 	app.use(morgan('dev'));
 
+	app.use('/static', staticRouter);
+
 	app.get('/', (_request, response) => {
 		response.type('html').status(200);
 
@@ -40,15 +42,6 @@ export function setupServer(api: Api) {
 
 		response.end();
 	});
-
-	const cssDirectory = fileURLToPath(import.meta.resolve('frontend/css'));
-	app.use(
-		'/static/css',
-		express.static(cssDirectory, {
-			index: false,
-			dotfiles: 'ignore',
-		}),
-	);
 
 	return app;
 }
