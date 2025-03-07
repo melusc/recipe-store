@@ -1,7 +1,3 @@
 :root {
-	--theme: oklch(79.33% 0.179 145.62);
-}
-
-header {
-	background: var(--theme);
+	--bs-secondary-rgb: 100, 217, 112;
 }

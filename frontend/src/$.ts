@@ -58,7 +58,7 @@ function $_(
 			}
 		}
 
-		result.push(templateItem.trim().replaceAll(/\s+/g, ' '));
+		result.push(templateItem.replaceAll(/\s+/g, ' '));
 	}
 
 	return new SafeString(result.join(''));
