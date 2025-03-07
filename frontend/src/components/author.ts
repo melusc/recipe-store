@@ -1,13 +1,6 @@
 import type {User} from 'api';
 
 import {$} from '../$.js';
-import {registerStyle} from '../styles.js';
-
-registerStyle(
-	'author',
-	`
-`,
-);
 
 export function smallAuthor(author: InstanceType<User> | undefined) {
 	return $`
