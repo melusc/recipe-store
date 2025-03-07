@@ -19,7 +19,11 @@ export function setupServer(api: Api) {
 		helmet({
 			contentSecurityPolicy: {
 				directives: {
-					'script-src': ["'self'", "'unsafe-inline'"],
+					'script-src': [
+						"'self'",
+						'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/',
+						"'unsafe-inline'",
+					],
 				},
 			},
 

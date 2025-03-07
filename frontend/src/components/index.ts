@@ -1,3 +1,4 @@
-export {smallAuthor} from './author.js';
-export {header} from './header.js';
-export {recipeTable} from './recipe-table.js';
+export * from './author.js';
+export * from './header.js';
+export * from './recipe-table.js';
+export * from './recipe-card.js';

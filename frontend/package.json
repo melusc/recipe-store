@@ -11,6 +11,7 @@
 		"@lusc/tsconfig": "^6.0.2",
 		"@types/express": "^5.0.0",
 		"@types/he": "^1.2.3",
+		"@types/node": "^22.13.9",
 		"api": "workspace:^",
 		"eslint": "^9.21.0",
 		"typescript": "^5.8.2"

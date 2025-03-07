@@ -1,27 +1,26 @@
+import {readFile} from 'node:fs/promises';
+
 import type {Recipe, User} from 'api';
 
 import {$} from './$.js';
-import {header, recipeTable, smallAuthor} from './components/index.js';
+import {header, recipeCard, smallAuthor} from './components/index.js';
 
-function boilerplate() {
-	return $`
-		<!doctype html>
-
-		<link rel="stylesheet" href="/static/css/sanitise.css" />
-		<link rel="stylesheet" href="/static/css/main.css" />
-	`;
-}
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+const baseHtml = await readFile(
+	new URL('../src/base.html', import.meta.url),
+	'utf8',
+);
 
 export function renderIndex(
 	users: readonly InstanceType<User>[],
 	recipes: readonly InstanceType<Recipe>[],
 ) {
 	return $`
-		${boilerplate()}
+		${$.trusted(baseHtml)}
 		${header(false)}
 
 		${users.map(user => smallAuthor(user))}
 
-		${recipes.map(recipe => recipeTable(recipe))}
+		${recipes.map(recipe => recipeCard(recipe))}
 	`;
 }

@@ -21,17 +21,20 @@ export type Substitution =
 	| SafeString
 	| ReadonlyArray<SafeString>
 	| boolean
-	| undefined;
+	| undefined
+	| null;
 
-export class SafeString {
+class SafeString {
 	constructor(private content: string) {}
 
 	render() {
-		return this.content.trim().replaceAll(/\s+/g, ' ');
+		return this.content;
 	}
 }
 
-export function $(
+export type {SafeString};
+
+function $_(
 	template: readonly string[],
 	...substitutions: readonly Substitution[]
 ): SafeString {
@@ -46,7 +49,8 @@ export function $(
 				result.push(substitution.render());
 			} else if (
 				typeof substitution === 'boolean' ||
-				substitution === undefined
+				substitution === undefined ||
+				substitution === null
 			) {
 				// Do nothing
 			} else {
@@ -54,8 +58,16 @@ export function $(
 			}
 		}
 
-		result.push(templateItem);
+		result.push(templateItem.trim().replaceAll(/\s+/g, ' '));
 	}
 
 	return new SafeString(result.join(''));
 }
+
+function trusted(html: string) {
+	return new SafeString(html);
+}
+
+export const $ = Object.assign($_, {
+	trusted,
+});
