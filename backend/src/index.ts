@@ -54,6 +54,8 @@ if (createOwnerUsername) {
 	);
 }
 
+await Promise.all(api.Recipe.all().map(recipe => recipe.delete()));
+
 await api.Recipe.create(
 	'recipe 1',
 	api.User.all()[0]!,
@@ -63,7 +65,7 @@ await api.Recipe.create(
 );
 
 await api.Recipe.create(
-	'recipe 1',
+	'recipe 2',
 	api.User.all()[0]!,
 	undefined,
 	[],
