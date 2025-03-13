@@ -60,7 +60,7 @@ await api.Recipe.create(
 	'recipe 1',
 	api.User.all()[0]!,
 	undefined,
-	[],
+	['milk', 'example'],
 	['Add @milk'],
 );
 
@@ -68,7 +68,7 @@ await api.Recipe.create(
 	'recipe 2',
 	api.User.all()[0]!,
 	undefined,
-	[],
+	['pineapple', 'example'],
 	['Add @pineapple'],
 );
 
