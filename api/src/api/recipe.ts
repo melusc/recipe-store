@@ -191,8 +191,10 @@ export function createRecipeClass(options: InternalApiOptions) {
 				privateConstructorKey,
 			);
 
-			// These below require more than just a single SQL query
-			// so take advantage of the methods for those
+			// This requires some logic to deduplicate tags
+			// It is easier and guarantees correctness
+			// to use this method instead
+			// Downside is a seperate SQL query for each tag
 			for (const tag of tags) {
 				recipe.addTag(tag);
 			}
