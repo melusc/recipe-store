@@ -2,7 +2,7 @@ import {$} from '../$.js';
 
 export function header(loggedIn: boolean) {
 	return $`
-		<header class="sticky-top bg-primary">
+		<header class="sticky-top bg-primary shadow-sm">
 			<nav class="p-3 d-flex flex-row">
 				<h2 class="fw-semibold">
 					<a href="/">Home</a>

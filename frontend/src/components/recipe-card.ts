@@ -10,7 +10,7 @@ export function recipeCard(recipe: InstanceType<Recipe>) {
 		(recipe.image && `/api/user-content/images/${recipe.image}`) ||
 		`https://picsum.photos/${String(Math.floor(Math.random() * 200 + 400))}/${String(Math.floor(Math.random() * 200 + 400))}`;
 
-	return $`<div class="card recipe-card">
+	return $`<div class="card shadow-sm">
 		${
 			imageUrl &&
 			$`

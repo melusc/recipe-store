@@ -5,7 +5,10 @@ import {$} from '../$.js';
 export function recipeTag(tagName: string) {
 	const slug = makeSlug(tagName, {appendRandomHex: false});
 
-	return $`<a href="/tag/${slug}" class="badge text-bg-primary">
+	return $`<a
+		href="/tag/${slug}"
+		class="badge text-bg-primary shadow-sm"
+	>
 		${tagName}
 	</a>`;
 }
