@@ -25,6 +25,7 @@
 		"build": "tsc"
 	},
 	"dependencies": {
+		"@lusc/util": "^1.4.3",
 		"cooklang": "workspace:^",
 		"he": "^1.2.0"
 	}

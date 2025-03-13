@@ -19,3 +19,11 @@
 ></script>
 
 <link rel="stylesheet" href="/static/css/main.css" />
+
+<script type="module">
+	document.querySelectorAll('time').forEach(timeElement => {
+		timeElement.textContent = new Date(
+			timeElement.dateTime,
+		).toLocaleDateString();
+	});
+</script>

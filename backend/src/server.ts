@@ -24,6 +24,12 @@ export function setupServer(api: Api) {
 						'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/',
 						"'unsafe-inline'",
 					],
+					'img-src': [
+						"'self'",
+						'data:',
+						'picsum.photos',
+						'fastly.picsum.photos',
+					],
 				},
 			},
 

@@ -2465,6 +2465,7 @@ __metadata:
   dependencies:
     "@lusc/eslint-config": "npm:^6.2.0"
     "@lusc/tsconfig": "npm:^6.0.2"
+    "@lusc/util": "npm:^1.4.3"
     "@types/express": "npm:^5.0.0"
     "@types/he": "npm:^1.2.3"
     "@types/node": "npm:^22.13.10"
