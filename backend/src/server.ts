@@ -42,9 +42,7 @@ export function setupServer(api: Api) {
 	app.get('/', (_request, response) => {
 		response.type('html').status(200);
 
-		response.write(
-			renderIndex(false, api.User.all(), api.Recipe.all()).render(),
-		);
+		response.write(renderIndex(false, api.Recipe.all()).render());
 
 		response.end();
 	});
