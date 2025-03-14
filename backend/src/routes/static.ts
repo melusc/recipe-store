@@ -20,9 +20,9 @@ import express, {Router} from 'express';
 
 const router = Router();
 
-const cssDirectory = fileURLToPath(import.meta.resolve('frontend/css'));
+const cssDirectory = fileURLToPath(import.meta.resolve('frontend/static'));
 router.use(
-	'/css',
+	'/',
 	express.static(cssDirectory, {
 		index: false,
 		dotfiles: 'ignore',

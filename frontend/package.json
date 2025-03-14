@@ -3,7 +3,7 @@
 	"name": "frontend",
 	"exports": {
 		".": "./dist/index.js",
-		"./css": "./static/css"
+		"./static": "./static"
 	},
 	"private": true,
 	"devDependencies": {
