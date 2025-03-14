@@ -26,7 +26,7 @@ import {
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
-import type {ReadonlyDate} from './utilities.js';
+import {PaginationResult, type ReadonlyDate} from './utilities.js';
 
 import {
 	ApiError,
@@ -217,7 +217,35 @@ export function createRecipeClass(options: InternalApiOptions) {
 			);
 		}
 
-		static paginate(limit: number, skip: number) {
+		static count() {
+			const recipeCount = database
+				.prepare(
+					`SELECT count(recipe_id) as count
+					FROM recipes`,
+				)
+				.get() as {
+				count: number;
+			};
+
+			return recipeCount.count;
+		}
+
+		static paginate({
+			limit,
+			page,
+		}: {
+			readonly limit: number;
+			readonly page: number;
+		}): PaginationResult<Recipe> {
+			const recipeCount = this.count();
+
+			const pageCount = Math.ceil(recipeCount / limit);
+			const skip = (page - 1) * limit;
+
+			if (recipeCount < skip) {
+				return new PaginationResult({pageCount, page, items: []});
+			}
+
 			const recipes = database
 				.prepare(
 					`SELECT recipe_id FROM recipes
@@ -231,9 +259,13 @@ export function createRecipeClass(options: InternalApiOptions) {
 				recipe_id: number;
 			}>;
 
-			return recipes.map(
-				({recipe_id: recipeId}) => Recipe.fromRecipeId(recipeId)!,
-			);
+			return new PaginationResult({
+				pageCount,
+				page,
+				items: recipes.map(
+					({recipe_id: recipeId}) => Recipe.fromRecipeId(recipeId)!,
+				),
+			});
 		}
 
 		static fromRecipeId(recipeId: number) {

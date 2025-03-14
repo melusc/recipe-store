@@ -307,16 +307,33 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	);
 
 	expect(Recipe.all()).toHaveLength(25);
+	expect(Recipe.count()).toStrictEqual(25);
 
-	const firstTen = Recipe.paginate(10, 0);
-	expect(firstTen).toHaveLength(10);
-	const nextTen = Recipe.paginate(10, 10);
-	expect(nextTen).toHaveLength(10);
-	const lastFive = Recipe.paginate(10, 20);
-	expect(lastFive).toHaveLength(5);
+	const firstTen = Recipe.paginate({page: 1, limit: 10});
+	expect(firstTen.items).toHaveLength(10);
+	expect(firstTen.page).toStrictEqual(1);
+	expect(firstTen.pageCount).toStrictEqual(3);
+	expect(firstTen.getPreviousPage()).toStrictEqual(false);
+	expect(firstTen.getNextPage()).toStrictEqual(2);
+
+	const nextTen = Recipe.paginate({page: 2, limit: 10});
+	expect(nextTen.items).toHaveLength(10);
+	expect(nextTen.page).toStrictEqual(2);
+	expect(nextTen.pageCount).toStrictEqual(3);
+	expect(nextTen.getPreviousPage()).toStrictEqual(1);
+	expect(nextTen.getNextPage()).toStrictEqual(3);
+
+	const lastFive = Recipe.paginate({page: 3, limit: 10});
+	expect(lastFive.items).toHaveLength(5);
+	expect(lastFive.page).toStrictEqual(3);
+	expect(lastFive.pageCount).toStrictEqual(3);
+	expect(lastFive.getPreviousPage()).toStrictEqual(2);
+	expect(lastFive.getNextPage()).toStrictEqual(false);
 
 	const paginatedIds = new Set(
-		[...firstTen, ...nextTen, ...lastFive].map(recipe => recipe.recipeId),
+		[...firstTen.items, ...nextTen.items, ...lastFive.items].map(
+			recipe => recipe.recipeId,
+		),
 	);
 	const expectedIds = new Set(Recipe.all().map(recipe => recipe.recipeId));
 	expect(paginatedIds).toStrictEqual(expectedIds);

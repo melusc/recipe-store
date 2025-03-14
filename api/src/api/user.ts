@@ -18,7 +18,7 @@ import bcrypt from 'bcrypt';
 
 import {ApiError} from './error.js';
 import type {Recipe} from './recipe.js';
-import type {ReadonlyDate} from './utilities.js';
+import {PaginationResult, type ReadonlyDate} from './utilities.js';
 
 import type {InternalApiOptions} from './index.js';
 
@@ -382,10 +382,38 @@ export function createUserClass(options: InternalApiOptions) {
 			);
 		}
 
-		paginateRecipes(
-			limit: number,
-			skip: number,
-		): ReadonlyArray<InstanceType<Recipe>> {
+		countRecipes() {
+			const recipeCount = database
+				.prepare(
+					`SELECT count(recipe_id) as count
+					FROM recipes
+					WHERE author = :userId`,
+				)
+				.get({
+					userId: this.userId,
+				}) as {
+				count: number;
+			};
+
+			return recipeCount.count;
+		}
+
+		paginateRecipes({
+			limit,
+			page,
+		}: {
+			readonly limit: number;
+			readonly page: number;
+		}): PaginationResult<InstanceType<Recipe>> {
+			const recipeCount = this.countRecipes();
+
+			const pageCount = Math.ceil(recipeCount / limit);
+			const skip = (page - 1) * limit;
+
+			if (recipeCount < skip) {
+				return new PaginationResult({pageCount, page, items: []});
+			}
+
 			const recipes = database
 				.prepare(
 					`SELECT recipe_id FROM recipes
@@ -401,9 +429,13 @@ export function createUserClass(options: InternalApiOptions) {
 				recipe_id: number;
 			}>;
 
-			return recipes.map(
-				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
-			);
+			return new PaginationResult({
+				pageCount,
+				page,
+				items: recipes.map(
+					({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
+				),
+			});
 		}
 
 		changeUsername(newUsername: string) {

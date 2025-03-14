@@ -15,3 +15,43 @@
 */
 
 export type ReadonlyDate = Readonly<Omit<Date, `set${string}`>>;
+
+export class PaginationResult<T> {
+	public readonly pageCount: number;
+	public readonly page: number;
+	public readonly items: readonly T[];
+
+	constructor({
+		pageCount,
+		page,
+		items,
+	}: {
+		readonly pageCount: number;
+		readonly page: number;
+		readonly items: readonly T[];
+	}) {
+		this.pageCount = pageCount;
+		this.page = page;
+		this.items = items;
+	}
+
+	getNextPage() {
+		if (this.page >= this.pageCount) {
+			return false;
+		}
+
+		// If page is negative for some reason,
+		// skip to page 1
+		return Math.max(1, this.page + 1);
+	}
+
+	getPreviousPage() {
+		if (this.page <= 1) {
+			return false;
+		}
+
+		// If page is way too high
+		// skip to last page
+		return Math.min(this.pageCount, this.page - 1);
+	}
+}
