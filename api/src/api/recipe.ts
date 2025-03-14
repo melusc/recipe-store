@@ -65,6 +65,29 @@ function randomImageName(extension: string) {
 	return `${name}.${extension}`;
 }
 
+type SqlRecipeRow = {
+	recipe_id: number;
+	title: string;
+	author: number;
+	created_at: number;
+	updated_at: number;
+	sections: string;
+	image: string | null;
+	tags: string;
+};
+
+const BASE_SQL_RECIPE_SELECT = `
+SELECT recipe_id,
+       title,
+       author,
+       created_at,
+       updated_at,
+       sections,
+       image,
+       json_group_array(recipe_tags.tag_name) AS tags
+FROM   recipes
+       LEFT JOIN recipe_tags using (recipe_id)`;
+
 export type Recipe = ReturnType<typeof createRecipeClass>;
 export function createRecipeClass(options: InternalApiOptions) {
 	const {database} = options;
@@ -204,26 +227,41 @@ export function createRecipeClass(options: InternalApiOptions) {
 			return recipe;
 		}
 
-		static all(): ReadonlyArray<Recipe> {
-			const recipes = database
-				.prepare(
-					`SELECT recipe_id FROM recipes
-					ORDER BY recipe_id ASC`,
-				)
-				.all() as ReadonlyArray<{recipe_id: number}>;
+		// UserId is internal use only
+		// Avoid duplication in User#listRecipes
+		static all(_userId?: number): ReadonlyArray<Recipe> {
+			const query = [BASE_SQL_RECIPE_SELECT];
+			const parameters: Record<string, number> = {};
 
-			return recipes.map(
-				({recipe_id: recipeId}) => this.fromRecipeId(recipeId)!,
-			);
+			if (_userId !== undefined) {
+				query.push('WHERE author = :userId');
+				parameters['userId'] = _userId;
+			}
+
+			query.push('GROUP BY recipe_id', 'ORDER BY recipe_id ASC');
+
+			const recipes = database
+				.prepare(query.join(' '))
+				.all(parameters) as ReadonlyArray<SqlRecipeRow>;
+
+			return recipes.map(row => this.#fromRow(row)!);
 		}
 
-		static count() {
-			const recipeCount = database
-				.prepare(
-					`SELECT count(recipe_id) as count
-					FROM recipes`,
-				)
-				.get() as {
+		// Internal parameters `userId` is for use via `User#paginateRecipes`
+		// Adding this optional parameter allows for deduplication instead
+		// of one method here and one there
+		static #count(userId?: number) {
+			let query = `SELECT count(recipe_id) as count
+					FROM recipes`;
+
+			const parameters: Record<string, number> = {};
+
+			if (userId !== undefined) {
+				query += ' WHERE author = :userId';
+				parameters['userId'] = userId;
+			}
+
+			const recipeCount = database.prepare(query).get(parameters) as {
 				count: number;
 			};
 
@@ -233,11 +271,13 @@ export function createRecipeClass(options: InternalApiOptions) {
 		static paginate({
 			limit,
 			page,
+			_userId: userId,
 		}: {
 			readonly limit: number;
 			readonly page: number;
+			readonly _userId?: number;
 		}): PaginationResult<Recipe> {
-			const recipeCount = this.count();
+			const recipeCount = this.#count(userId);
 
 			const pageCount = Math.ceil(recipeCount / limit);
 			const skip = (page - 1) * limit;
@@ -246,59 +286,38 @@ export function createRecipeClass(options: InternalApiOptions) {
 				return new PaginationResult({pageCount, page, items: []});
 			}
 
+			const parameters: Record<string, number> = {
+				limit,
+				skip,
+			};
+			const query = [BASE_SQL_RECIPE_SELECT];
+
+			if (userId !== undefined) {
+				parameters['userId'] = userId;
+				query.push('WHERE author = :userId');
+			}
+
+			query.push(
+				'GROUP BY recipe_id',
+				'ORDER BY recipe_id ASC',
+				'LIMIT :limit OFFSET :skip',
+			);
+
 			const recipes = database
-				.prepare(
-					`SELECT recipe_id FROM recipes
-					ORDER BY recipe_id ASC
-					LIMIT :limit OFFSET :skip`,
-				)
-				.all({
-					limit,
-					skip,
-				}) as ReadonlyArray<{
-				recipe_id: number;
-			}>;
+				.prepare(query.join(' '))
+				.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
 			return new PaginationResult({
 				pageCount,
 				page,
-				items: recipes.map(
-					({recipe_id: recipeId}) => Recipe.fromRecipeId(recipeId)!,
-				),
+				items: recipes.map(row => Recipe.#fromRow(row)!),
 			});
 		}
 
-		static fromRecipeId(recipeId: number) {
-			const result = database
-				.prepare(
-					`SELECT
-						title, author, created_at,
-						updated_at, sections, image FROM recipes
-					WHERE recipe_id = :recipeId`,
-				)
-				.get({recipeId}) as
-				| {
-						title: string;
-						author: number;
-						created_at: number;
-						updated_at: number;
-						sections: string;
-						image: string | null;
-				  }
-				| undefined;
-
-			if (!result) {
+		static #fromRow(row: SqlRecipeRow | undefined) {
+			if (!row) {
 				return;
 			}
-
-			const tags = database
-				.prepare(
-					`SELECT tag_name FROM recipe_tags
-					WHERE recipe_id = :recipeId`,
-				)
-				.all({recipeId}) as ReadonlyArray<{
-				tag_name: string;
-			}>;
 
 			const parsedSections = array(
 				object({
@@ -307,21 +326,36 @@ export function createRecipeClass(options: InternalApiOptions) {
 				}).readonly(),
 			)
 				.readonly()
-				.parse(JSON.parse(result.sections));
+				.parse(JSON.parse(row.sections));
+
+			// Left join means right (=recipe_tags) can be null
+			// I.e. if a recipe has no tags it returns [null]
+			const tags = (JSON.parse(row.tags) as Array<string | null>).filter(
+				tag => tag !== null,
+			);
 
 			return new Recipe(
-				recipeId,
-				result.title,
-				result.author === -1
-					? undefined
-					: options.User.fromUserid(result.author),
-				new Date(result.created_at),
-				new Date(result.updated_at),
-				result.image ?? undefined,
-				tags.map(s => s.tag_name),
+				row.recipe_id,
+				row.title,
+				row.author === -1 ? undefined : options.User.fromUserid(row.author),
+				new Date(row.created_at),
+				new Date(row.updated_at),
+				row.image ?? undefined,
+				tags,
 				parsedSections,
 				privateConstructorKey,
 			);
+		}
+
+		static fromRecipeId(recipeId: number) {
+			const result = database
+				.prepare(
+					`${BASE_SQL_RECIPE_SELECT}
+					WHERE recipe_id = :recipeId`,
+				)
+				.get({recipeId}) as SqlRecipeRow | undefined;
+
+			return this.#fromRow(result);
 		}
 
 		addTag(tag: string) {

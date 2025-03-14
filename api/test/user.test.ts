@@ -235,9 +235,6 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 		);
 	}
 
-	expect(user1.countRecipes()).toStrictEqual(25);
-	expect(user2.countRecipes()).toStrictEqual(25);
-
 	const firstTen = user1.paginateRecipes({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);
 	expect(firstTen.page).toStrictEqual(1);

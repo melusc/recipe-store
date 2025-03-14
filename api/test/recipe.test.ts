@@ -307,7 +307,6 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	);
 
 	expect(Recipe.all()).toHaveLength(25);
-	expect(Recipe.count()).toStrictEqual(25);
 
 	const firstTen = Recipe.paginate({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);

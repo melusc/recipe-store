@@ -367,35 +367,7 @@ export function createUserClass(options: InternalApiOptions) {
 		}
 
 		listRecipes(): ReadonlyArray<InstanceType<Recipe>> {
-			const recipeIds = database
-				.prepare(
-					`SELECT recipe_id FROM recipes
-					WHERE author = :userId
-					ORDER BY recipe_id ASC`,
-				)
-				.all({
-					userId: this.userId,
-				}) as ReadonlyArray<{recipe_id: number}>;
-
-			return recipeIds.map(
-				({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
-			);
-		}
-
-		countRecipes() {
-			const recipeCount = database
-				.prepare(
-					`SELECT count(recipe_id) as count
-					FROM recipes
-					WHERE author = :userId`,
-				)
-				.get({
-					userId: this.userId,
-				}) as {
-				count: number;
-			};
-
-			return recipeCount.count;
+			return options.Recipe.all(this.userId);
 		}
 
 		paginateRecipes({
@@ -405,37 +377,7 @@ export function createUserClass(options: InternalApiOptions) {
 			readonly limit: number;
 			readonly page: number;
 		}): PaginationResult<InstanceType<Recipe>> {
-			const recipeCount = this.countRecipes();
-
-			const pageCount = Math.ceil(recipeCount / limit);
-			const skip = (page - 1) * limit;
-
-			if (recipeCount < skip) {
-				return new PaginationResult({pageCount, page, items: []});
-			}
-
-			const recipes = database
-				.prepare(
-					`SELECT recipe_id FROM recipes
-					WHERE author = :userId
-					ORDER BY recipe_id ASC
-					LIMIT :limit OFFSET :skip`,
-				)
-				.all({
-					userId: this.userId,
-					limit,
-					skip,
-				}) as ReadonlyArray<{
-				recipe_id: number;
-			}>;
-
-			return new PaginationResult({
-				pageCount,
-				page,
-				items: recipes.map(
-					({recipe_id: recipeId}) => options.Recipe.fromRecipeId(recipeId)!,
-				),
-			});
+			return options.Recipe.paginate({limit, page, _userId: this.userId});
 		}
 
 		changeUsername(newUsername: string) {
