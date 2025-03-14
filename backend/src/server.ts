@@ -18,7 +18,7 @@ import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import {renderIndex} from 'frontend';
+import {renderIndex, render404} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -65,6 +65,11 @@ export function setupServer(api: Api) {
 		response.status(200);
 
 		response.send(renderIndex(false, '/', api.Recipe.all()).render());
+	});
+
+	app.use((_request, response) => {
+		response.status(404);
+		response.send(render404(false, '/404').render());
 	});
 
 	return app;

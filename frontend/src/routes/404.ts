@@ -14,5 +14,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {renderIndex} from './routes/index.js';
-export {render404} from './routes/404.js';
+import {$} from '../$.js';
+
+import {createRoute, type Route} from './_utilities.js';
+
+export const render404: Route<[]> = createRoute(
+	'404 - Not Found',
+	() => $`
+		<div
+			class="position-absolute top-50 start-50 translate-middle"
+		>
+			<h1>Not Found :(</h1>
+		</div>
+	`,
+);
