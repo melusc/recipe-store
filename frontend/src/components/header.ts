@@ -16,21 +16,78 @@
 
 import {$} from '../$.js';
 
-export function header(loggedIn: boolean) {
+export function header(loggedIn: boolean, path: string) {
+	const active = {
+		'/login': 'login-logout',
+		'/logout': 'login-logout',
+		'/': 'frontpage',
+	}[path];
+
+	const routes = [
+		{
+			href: '/',
+			name: 'Home',
+		},
+		loggedIn
+			? {
+					href: '/logout',
+					name: 'Logout',
+				}
+			: {
+					href: '/login',
+					name: 'Login',
+				},
+	];
+
 	return $`
 		<header class="sticky-top bg-primary shadow-sm">
-			<nav class="p-3 d-flex flex-row">
-				<h2 class="fw-semibold">
-					<a href="/">Home</a>
-				</h2>
-				<h3 class="fw-semibold ms-auto">
+			<nav class="navbar navbar-expand-lg p-3">
+			  <div class="container-fluid">
 					<a
-						class="header-login"
-						href="${loggedIn ? '/logout' : '/login'}"
-					>
-						${loggedIn ? 'Logout' : 'Login'}
-					</a>
-				</h3>
+						class="navbar-brand ${active === 'frontpage' ? 'active' : ''}"
+						aria-current="${active === 'frontpage' ? 'page' : 'false'}"
+						href="/"
+					>Recipe Store</a>
+
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      			<span class="navbar-toggler-icon"></span>
+					</button>
+
+
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+							${routes.map(
+								({href, name}) => $`
+									<li class="nav-item">
+										<a
+											class="nav-link${path === href ? ' active' : ''}"
+											aria-current="${path === href ? 'page' : 'false'}"
+											href="${href}"
+										>
+											${name}
+										</a>
+									</li>
+								`,
+							)}
+						</ul>
+
+						<form class="d-flex" role="search" action="/search">
+        			<input
+								class="form-control me-2"
+								type="search"
+								placeholder="Search"
+								aria-label="Search"
+								name="q"
+							>
+        			<button
+								class="btn btn-outline-success"
+								type="submit"
+							>
+								Search
+							</button>
+      			</form>
+					</div>
+				</div>
 			</nav>
 		</header>
 	`;

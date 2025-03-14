@@ -27,6 +27,7 @@ const baseHtml = await readFile(
 
 export type Route<Parameters extends readonly unknown[]> = (
 	loggedIn: boolean,
+	path: string,
 	...templateParameters: Parameters
 ) => SafeString;
 
@@ -34,12 +35,16 @@ export function createRoute<Parameters extends readonly unknown[]>(
 	title: string,
 	template: (...parameters: Parameters) => SafeString,
 ): Route<Parameters> {
-	return (loggedIn: boolean, ...templateParameters: Parameters) => $`
+	return (
+		loggedIn: boolean,
+		path: string,
+		...templateParameters: Parameters
+	) => $`
 		${$.trusted(baseHtml)}
 
 		${title ? $`<title>${title} | Recipe Store</title>` : undefined}
 
-		${header(loggedIn)}
+		${header(loggedIn, path)}
 
 		<div id="App" class="m-3">
 			${template(...templateParameters)}
