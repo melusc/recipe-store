@@ -16,7 +16,14 @@
 
 import {describe, expect, test} from 'vitest';
 
-import {QueryParser, type QueryFilter} from '../src/api/search.js';
+import {
+	QueryParser,
+	recipeMatchesFilter,
+	type QueryFilter,
+} from '../src/api/search.js';
+import {UserRoles} from '../src/index.js';
+
+import {apiTest} from './utilities.js';
 
 describe('QueryParser', () => {
 	test.for<[string, QueryFilter[]]>([
@@ -68,3 +75,84 @@ describe('QueryParser', () => {
 		expect(parsed).toStrictEqual(expectedParsed);
 	});
 });
+
+apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
+	['user:1', 'Banana Cake', 'Mushroom Risotto'],
+	['user:1 waiter', 'Mushroom Risotto'],
+	['user:2', 'Chocolate Cake'],
+	['user:Michael', 'Banana Cake', 'Mushroom Risotto'],
+	['user:pickle', 'Chocolate Cake'],
+	['tagged:cake', 'Banana Cake', 'Chocolate Cake'],
+	['tagged:"chocolate cake"', 'Chocolate Cake'],
+	['title:mushroom', 'Mushroom Risotto'],
+	['easy', 'Banana Cake'],
+	['restaurant', 'Mushroom Risotto'],
+	['first prepare', 'Banana Cake'],
+	['unique', 'Banana Cake', 'Chocolate Cake'],
+	['tagged:unique', 'Banana Cake'],
+	['contains:unique', 'Chocolate Cake'],
+	['unique banana', 'Banana Cake'],
+])(
+	'recipeMatchesFilter(%j)',
+	async ([query, ...expectedTitles], {api: {User, Recipe}}) => {
+		const expectedTitlesSet = new Set(expectedTitles);
+		const queryParsed = new QueryParser(query).parse();
+
+		const user1 = User.create(
+			'michaelcaine33',
+			'Michael Caine',
+			'vvnem',
+			UserRoles.User,
+		);
+		const user2 = User.create(
+			'picklerick',
+			'Rick Sanchez',
+			'emaee',
+			UserRoles.User,
+		);
+
+		const recipes = await Promise.all([
+			Recipe.create(
+				'Banana Cake',
+				user1,
+				undefined,
+				// "unique" appears only in tags
+				['cake', 'banana', 'dessert', 'easy cakes', 'unique'],
+				[
+					'First, prepare a bowl with @flour{200%g} and @sugar{150%g}. Stir until uniform.',
+					'Add @bananas{3} to a seperate bowl and lightly mash.',
+					'Combine the two bowls and add @milk{200%mL}.',
+				],
+			),
+			Recipe.create(
+				'Chocolate Cake',
+				user2,
+				undefined,
+				// Badly tagged
+				['chocolate cake'],
+				[
+					'Buy @chocolate cake{} from shop.',
+					'Put in #fridge{} and let cool down for a few hours.',
+					// "unique" appears only in text
+					'unique',
+				],
+			),
+			Recipe.create(
+				'Mushroom Risotto',
+				user1,
+				undefined,
+				['risotto', 'mushroom'],
+				['Go to #restaurant{}.', 'Ask waiter for risotto with mushroom.'],
+			),
+		]);
+
+		const matchedRecipes = recipes.filter(recipe =>
+			recipeMatchesFilter(recipe, queryParsed),
+		);
+		const matchedRecipesTitles = new Set(
+			matchedRecipes.map(recipe => recipe.title),
+		);
+
+		expect(matchedRecipesTitles).toStrictEqual(expectedTitlesSet);
+	},
+);

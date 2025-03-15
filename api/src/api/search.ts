@@ -14,6 +14,10 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {sectionToText} from 'cooklang';
+
+import type {Recipe} from './recipe.js';
+
 type Qualifier = 'any' | 'tagged' | 'author' | 'contains' | 'title';
 
 export type QueryFilter = {
@@ -155,4 +159,75 @@ export class QueryParser {
 
 		return filters;
 	}
+}
+
+function normaliseSearchValue(value: string) {
+	// Treat all whitespace equal by normalising it to a space
+	// "abc\r\ndef" == "abc\tdef"
+	// Ignore punctuation: "Firstly, add" == "firstly add"
+	// Don't care about case
+	return value.toLowerCase().replaceAll(/[\s,.:;\-!?]+/g, ' ');
+}
+
+function searchContains(needle: string, haystack: string) {
+	needle = normaliseSearchValue(needle);
+	haystack = normaliseSearchValue(haystack);
+
+	return haystack.includes(needle);
+}
+
+const filterMatchers = {
+	any(this, filterValue: string, recipe: InstanceType<Recipe>) {
+		// `contains:` last because it is probably the slowest, because it has to stringify the sections
+		return (
+			this.title(filterValue, recipe) ||
+			this.tagged(filterValue, recipe) ||
+			this.author(filterValue, recipe) ||
+			this.contains(filterValue, recipe)
+		);
+	},
+	title(filterValue: string, recipe: InstanceType<Recipe>) {
+		return searchContains(filterValue, recipe.title);
+	},
+	tagged(filterValue: string, recipe: InstanceType<Recipe>) {
+		return recipe.tags.some(tag => searchContains(filterValue, tag));
+	},
+	author(filterValue: string, recipe: InstanceType<Recipe>) {
+		if (!recipe.author) {
+			return false;
+		}
+
+		// author:32
+		const asUserId = Number.parseInt(filterValue);
+		if (asUserId === recipe.author.userId) {
+			return true;
+		}
+
+		return (
+			// author:Michael Caine
+			searchContains(filterValue, recipe.author.displayName) ||
+			// author:michaelcaine33
+			searchContains(filterValue, recipe.author.username)
+		);
+	},
+	contains(filterValue: string, recipe: InstanceType<Recipe>) {
+		// contains:"add to bowl"
+		for (const section of recipe.sections) {
+			const stringified = sectionToText(section.parsed);
+			if (searchContains(filterValue, stringified)) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+} as const;
+
+export function recipeMatchesFilter(
+	recipe: InstanceType<Recipe>,
+	filters: readonly QueryFilter[],
+) {
+	return filters.every(filter =>
+		filterMatchers[filter.qualifier](filter.filterValue, recipe),
+	);
 }
