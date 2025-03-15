@@ -60,7 +60,13 @@ export function parseSection(section: string) {
 	return cooklangSectionSchema.parse(parsedResult);
 }
 
+const cache = new WeakMap<CooklangSection, string>();
 export function sectionToText(section: CooklangSection) {
+	const cachedValue = cache.get(section);
+	if (cachedValue) {
+		return cachedValue;
+	}
+
 	const result: string[] = [];
 	const {cookware, ingredients, timers} = section;
 
@@ -85,5 +91,7 @@ export function sectionToText(section: CooklangSection) {
 		}
 	}
 
-	return result.join('').trim();
+	const joined = result.join('').trim();
+	cache.set(section, joined);
+	return joined;
 }
