@@ -14,7 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-type Qualifier = 'any' | 'tagged' | 'author' | 'contains';
+type Qualifier = 'any' | 'tagged' | 'author' | 'contains' | 'title';
 
 export type QueryFilter = {
 	readonly qualifier: Qualifier;
@@ -24,6 +24,9 @@ export type QueryFilter = {
 const qualifiers: Record<string, Qualifier> = {
 	tagged: 'tagged',
 	tag: 'tagged',
+	title: 'title',
+	titled: 'title',
+	intitle: 'title',
 	author: 'author',
 	user: 'author',
 	by: 'author',

@@ -56,6 +56,9 @@ describe('QueryParser', () => {
 				{qualifier: 'any', filterValue: 'def'},
 			],
 		],
+		['title:coolyo', [{qualifier: 'title', filterValue: 'coolyo'}]],
+		['intitle:pie', [{qualifier: 'title', filterValue: 'pie'}]],
+		['TitLeD: "soft cake"', [{qualifier: 'title', filterValue: 'soft cake'}]],
 		['', []],
 		[' ', []],
 	])('parse(%j)', ([query, expectedParsed]) => {
