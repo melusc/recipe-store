@@ -26,7 +26,12 @@ import {
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
-import {PaginationResult, type ReadonlyDate} from './utilities.js';
+import {QueryParser, recipeMatchesFilter} from './search.js';
+import {
+	DynamicPaginationResult,
+	PaginationResult,
+	type ReadonlyDate,
+} from './utilities.js';
 
 import {
 	ApiError,
@@ -266,6 +271,76 @@ export function createRecipeClass(options: InternalApiOptions) {
 			};
 
 			return recipeCount.count;
+		}
+
+		static search({
+			limit,
+			page,
+			query,
+		}: {
+			limit: number;
+			page: number;
+			query: string;
+		}): DynamicPaginationResult<Recipe> {
+			let hasSkipped = 0;
+			const shouldSkip = (page - 1) * limit;
+
+			// Short-circuit if it is asking for a page that
+			// certainly cannot exist because there are too few recipes
+			if (shouldSkip >= this.#count()) {
+				return new DynamicPaginationResult({
+					page,
+					items: [],
+					hasNextPage: false,
+				});
+			}
+
+			const items: Recipe[] = [];
+			const queryFilters = new QueryParser(query).parse();
+
+			const rowsIter = database
+				.prepare(
+					`${BASE_SQL_RECIPE_SELECT}
+					GROUP BY recipe_id
+					ORDER BY recipe_id ASC`,
+				)
+				.iterate() as NodeJS.Iterator<SqlRecipeRow>;
+			for (const row of rowsIter) {
+				const recipe = this.#fromRow(row);
+
+				if (recipeMatchesFilter(recipe, queryFilters)) {
+					if (hasSkipped === shouldSkip) {
+						items.push(recipe);
+					} else {
+						++hasSkipped;
+					}
+				}
+
+				if (items.length === limit + 1) {
+					return new DynamicPaginationResult({
+						page,
+						items: items.slice(0, -1),
+						hasNextPage: true,
+					});
+				}
+			}
+
+			if (items.length <= limit && items.length > 0) {
+				return new DynamicPaginationResult({
+					page,
+					items,
+					hasNextPage: false,
+					pageCount: page,
+				});
+			}
+
+			const pageCount = Math.ceil(hasSkipped / limit);
+			return new DynamicPaginationResult({
+				page,
+				items: [],
+				hasNextPage: false,
+				pageCount,
+			});
 		}
 
 		static paginate({

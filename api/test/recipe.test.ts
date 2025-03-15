@@ -420,3 +420,80 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 	expect(recipeOwner.permissionToModifyRecipe(admin)).toStrictEqual(true);
 	expect(recipeOwner.permissionToModifyRecipe(owner)).toStrictEqual(true);
 });
+
+apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
+	const user = User.create('xdshb', 'dcuml', 'rkkec', UserRoles.User);
+
+	await Promise.all(
+		Array.from({length: 50}).map((_v, index) =>
+			Recipe.create(
+				`Banana Cake ${index}`,
+				user,
+				undefined,
+				['banana', 'cake', index.toString(10)],
+				[`Banana Cake No. ${index}`],
+			),
+		),
+	);
+
+	// First page
+	const page1_5per = Recipe.search({
+		limit: 5,
+		page: 1,
+		query: 'banana',
+	});
+
+	expect(page1_5per.items).toHaveLength(5);
+	expect(page1_5per.getPreviousPage()).toStrictEqual(false);
+	expect(page1_5per.getNextPage()).toStrictEqual(2);
+	expect(page1_5per.pageCount).toBeUndefined();
+
+	// Last page, page can be filled with limit
+	const page10_5per = Recipe.search({
+		limit: 5,
+		page: 10,
+		query: 'banana',
+	});
+
+	expect(page10_5per.items).toHaveLength(5);
+	expect(page10_5per.getPreviousPage()).toStrictEqual(9);
+	expect(page10_5per.getNextPage()).toStrictEqual(false);
+	expect(page10_5per.pageCount).toStrictEqual(10);
+
+	// Recipes running on next page means it won't know how many pages
+	// 43..=49 means next page will have 1
+	const page7_7per = Recipe.search({
+		limit: 7,
+		page: 7,
+		query: 'banana',
+	});
+	expect(page7_7per.items).toHaveLength(7);
+	expect(page7_7per.getPreviousPage()).toStrictEqual(6);
+	expect(page7_7per.getNextPage()).toStrictEqual(8);
+	expect(page7_7per.pageCount).toBeUndefined();
+
+	// Recipes run out before limit is reached
+	const page8_7per = Recipe.search({
+		limit: 7,
+		page: 8,
+		query: 'banana',
+	});
+	expect(page8_7per.items).toHaveLength(1);
+	expect(page8_7per.getPreviousPage()).toStrictEqual(7);
+	expect(page8_7per.getNextPage()).toStrictEqual(false);
+	expect(page8_7per.pageCount).toStrictEqual(8);
+
+	// Short-circuit. Even though query matches all recipes
+	// there aren't enough recipes for there to be a page 20
+	const page20_5per = Recipe.search({
+		limit: 5,
+		page: 20,
+		query: 'banana',
+	});
+	expect(page20_5per.items).toHaveLength(0);
+	// due to short-circuit there is no way for it to know
+	// what the max page count is
+	expect(page20_5per.getPreviousPage()).toStrictEqual(19);
+	expect(page20_5per.getNextPage()).toStrictEqual(false);
+	expect(page20_5per.pageCount).toBeUndefined();
+});

@@ -16,10 +16,57 @@
 
 export type ReadonlyDate = Readonly<Omit<Date, `set${string}`>>;
 
-export class PaginationResult<T> {
-	public readonly pageCount: number;
+export class DynamicPaginationResult<T> {
 	public readonly page: number;
 	public readonly items: readonly T[];
+	private readonly hasNextPage: boolean;
+	public readonly pageCount: number | undefined;
+
+	constructor({
+		page,
+		items,
+		hasNextPage,
+		pageCount,
+	}: {
+		readonly page: number;
+		readonly items: readonly T[];
+		readonly hasNextPage: boolean;
+		readonly pageCount?: number | undefined;
+	}) {
+		this.page = page;
+		this.items = items;
+		this.hasNextPage = hasNextPage;
+		this.pageCount = pageCount;
+	}
+
+	getNextPage() {
+		if (!this.hasNextPage) {
+			return false;
+		}
+
+		// If page is negative for some reason,
+		// skip to page 1
+		return Math.max(1, this.page + 1);
+	}
+
+	getPreviousPage() {
+		if (this.page <= 1) {
+			return false;
+		}
+
+		// If page is way too high
+		// skip to last page
+
+		if (this.pageCount !== undefined) {
+			return Math.min(this.pageCount, this.page - 1);
+		}
+
+		return this.page - 1;
+	}
+}
+
+export class PaginationResult<T> extends DynamicPaginationResult<T> {
+	public override readonly pageCount: number;
 
 	constructor({
 		pageCount,
@@ -30,22 +77,15 @@ export class PaginationResult<T> {
 		readonly page: number;
 		readonly items: readonly T[];
 	}) {
+		super({
+			page,
+			items,
+			hasNextPage: page < pageCount,
+		});
 		this.pageCount = pageCount;
-		this.page = page;
-		this.items = items;
 	}
 
-	getNextPage() {
-		if (this.page >= this.pageCount) {
-			return false;
-		}
-
-		// If page is negative for some reason,
-		// skip to page 1
-		return Math.max(1, this.page + 1);
-	}
-
-	getPreviousPage() {
+	override getPreviousPage() {
 		if (this.page <= 1) {
 			return false;
 		}

@@ -14,82 +14,165 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {test, expect} from 'vitest';
+import {test, expect, describe} from 'vitest';
 
-import {PaginationResult} from '../src/api/utilities.js';
+import {
+	DynamicPaginationResult,
+	PaginationResult,
+} from '../src/api/utilities.js';
 
-test('PaginationResult normal usage', () => {
-	const paginationResult = new PaginationResult({
-		page: 30,
-		pageCount: 50,
-		items: ['abc', 'def'],
+describe('PaginationResult', () => {
+	test('normal usage', () => {
+		const paginationResult = new PaginationResult({
+			page: 30,
+			pageCount: 50,
+			items: ['abc', 'def'],
+		});
+
+		expect(paginationResult.page).toStrictEqual(30);
+		expect(paginationResult.pageCount).toStrictEqual(50);
+		expect(paginationResult.items).toStrictEqual(['abc', 'def']);
+
+		expect(paginationResult.getPreviousPage()).toStrictEqual(29);
+		expect(paginationResult.getNextPage()).toStrictEqual(31);
 	});
 
-	expect(paginationResult.page).toStrictEqual(30);
-	expect(paginationResult.pageCount).toStrictEqual(50);
-	expect(paginationResult.items).toStrictEqual(['abc', 'def']);
+	test('first page', () => {
+		const paginationResult = new PaginationResult({
+			page: 1,
+			pageCount: 20,
+			items: ['you', 'lost', 'the', 'game'],
+		});
 
-	expect(paginationResult.getPreviousPage()).toStrictEqual(29);
-	expect(paginationResult.getNextPage()).toStrictEqual(31);
+		expect(paginationResult.page).toStrictEqual(1);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
+		expect(paginationResult.getNextPage()).toStrictEqual(2);
+	});
+
+	test('last page', () => {
+		const paginationResult = new PaginationResult({
+			page: 15,
+			pageCount: 15,
+			items: ['alpha', 'beta'],
+		});
+
+		expect(paginationResult.page).toStrictEqual(15);
+
+		expect(paginationResult.getPreviousPage()).toStrictEqual(14);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
+	});
+
+	test('only page', () => {
+		const paginationResult = new PaginationResult({
+			page: 1,
+			pageCount: 1,
+			items: ['banana', 'bread'],
+		});
+
+		expect(paginationResult.page).toStrictEqual(1);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
+	});
+
+	test('out of bounds lower', () => {
+		const paginationResult = new PaginationResult({
+			page: -3,
+			pageCount: 3,
+			items: [],
+		});
+
+		expect(paginationResult.page).toStrictEqual(-3);
+		expect(paginationResult.getNextPage()).toStrictEqual(1);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
+	});
+
+	test('out of bounds upper', () => {
+		const paginationResult = new PaginationResult({
+			page: 25,
+			pageCount: 20,
+			items: [],
+		});
+
+		expect(paginationResult.page).toStrictEqual(25);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(20);
+	});
 });
 
-test('PaginationResult first page', () => {
-	const paginationResult = new PaginationResult({
-		page: 1,
-		pageCount: 20,
-		items: ['you', 'lost', 'the', 'game'],
+describe('DynamicPaginationResult', () => {
+	test('normal usage', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: 30,
+			items: ['abc', 'def'],
+			hasNextPage: true,
+		});
+
+		expect(paginationResult.page).toStrictEqual(30);
+		expect(paginationResult.items).toStrictEqual(['abc', 'def']);
+
+		expect(paginationResult.getPreviousPage()).toStrictEqual(29);
+		expect(paginationResult.getNextPage()).toStrictEqual(31);
 	});
 
-	expect(paginationResult.page).toStrictEqual(1);
-	expect(paginationResult.getPreviousPage()).toStrictEqual(false);
-	expect(paginationResult.getNextPage()).toStrictEqual(2);
-});
+	test('first page', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: 1,
+			items: ['you', 'lost', 'the', 'game'],
+			hasNextPage: true,
+		});
 
-test('PaginationResult last page', () => {
-	const paginationResult = new PaginationResult({
-		page: 15,
-		pageCount: 15,
-		items: ['alpha', 'beta'],
+		expect(paginationResult.page).toStrictEqual(1);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
+		expect(paginationResult.getNextPage()).toStrictEqual(2);
 	});
 
-	expect(paginationResult.page).toStrictEqual(15);
+	test('last page', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: 15,
+			items: ['alpha', 'beta'],
+			hasNextPage: false,
+		});
 
-	expect(paginationResult.getPreviousPage()).toStrictEqual(14);
-	expect(paginationResult.getNextPage()).toStrictEqual(false);
-});
+		expect(paginationResult.page).toStrictEqual(15);
 
-test('PaginationResult only page', () => {
-	const paginationResult = new PaginationResult({
-		page: 1,
-		pageCount: 1,
-		items: ['banana', 'bread'],
+		expect(paginationResult.getPreviousPage()).toStrictEqual(14);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
 	});
 
-	expect(paginationResult.page).toStrictEqual(1);
-	expect(paginationResult.getNextPage()).toStrictEqual(false);
-	expect(paginationResult.getPreviousPage()).toStrictEqual(false);
-});
+	test('only page', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: 1,
+			items: ['banana', 'bread'],
+			hasNextPage: false,
+		});
 
-test('PaginationResult out of bounds lower', () => {
-	const paginationResult = new PaginationResult({
-		page: -3,
-		pageCount: 3,
-		items: [],
+		expect(paginationResult.page).toStrictEqual(1);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
 	});
 
-	expect(paginationResult.page).toStrictEqual(-3);
-	expect(paginationResult.getNextPage()).toStrictEqual(1);
-	expect(paginationResult.getPreviousPage()).toStrictEqual(false);
-});
+	test('out of bounds lower', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: -3,
+			items: [],
+			hasNextPage: true,
+		});
 
-test('PaginationResult out of bounds upper', () => {
-	const paginationResult = new PaginationResult({
-		page: 25,
-		pageCount: 20,
-		items: [],
+		expect(paginationResult.page).toStrictEqual(-3);
+		expect(paginationResult.getNextPage()).toStrictEqual(1);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
 	});
 
-	expect(paginationResult.page).toStrictEqual(25);
-	expect(paginationResult.getNextPage()).toStrictEqual(false);
-	expect(paginationResult.getPreviousPage()).toStrictEqual(20);
+	test('out of bounds upper', () => {
+		const paginationResult = new DynamicPaginationResult({
+			page: 25,
+			items: [],
+			pageCount: 20,
+			hasNextPage: false,
+		});
+
+		expect(paginationResult.page).toStrictEqual(25);
+		expect(paginationResult.getNextPage()).toStrictEqual(false);
+		expect(paginationResult.getPreviousPage()).toStrictEqual(20);
+	});
 });
