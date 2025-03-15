@@ -244,7 +244,7 @@ export function createRecipeClass(options: InternalApiOptions) {
 				.prepare(query.join(' '))
 				.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
-			return recipes.map(row => this.#fromRow(row)!);
+			return recipes.map(row => this.#fromRow(row));
 		}
 
 		// Internal parameters `userId` is for use via `User#paginateRecipes`
@@ -310,10 +310,12 @@ export function createRecipeClass(options: InternalApiOptions) {
 			return new PaginationResult({
 				pageCount,
 				page,
-				items: recipes.map(row => Recipe.#fromRow(row)!),
+				items: recipes.map(row => Recipe.#fromRow(row)),
 			});
 		}
 
+		static #fromRow(row: SqlRecipeRow): Recipe;
+		static #fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
 		static #fromRow(row: SqlRecipeRow | undefined) {
 			if (!row) {
 				return;
