@@ -298,16 +298,30 @@ export function createRecipeClass(options: InternalApiOptions) {
 			const items: Recipe[] = [];
 			const queryFilters = new QueryParser(query).parse();
 
-			const rowsIter = database
-				.prepare(
-					`${BASE_SQL_RECIPE_SELECT}
-					GROUP BY recipe_id
-					ORDER BY recipe_id ASC`,
-				)
-				.iterate() as NodeJS.Iterator<SqlRecipeRow>;
-			for (const row of rowsIter) {
-				const recipe = this.#fromRow(row);
+			/*
+			 https://github.com/nodejs/node/issues/57493
+			 `StatementSync#iterate` doesn't work correctly for some reason.
+			 Test "Recipe search pagination" works when its the only test running.
+			 It fails with `Error: statement has been finalized` when other tests are running too
+			 This solution just gets `limit` recipes in a loop until we have enough
+			 that match the filter.
+			 I don't want to just get all recipes, which would mean holding all in memory at once.
+			*/
+			function* getRowsChunked(this: typeof Recipe) {
+				let internalPage: number | false = 1;
 
+				while (internalPage !== false) {
+					const page = this.paginate({
+						limit,
+						page: internalPage,
+					});
+
+					yield* page.items;
+					internalPage = page.getNextPage();
+				}
+			}
+
+			for (const recipe of getRowsChunked.call(this)) {
 				if (recipeMatchesFilter(recipe, queryFilters)) {
 					if (hasSkipped === shouldSkip) {
 						items.push(recipe);
