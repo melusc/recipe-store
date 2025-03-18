@@ -12,9 +12,6 @@ cooklang = "0.15.0"
 wasm-bindgen = "0.2.100"
 serde_json = "1.0.140"
 
-[build-dependencies]
-wasm-pack = "0.13.1"
-
 [profile.release]
 strip = true
 lto = true
