@@ -14,9 +14,11 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type {User} from 'api';
+
 import {$} from '../$.js';
 
-export function header(loggedIn: boolean, path: string) {
+export function header(user: User | undefined, path: string) {
 	const active = {
 		'/login': 'login-logout',
 		'/logout': 'login-logout',
@@ -28,7 +30,7 @@ export function header(loggedIn: boolean, path: string) {
 			href: '/',
 			name: 'Home',
 		},
-		loggedIn
+		user
 			? {
 					href: '/logout',
 					name: 'Logout',

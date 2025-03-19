@@ -72,6 +72,17 @@ await api.Recipe.create(
 	['Add @pineapple'],
 );
 
+const username = generatePassword({
+	length: 5,
+	lowercase: true,
+	uppercase: false,
+	special: false,
+	number: false,
+});
+const password = generatePassword();
+api.User.create(username, username, password, UserRoles.Owner);
+console.log(username, password);
+
 const app = setupServer(api);
 const port = 3108;
 

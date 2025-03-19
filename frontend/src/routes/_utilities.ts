@@ -16,6 +16,8 @@
 
 import {readFile} from 'node:fs/promises';
 
+import type {User} from 'api';
+
 import {$, type SafeString} from '../$.js';
 import {header} from '../components/header.js';
 
@@ -26,28 +28,25 @@ const baseHtml = await readFile(
 );
 
 export type Route<Parameters extends readonly unknown[]> = (
-	loggedIn: boolean,
+	user: User | undefined,
 	path: string,
 	...templateParameters: Parameters
-) => SafeString;
+) => string;
 
 export function createRoute<Parameters extends readonly unknown[]>(
 	title: string,
 	template: (...parameters: Parameters) => SafeString,
 ): Route<Parameters> {
-	return (
-		loggedIn: boolean,
-		path: string,
-		...templateParameters: Parameters
-	) => $`
+	return (user, path, ...templateParameters: Parameters) =>
+		$`
 		${$.trusted(baseHtml)}
 
 		${title ? $`<title>${title} | Recipe Store</title>` : undefined}
 
-		${header(loggedIn, path)}
+		${header(user, path)}
 
 		<div id="App" class="m-3">
 			${template(...templateParameters)}
 		</div>
-	`;
+	`.render();
 }

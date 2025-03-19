@@ -11,3 +11,9 @@ body {
 	font-weight: 400;
 	font-style: normal;
 }
+
+:root,
+body,
+#App {
+	min-height: 100%;
+}

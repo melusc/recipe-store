@@ -14,6 +14,16 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {renderIndex} from './routes/index.js';
-export {render404} from './routes/404.js';
-export {renderLogin} from './routes/login.js';
+import type {RequestHandler} from 'express';
+
+export function setHeaders(headers: Record<string, string>): RequestHandler {
+	const headerEntries = Object.entries(headers);
+
+	return (_request, response, next) => {
+		for (const [key, value] of headerEntries) {
+			response.setHeader(key, value);
+		}
+
+		next();
+	};
+}
