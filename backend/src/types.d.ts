@@ -19,10 +19,11 @@ declare global {
 	declare module 'express-serve-static-core' {
 		interface Locals {
 			readonly user?: import('api').User;
+			readonly api: import('api').Api;
 		}
 
 		interface Request {
-			search: URLSearchParams;
+			readonly search: URLSearchParams;
 		}
 	}
 }

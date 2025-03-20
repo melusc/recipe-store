@@ -62,8 +62,14 @@ export function setupServer(api: Api) {
 	);
 	app.use(cors());
 	app.use(morgan('dev'));
-	app.use((request, _response, next) => {
-		request.search = new RelativeUrl(request.url).searchParams;
+	app.use((request, response, next) => {
+		Object.defineProperty(request, 'search', {
+			value: new RelativeUrl(request.url).searchParams,
+		});
+		Object.defineProperty(response.locals, 'api', {
+			value: api,
+		});
+
 		next();
 	});
 	app.use(
