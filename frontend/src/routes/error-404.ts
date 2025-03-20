@@ -18,7 +18,7 @@ import {$} from '../$.js';
 
 import {createRoute} from './_utilities.js';
 
-export const render404 = createRoute(
+export const renderError404 = createRoute(
 	'404 - Not Found',
 	() => $`
 		<div

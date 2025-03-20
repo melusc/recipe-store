@@ -15,18 +15,17 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import type {Api, User} from 'api';
+import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import {renderIndex, render404, renderLogin} from 'frontend';
+import {render} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
 import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
 import {staticRouter} from './routes/static.ts';
-import {formdataMiddleware} from './upload.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
@@ -82,70 +81,15 @@ export function setupServer(api: Api) {
 
 	app.use('/static', staticRouter);
 
-	app.get('/login', (request, response) => {
-		if (response.locals.user) {
-			const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
-			response.redirect(302, redirect.href);
-		} else {
-			response.status(200).send(renderLogin(undefined, '/login', undefined));
-		}
-	});
-
-	app.post('/login', formdataMiddleware.none(), (request, response) => {
-		if (typeof request.body !== 'object' || request.body === null) {
-			response
-				.status(400)
-				.send(
-					renderLogin(
-						undefined,
-						'/login',
-						'Something went wrong! Please try again.',
-					),
-				);
-			return;
-		}
-		const body = request.body as {username?: string; password?: string};
-		const username = body.username;
-		const password = body.password;
-
-		if (typeof username !== 'string' || typeof password !== 'string') {
-			response
-				.status(400)
-				.send(renderLogin(undefined, '/login', 'Please fill all inputs.'));
-			return;
-		}
-
-		let user: User;
-		try {
-			user = api.User.login(username, password);
-		} catch {
-			response
-				.status(400)
-				.send(
-					renderLogin(
-						undefined,
-						'/login',
-						'Incorrect credentials. Please try again.',
-					),
-				);
-			return;
-		}
-
-		session.setCookie(user.userId, response);
-
-		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
-		response.redirect(302, redirect.href);
-	});
-
 	app.get('/', (_request, response) => {
 		response
 			.status(200)
-			.send(renderIndex(response.locals.user, '/', api.Recipe.all()));
+			.send(render.index(response.locals.user, '/', api.Recipe.all()));
 	});
 
 	app.use((_request, response) => {
 		response.status(404);
-		response.send(render404(response.locals.user, '/404'));
+		response.send(render.error404(response.locals.user, '/404'));
 	});
 
 	return app;

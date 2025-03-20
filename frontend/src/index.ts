@@ -14,6 +14,12 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {renderIndex} from './routes/index.js';
-export {render404} from './routes/404.js';
-export {renderLogin} from './routes/login.js';
+import {renderError404} from './routes/error-404.js';
+import {renderIndex} from './routes/index.js';
+import {renderLogin} from './routes/login.js';
+
+export const render = {
+	index: renderIndex,
+	error404: renderError404,
+	login: renderLogin,
+} as const;
