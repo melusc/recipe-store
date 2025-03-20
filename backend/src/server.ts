@@ -109,7 +109,7 @@ export function setupServer(api: Api) {
 			return;
 		}
 
-		let user: InstanceType<User>;
+		let user: User;
 		try {
 			user = api.User.login(username, password);
 		} catch {
