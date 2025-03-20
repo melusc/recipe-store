@@ -26,6 +26,7 @@ import {
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
+import {InjectableApi} from './injectable.js';
 import {QueryParser, recipeMatchesFilter} from './search.js';
 import {
 	DynamicPaginationResult,
@@ -33,12 +34,7 @@ import {
 	type ReadonlyDate,
 } from './utilities.js';
 
-import {
-	ApiError,
-	UserRoles,
-	type InternalApiOptions,
-	type User,
-} from './index.js';
+import {ApiError, UserRoles, type User} from './index.js';
 
 export type RecipeSection = {
 	source: string;
@@ -93,538 +89,550 @@ SELECT recipe_id,
 FROM   recipes
        LEFT JOIN recipe_tags using (recipe_id)`;
 
-export type Recipe = ReturnType<typeof createRecipeClass>;
-export function createRecipeClass(options: InternalApiOptions) {
-	const {database} = options;
-	// InstanceType<Tag> only works if constructor is public
-	// constructor should still only be used internally
-	const privateConstructorKey = Symbol();
+const privateConstructorKey = Symbol();
 
-	return class Recipe {
-		#title: string;
-		readonly #createdAt: ReadonlyDate;
-		#updatedAt: ReadonlyDate;
-		#image: string | undefined;
-		#tags: readonly string[];
-		#sections: readonly RecipeSection[];
-		#author: InstanceType<User> | undefined;
+export class Recipe extends InjectableApi {
+	// These are accessed by getters
+	// That makes then readonly externally
+	// Internally, they are r/w
 
-		constructor(
-			readonly recipeId: number,
-			title: string,
-			author: InstanceType<User> | undefined,
-			createdAt: ReadonlyDate,
-			updatedAt: ReadonlyDate,
-			image: string | undefined,
-			tags: readonly string[],
-			sections: readonly RecipeSection[],
-			constructorKey: symbol,
-		) {
-			if (constructorKey !== privateConstructorKey) {
-				throw new TypeError('Recipe.constructor is private.');
-			}
+	/** @internal */
+	_title: string;
+	/** @internal */
+	readonly _createdAt: ReadonlyDate;
+	/** @internal */
+	_updatedAt: ReadonlyDate;
+	/** @internal */
+	_image: string | undefined;
+	/** @internal */
+	_tags: readonly string[];
+	/** @internal */
+	_sections: readonly RecipeSection[];
+	/** @internal */
+	_author: User | undefined;
 
-			this.#title = title;
-			this.#author = author;
-			this.#createdAt = createdAt;
-			this.#updatedAt = updatedAt;
-			this.#image = image;
-			this.#tags = tags;
-			this.#sections = sections;
+	constructor(
+		readonly recipeId: number,
+		title: string,
+		author: User | undefined,
+		createdAt: ReadonlyDate,
+		updatedAt: ReadonlyDate,
+		image: string | undefined,
+		tags: readonly string[],
+		sections: readonly RecipeSection[],
+		constructorKey: symbol,
+	) {
+		if (constructorKey !== privateConstructorKey) {
+			throw new TypeError('Recipe.constructor is private.');
 		}
 
-		get title() {
-			return this.#title;
-		}
+		super();
 
-		get author() {
-			return this.#author;
-		}
+		this._title = title;
+		this._author = author;
+		this._createdAt = createdAt;
+		this._updatedAt = updatedAt;
+		this._image = image;
+		this._tags = tags;
+		this._sections = sections;
+	}
 
-		get createdAt(): ReadonlyDate {
-			return new Date(this.#createdAt as Date);
-		}
+	get title() {
+		return this._title;
+	}
 
-		get updatedAt(): ReadonlyDate {
-			return new Date(this.#updatedAt as Date);
-		}
+	get author() {
+		return this._author;
+	}
 
-		get image() {
-			return this.#image;
-		}
+	get createdAt(): ReadonlyDate {
+		return new Date(this._createdAt as Date);
+	}
 
-		get tags() {
-			return this.#tags;
-		}
+	get updatedAt(): ReadonlyDate {
+		return new Date(this._updatedAt as Date);
+	}
 
-		get sections() {
-			return this.#sections;
-		}
+	get image() {
+		return this._image;
+	}
 
-		#triggerUpdated() {
-			this.#updatedAt = new Date();
-			database
-				.prepare(
-					`UPDATE recipes
-					SET updated_at = :updatedAt
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					updatedAt: this.#updatedAt.getTime(),
-					recipeId: this.recipeId,
-				});
-		}
+	get tags() {
+		return this._tags;
+	}
 
-		static async create(
-			title: string,
-			author: InstanceType<User>,
-			image: Buffer | undefined,
-			tags: readonly string[],
-			sections: readonly string[],
-		) {
-			const createdAt = new Date();
+	get sections() {
+		return this._sections;
+	}
 
-			const sectionsParsed = sections.map(
-				source =>
-					({
-						source,
-						parsed: parseSection(source),
-					}) satisfies RecipeSection,
-			);
+	/** @internal */
+	_triggerUpdated() {
+		this._updatedAt = new Date();
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET updated_at = :updatedAt
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				updatedAt: this._updatedAt.getTime(),
+				recipeId: this.recipeId,
+			});
+	}
 
-			const {recipe_id: recipeId} = database
-				.prepare(
-					`INSERT INTO recipes
-					(title, author, created_at, updated_at, sections, image)
-					VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath)
-					RETURNING recipe_id`,
-				)
-				.get({
-					title,
-					author: author.userId,
-					createdAt: createdAt.getTime(),
-					sections: JSON.stringify(sectionsParsed),
-					imagePath: null,
-				}) as {recipe_id: number};
+	static async create(
+		title: string,
+		author: User,
+		image: Buffer | undefined,
+		tags: readonly string[],
+		sections: readonly string[],
+	) {
+		const createdAt = new Date();
 
-			const recipe = new Recipe(
-				recipeId,
+		const sectionsParsed = sections.map(
+			source =>
+				({
+					source,
+					parsed: parseSection(source),
+				}) satisfies RecipeSection,
+		);
+
+		const {recipe_id: recipeId} = this.database
+			.prepare(
+				`INSERT INTO recipes
+				(title, author, created_at, updated_at, sections, image)
+				VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath)
+				RETURNING recipe_id`,
+			)
+			.get({
 				title,
-				author,
-				createdAt,
-				createdAt,
-				undefined,
-				[],
-				sectionsParsed,
-				privateConstructorKey,
-			);
+				author: author.userId,
+				createdAt: createdAt.getTime(),
+				sections: JSON.stringify(sectionsParsed),
+				imagePath: null,
+			}) as {recipe_id: number};
 
-			// This requires some logic to deduplicate tags
-			// It is easier and guarantees correctness
-			// to use this method instead
-			// Downside is a seperate SQL query for each tag
-			for (const tag of tags) {
-				recipe.addTag(tag);
-			}
+		const recipe = new this.Recipe(
+			recipeId,
+			title,
+			author,
+			createdAt,
+			createdAt,
+			undefined,
+			[],
+			sectionsParsed,
+			privateConstructorKey,
+		);
 
-			await recipe.updateImage(image);
-
-			return recipe;
+		// This requires some logic to deduplicate tags
+		// It is easier and guarantees correctness
+		// to use this method instead
+		// Downside is a seperate SQL query for each tag
+		for (const tag of tags) {
+			recipe.addTag(tag);
 		}
 
-		// UserId is internal use only
-		// Avoid duplication in User#listRecipes
-		static all(_userId?: number): ReadonlyArray<Recipe> {
-			const query = [BASE_SQL_RECIPE_SELECT];
-			const parameters: Record<string, number> = {};
+		await recipe.updateImage(image);
 
-			if (_userId !== undefined) {
-				query.push('WHERE author = :userId');
-				parameters['userId'] = _userId;
-			}
+		return recipe;
+	}
 
-			query.push('GROUP BY recipe_id', 'ORDER BY recipe_id ASC');
+	// UserId is internal use only
+	// Avoid duplication in User#listRecipes
+	static all(_userId?: number): ReadonlyArray<Recipe> {
+		const query = [BASE_SQL_RECIPE_SELECT];
+		const parameters: Record<string, number> = {};
 
-			const recipes = database
-				.prepare(query.join(' '))
-				.all(parameters) as ReadonlyArray<SqlRecipeRow>;
-
-			return recipes.map(row => this.#fromRow(row));
+		if (_userId !== undefined) {
+			query.push('WHERE author = :userId');
+			parameters['userId'] = _userId;
 		}
 
-		// Internal parameters `userId` is for use via `User#paginateRecipes`
-		// Adding this optional parameter allows for deduplication instead
-		// of one method here and one there
-		static #count(userId?: number) {
-			let query = `SELECT count(recipe_id) as count
-					FROM recipes`;
+		query.push('GROUP BY recipe_id', 'ORDER BY recipe_id ASC');
 
-			const parameters: Record<string, number> = {};
+		const recipes = this.database
+			.prepare(query.join(' '))
+			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
-			if (userId !== undefined) {
-				query += ' WHERE author = :userId';
-				parameters['userId'] = userId;
-			}
+		return recipes.map(row => this._fromRow(row));
+	}
 
-			const recipeCount = database.prepare(query).get(parameters) as {
-				count: number;
-			};
+	// Internal parameters `userId` is for use via `User#paginateRecipes`
+	// Adding this optional parameter allows for deduplication instead
+	// of one method here and one there
+	/** @internal */
+	static _count(userId?: number) {
+		let query = `SELECT count(recipe_id) as count
+				FROM recipes`;
 
-			return recipeCount.count;
+		const parameters: Record<string, number> = {};
+
+		if (userId !== undefined) {
+			query += ' WHERE author = :userId';
+			parameters['userId'] = userId;
 		}
 
-		static search({
-			limit,
-			page,
-			query,
-		}: {
-			limit: number;
-			page: number;
-			query: string;
-		}): DynamicPaginationResult<Recipe> {
-			let hasSkipped = 0;
-			const shouldSkip = (page - 1) * limit;
+		const recipeCount = this.database.prepare(query).get(parameters) as {
+			count: number;
+		};
 
-			// Short-circuit if it is asking for a page that
-			// certainly cannot exist because there are too few recipes
-			if (shouldSkip >= this.#count()) {
-				return new DynamicPaginationResult({
-					page,
-					items: [],
-					hasNextPage: false,
-				});
-			}
+		return recipeCount.count;
+	}
 
-			const items: Recipe[] = [];
-			const queryFilters = new QueryParser(query).parse();
+	static search({
+		limit,
+		page,
+		query,
+	}: {
+		limit: number;
+		page: number;
+		query: string;
+	}): DynamicPaginationResult<Recipe> {
+		let hasSkipped = 0;
+		const shouldSkip = (page - 1) * limit;
 
-			const statement = database.prepare(
-				`${BASE_SQL_RECIPE_SELECT}
-				GROUP BY recipe_id
-				ORDER BY recipe_id ASC`,
-			);
-			const rowIterator = statement.iterate() as NodeJS.Iterator<SqlRecipeRow>;
-
-			for (const row of rowIterator) {
-				const recipe = this.#fromRow(row);
-				if (recipeMatchesFilter(recipe, queryFilters)) {
-					if (hasSkipped === shouldSkip) {
-						items.push(recipe);
-					} else {
-						++hasSkipped;
-					}
-				}
-
-				if (items.length === limit + 1) {
-					return new DynamicPaginationResult({
-						page,
-						items: items.slice(0, -1),
-						hasNextPage: true,
-					});
-				}
-			}
-
-			if (items.length <= limit && items.length > 0) {
-				return new DynamicPaginationResult({
-					page,
-					items,
-					hasNextPage: false,
-					pageCount: page,
-				});
-			}
-
-			const pageCount = Math.ceil(hasSkipped / limit);
+		// Short-circuit if it is asking for a page that
+		// certainly cannot exist because there are too few recipes
+		if (shouldSkip >= this._count()) {
 			return new DynamicPaginationResult({
 				page,
 				items: [],
 				hasNextPage: false,
-				pageCount,
 			});
 		}
 
-		static paginate({
-			limit,
-			page,
-			_userId: userId,
-		}: {
-			readonly limit: number;
-			readonly page: number;
-			readonly _userId?: number;
-		}): PaginationResult<Recipe> {
-			const recipeCount = this.#count(userId);
+		const items: Recipe[] = [];
+		const queryFilters = new QueryParser(query).parse();
 
-			const pageCount = Math.ceil(recipeCount / limit);
-			const skip = (page - 1) * limit;
+		const statement = this.database.prepare(
+			`${BASE_SQL_RECIPE_SELECT}
+			GROUP BY recipe_id
+			ORDER BY recipe_id ASC`,
+		);
+		const rowIterator = statement.iterate() as NodeJS.Iterator<SqlRecipeRow>;
 
-			if (recipeCount < skip) {
-				return new PaginationResult({pageCount, page, items: []});
+		for (const row of rowIterator) {
+			const recipe = this._fromRow(row);
+			if (recipeMatchesFilter(recipe, queryFilters)) {
+				if (hasSkipped === shouldSkip) {
+					items.push(recipe);
+				} else {
+					++hasSkipped;
+				}
 			}
 
-			const parameters: Record<string, number> = {
-				limit,
-				skip,
-			};
-			const query = [BASE_SQL_RECIPE_SELECT];
-
-			if (userId !== undefined) {
-				parameters['userId'] = userId;
-				query.push('WHERE author = :userId');
+			if (items.length === limit + 1) {
+				return new DynamicPaginationResult({
+					page,
+					items: items.slice(0, -1),
+					hasNextPage: true,
+				});
 			}
+		}
 
-			query.push(
-				'GROUP BY recipe_id',
-				'ORDER BY recipe_id ASC',
-				'LIMIT :limit OFFSET :skip',
-			);
-
-			const recipes = database
-				.prepare(query.join(' '))
-				.all(parameters) as ReadonlyArray<SqlRecipeRow>;
-
-			return new PaginationResult({
-				pageCount,
+		if (items.length <= limit && items.length > 0) {
+			return new DynamicPaginationResult({
 				page,
-				items: recipes.map(row => Recipe.#fromRow(row)),
+				items,
+				hasNextPage: false,
+				pageCount: page,
 			});
 		}
 
-		static #fromRow(row: SqlRecipeRow): Recipe;
-		static #fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
-		static #fromRow(row: SqlRecipeRow | undefined) {
-			if (!row) {
-				return;
-			}
+		const pageCount = Math.ceil(hasSkipped / limit);
+		return new DynamicPaginationResult({
+			page,
+			items: [],
+			hasNextPage: false,
+			pageCount,
+		});
+	}
 
-			const parsedSections = array(
-				object({
-					source: string(),
-					parsed: cooklangSectionSchema,
-				}).readonly(),
+	static paginate({
+		limit,
+		page,
+		_userId: userId,
+	}: {
+		readonly limit: number;
+		readonly page: number;
+		readonly _userId?: number;
+	}): PaginationResult<Recipe> {
+		const recipeCount = this._count(userId);
+
+		const pageCount = Math.ceil(recipeCount / limit);
+		const skip = (page - 1) * limit;
+
+		if (recipeCount < skip) {
+			return new PaginationResult({pageCount, page, items: []});
+		}
+
+		const parameters: Record<string, number> = {
+			limit,
+			skip,
+		};
+		const query = [BASE_SQL_RECIPE_SELECT];
+
+		if (userId !== undefined) {
+			parameters['userId'] = userId;
+			query.push('WHERE author = :userId');
+		}
+
+		query.push(
+			'GROUP BY recipe_id',
+			'ORDER BY recipe_id ASC',
+			'LIMIT :limit OFFSET :skip',
+		);
+
+		const recipes = this.database
+			.prepare(query.join(' '))
+			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
+
+		return new PaginationResult({
+			pageCount,
+			page,
+			items: recipes.map(row => this.Recipe._fromRow(row)),
+		});
+	}
+
+	/** @internal */
+	static _fromRow(row: SqlRecipeRow): Recipe;
+	/** @internal */
+	static _fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
+	static _fromRow(row: SqlRecipeRow | undefined) {
+		if (!row) {
+			return;
+		}
+
+		const parsedSections = array(
+			object({
+				source: string(),
+				parsed: cooklangSectionSchema,
+			}).readonly(),
+		)
+			.readonly()
+			.parse(JSON.parse(row.sections));
+
+		// Left join means right (=recipe_tags) can be null
+		// I.e. if a recipe has no tags it returns [null]
+		const tags = (JSON.parse(row.tags) as Array<string | null>).filter(
+			tag => tag !== null,
+		);
+
+		return new this.Recipe(
+			row.recipe_id,
+			row.title,
+			row.author === -1 ? undefined : this.User.fromUserid(row.author),
+			new Date(row.created_at),
+			new Date(row.updated_at),
+			row.image ?? undefined,
+			tags,
+			parsedSections,
+			privateConstructorKey,
+		);
+	}
+
+	static fromRecipeId(recipeId: number) {
+		const result = this.database
+			.prepare(
+				`${BASE_SQL_RECIPE_SELECT}
+				WHERE recipe_id = :recipeId`,
 			)
-				.readonly()
-				.parse(JSON.parse(row.sections));
+			.get({recipeId}) as SqlRecipeRow | undefined;
 
-			// Left join means right (=recipe_tags) can be null
-			// I.e. if a recipe has no tags it returns [null]
-			const tags = (JSON.parse(row.tags) as Array<string | null>).filter(
-				tag => tag !== null,
-			);
+		return this._fromRow(result);
+	}
 
-			return new Recipe(
-				row.recipe_id,
-				row.title,
-				row.author === -1 ? undefined : options.User.fromUserid(row.author),
-				new Date(row.created_at),
-				new Date(row.updated_at),
-				row.image ?? undefined,
-				tags,
-				parsedSections,
-				privateConstructorKey,
-			);
-		}
-
-		static fromRecipeId(recipeId: number) {
-			const result = database
-				.prepare(
-					`${BASE_SQL_RECIPE_SELECT}
-					WHERE recipe_id = :recipeId`,
-				)
-				.get({recipeId}) as SqlRecipeRow | undefined;
-
-			return this.#fromRow(result);
-		}
-
-		addTag(tag: string) {
-			const result = database
-				.prepare(
-					`INSERT INTO recipe_tags
-					SELECT :recipeId, :tagName
-					WHERE NOT EXISTS (
-						SELECT 1 FROM recipe_tags
-						WHERE recipe_id = :recipeId
-							AND tag_slug = sluggify(:tagName)
-					)`,
-				)
-				.run({
-					recipeId: this.recipeId,
-					tagName: tag,
-				});
-
-			if (result.changes > 0) {
-				this.#triggerUpdated();
-				this.#syncTags();
-			}
-		}
-
-		removeTag(tag: string) {
-			const result = database
-				.prepare(
-					`DELETE FROM recipe_tags
+	addTag(tag: string) {
+		const result = this.database
+			.prepare(
+				`INSERT INTO recipe_tags
+				SELECT :recipeId, :tagName
+				WHERE NOT EXISTS (
+					SELECT 1 FROM recipe_tags
 					WHERE recipe_id = :recipeId
-				  AND tag_slug = sluggify(:tagName)`,
-				)
-				.run({
-					recipeId: this.recipeId,
-					tagName: tag,
-				});
+						AND tag_slug = sluggify(:tagName)
+				)`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				tagName: tag,
+			});
 
-			if (result.changes > 0) {
-				this.#triggerUpdated();
-				this.#syncTags();
-			}
+		if (result.changes > 0) {
+			this._triggerUpdated();
+			this._syncTags();
+		}
+	}
+
+	removeTag(tag: string) {
+		const result = this.database
+			.prepare(
+				`DELETE FROM recipe_tags
+				WHERE recipe_id = :recipeId
+				AND tag_slug = sluggify(:tagName)`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				tagName: tag,
+			});
+
+		if (result.changes > 0) {
+			this._triggerUpdated();
+			this._syncTags();
+		}
+	}
+
+	clearTags() {
+		const result = this.database
+			.prepare(
+				`DELETE FROM recipe_tags
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({recipeId: this.recipeId});
+
+		if (result.changes > 0) {
+			this._triggerUpdated();
 		}
 
-		clearTags() {
-			const result = database
-				.prepare(
-					`DELETE FROM recipe_tags
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({recipeId: this.recipeId});
+		this._tags = [];
+	}
 
-			if (result.changes > 0) {
-				this.#triggerUpdated();
-			}
+	// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
+	// that means it is possible `a !== b`
+	// For simplicity just requery the tags
+	/** @internal */
+	_syncTags() {
+		const tags = this.database
+			.prepare(
+				`SELECT tag_name FROM recipe_tags
+				WHERE recipe_id = :recipeId
+				ORDER BY tag_slug ASC`,
+			)
+			.all({recipeId: this.recipeId}) as ReadonlyArray<{
+			tag_name: string;
+		}>;
 
-			this.#tags = [];
+		this._tags = tags.map(({tag_name: tagName}) => tagName);
+	}
+
+	async updateImage(image: Buffer | undefined) {
+		let imagePath: string | undefined;
+
+		if (image) {
+			const imageExtension = await validateImageType(image);
+			imagePath = randomImageName(imageExtension);
+			// eslint-disable-next-line security/detect-non-literal-fs-filename
+			await writeFile(new URL(imagePath, this.imageDirectory), image);
 		}
 
-		// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
-		// that means it is possible `a !== b`
-		// For simplicity just requery the tags
-		#syncTags() {
-			const tags = database
-				.prepare(
-					`SELECT tag_name FROM recipe_tags
-					WHERE recipe_id = :recipeId
-					ORDER BY tag_slug ASC`,
-				)
-				.all({recipeId: this.recipeId}) as ReadonlyArray<{
-				tag_name: string;
-			}>;
+		// Update database first to prevent
+		// race condition where image doesn't exist anymore
+		// but database points to it still
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET image = :image
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				image: imagePath ?? null,
+			});
 
-			this.#tags = tags.map(({tag_name: tagName}) => tagName);
+		if (this._image) {
+			// eslint-disable-next-line security/detect-non-literal-fs-filename
+			await unlink(new URL(this._image, this.imageDirectory));
 		}
 
-		async updateImage(image: Buffer | undefined) {
-			let imagePath: string | undefined;
+		this._image = imagePath;
 
-			if (image) {
-				const imageExtension = await validateImageType(image);
-				imagePath = randomImageName(imageExtension);
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				await writeFile(new URL(imagePath, options.imageDirectory), image);
-			}
+		this._triggerUpdated();
+	}
 
-			// Update database first to prevent
-			// race condition where image doesn't exist anymore
-			// but database points to it still
-			database
-				.prepare(
-					`UPDATE recipes
-					SET image = :image
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					recipeId: this.recipeId,
-					image: imagePath ?? null,
-				});
+	updateSections(sections: readonly string[]) {
+		const sectionsParsed = sections.map(
+			source =>
+				({
+					source,
+					parsed: parseSection(source),
+				}) satisfies RecipeSection,
+		);
 
-			if (this.#image) {
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				await unlink(new URL(this.#image, options.imageDirectory));
-			}
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET sections = :sections
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				sections: JSON.stringify(sectionsParsed),
+			});
 
-			this.#image = imagePath;
+		this._sections = sectionsParsed;
 
-			this.#triggerUpdated();
+		this._triggerUpdated();
+	}
+
+	updateTitle(newTitle: string) {
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET title = :title
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				title: newTitle,
+			});
+
+		this._title = newTitle;
+
+		this._triggerUpdated();
+	}
+
+	async delete() {
+		if (this._image) {
+			// eslint-disable-next-line security/detect-non-literal-fs-filename
+			await unlink(new URL(this._image, this.imageDirectory));
+			// If `.delete` is called twice
+			this._image = undefined;
 		}
 
-		updateSections(sections: readonly string[]) {
-			const sectionsParsed = sections.map(
-				source =>
-					({
-						source,
-						parsed: parseSection(source),
-					}) satisfies RecipeSection,
-			);
+		this.database
+			.prepare(
+				`DELETE FROM recipes
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+			});
+	}
 
-			database
-				.prepare(
-					`UPDATE recipes
-					SET sections = :sections
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					recipeId: this.recipeId,
-					sections: JSON.stringify(sectionsParsed),
-				});
+	dissociateOwner() {
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET author = -1
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+			});
 
-			this.#sections = sectionsParsed;
+		this._author = undefined;
+		this._triggerUpdated();
+	}
 
-			this.#triggerUpdated();
+	static permissionToCreateRecipe(other: User) {
+		return other.role >= UserRoles.User;
+	}
+
+	permissionToModifyRecipe(other: User) {
+		if (other.userId === this.author?.userId) {
+			return true;
 		}
 
-		updateTitle(newTitle: string) {
-			database
-				.prepare(
-					`UPDATE recipes
-					SET title = :title
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					recipeId: this.recipeId,
-					title: newTitle,
-				});
-
-			this.#title = newTitle;
-
-			this.#triggerUpdated();
-		}
-
-		async delete() {
-			if (this.#image) {
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				await unlink(new URL(this.#image, options.imageDirectory));
-				// If `.delete` is called twice
-				this.#image = undefined;
-			}
-
-			database
-				.prepare(
-					`DELETE FROM recipes
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					recipeId: this.recipeId,
-				});
-		}
-
-		dissociateOwner() {
-			database
-				.prepare(
-					`UPDATE recipes
-					SET author = -1
-					WHERE recipe_id = :recipeId`,
-				)
-				.run({
-					recipeId: this.recipeId,
-				});
-
-			this.#author = undefined;
-			this.#triggerUpdated();
-		}
-
-		static permissionToCreateRecipe(other: InstanceType<User>) {
-			return other.role >= UserRoles.User;
-		}
-
-		permissionToModifyRecipe(other: InstanceType<User>) {
-			if (other.userId === this.author?.userId) {
-				return true;
-			}
-
-			return other.role >= UserRoles.Admin;
-		}
-	};
+		return other.role >= UserRoles.Admin;
+	}
 }

@@ -18,8 +18,8 @@ import {DatabaseSync, type SupportedValueType} from 'node:sqlite';
 
 import {makeSlug} from '@lusc/util/slug';
 
-import {createRecipeClass, type Recipe} from './recipe.js';
-import {createUserClass, type User} from './user.js';
+import {Recipe} from './recipe.js';
+import {User} from './user.js';
 
 export {ApiError} from './error.js';
 export {type User, UserRoles} from './user.js';
@@ -31,13 +31,13 @@ export type ApiOptions = {
 };
 
 export type InternalApiOptions = {
-	readonly Recipe: Recipe;
-	readonly User: User;
+	readonly Recipe: typeof Recipe;
+	readonly User: typeof User;
 } & ApiOptions;
 
 export type Api = {
-	readonly Recipe: Recipe;
-	readonly User: User;
+	readonly Recipe: typeof Recipe;
+	readonly User: typeof User;
 };
 
 function initDatabase(database: DatabaseSync) {
@@ -105,21 +105,38 @@ export function createApi(options: ApiOptions): Api {
 		database,
 		imageDirectory,
 		// Cyclical dependency
-		// passing object by reference so it will be fine :)
+		// passing object by reference so it will be fine 🙃
 		Recipe: undefined!,
 		User: undefined!,
 	};
 
-	const Recipe = createRecipeClass(internalApiOptions);
-	const User = createUserClass(internalApiOptions);
+	class RecipeInjected extends Recipe {
+		override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+
+		static override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+	}
+
+	class UserInjected extends User {
+		override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+
+		static override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+	}
 
 	// @ts-expect-error They depend on each other cyclically
-	internalApiOptions.Recipe = Recipe;
+	internalApiOptions.Recipe = RecipeInjected;
 	// @ts-expect-error I'd still like them readonly though
-	internalApiOptions.User = User;
+	internalApiOptions.User = UserInjected;
 
 	return {
-		Recipe,
-		User,
+		Recipe: RecipeInjected,
+		User: UserInjected,
 	} as const;
 }

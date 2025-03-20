@@ -15,11 +15,11 @@
 */
 import {$} from '../$.js';
 
-import {createRoute, type Route} from './_utilities.js';
+import {createRoute} from './_utilities.js';
 
-export const renderLogin: Route<[error?: string]> = createRoute(
+export const renderLogin = createRoute(
 	'Login',
-	error => $`
+	(error: string | undefined) => $`
 		<div class="row mt-5 justify-content-center">
 			<div class="col-4">
 				<h2>Login</h2>

@@ -21,7 +21,7 @@ import {$} from '../$.js';
 import {smallAuthor} from './author.js';
 import {recipeTagList} from './recipe-tag.js';
 
-export function recipeCard(recipe: InstanceType<Recipe>) {
+export function recipeCard(recipe: Recipe) {
 	const imageUrl =
 		(recipe.image && `/api/user-content/images/${recipe.image}`) ||
 		`https://picsum.photos/${String(Math.floor(Math.random() * 200 + 400))}/${String(Math.floor(Math.random() * 200 + 400))}`;

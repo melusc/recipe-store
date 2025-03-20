@@ -18,7 +18,7 @@ import type {User} from 'api';
 
 import {$} from '../$.js';
 
-export function smallAuthor(author: InstanceType<User> | undefined) {
+export function smallAuthor(author: User | undefined) {
 	return $`
 		<span class="author-small">
 			${

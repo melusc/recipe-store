@@ -19,12 +19,11 @@ import type {Recipe} from 'api';
 import {$} from '../$.js';
 import {recipeCard} from '../components/index.js';
 
-import {createRoute, type Route} from './_utilities.js';
+import {createRoute} from './_utilities.js';
 
-export const renderIndex: Route<[readonly InstanceType<Recipe>[]]> =
-	createRoute(
-		'Recipes',
-		recipes => $`
+export const renderIndex = createRoute(
+	'Recipes',
+	(recipes: readonly Recipe[]) => $`
 		<div class="row g-3">
 			${recipes.map(
 				recipe => $`
@@ -35,4 +34,4 @@ export const renderIndex: Route<[readonly InstanceType<Recipe>[]]> =
 			)}
 		</div>
 	`,
-	);
+);

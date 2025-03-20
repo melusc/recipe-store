@@ -27,17 +27,15 @@ const baseHtml = await readFile(
 	'utf8',
 );
 
-export type Route<Parameters extends readonly unknown[]> = (
-	user: User | undefined,
-	path: string,
-	...templateParameters: Parameters
-) => string;
-
 export function createRoute<Parameters extends readonly unknown[]>(
 	title: string,
 	template: (...parameters: Parameters) => SafeString,
-): Route<Parameters> {
-	return (user, path, ...templateParameters: Parameters) =>
+) {
+	return (
+		user: User | undefined,
+		path: string,
+		...templateParameters: Parameters
+	) =>
 		$`
 		${$.trusted(baseHtml)}
 
