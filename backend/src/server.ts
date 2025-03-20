@@ -23,10 +23,10 @@ import {renderIndex, render404, renderLogin} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
 import {staticRouter} from './routes/static.ts';
 import {formdataMiddleware} from './upload.ts';
-import { setHeaders } from './middleware/set-headers.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
