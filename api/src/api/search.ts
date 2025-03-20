@@ -177,7 +177,7 @@ function searchContains(needle: string, haystack: string) {
 }
 
 const filterMatchers = {
-	any(this, filterValue: string, recipe: InstanceType<Recipe>) {
+	any(this, filterValue: string, recipe: Recipe) {
 		// `contains:` last because it is probably the slowest, because it has to stringify the sections
 		return (
 			this.title(filterValue, recipe) ||
@@ -186,13 +186,13 @@ const filterMatchers = {
 			this.contains(filterValue, recipe)
 		);
 	},
-	title(filterValue: string, recipe: InstanceType<Recipe>) {
+	title(filterValue: string, recipe: Recipe) {
 		return searchContains(filterValue, recipe.title);
 	},
-	tagged(filterValue: string, recipe: InstanceType<Recipe>) {
+	tagged(filterValue: string, recipe: Recipe) {
 		return recipe.tags.some(tag => searchContains(filterValue, tag));
 	},
-	author(filterValue: string, recipe: InstanceType<Recipe>) {
+	author(filterValue: string, recipe: Recipe) {
 		if (!recipe.author) {
 			return false;
 		}
@@ -210,7 +210,7 @@ const filterMatchers = {
 			searchContains(filterValue, recipe.author.username)
 		);
 	},
-	contains(filterValue: string, recipe: InstanceType<Recipe>) {
+	contains(filterValue: string, recipe: Recipe) {
 		// contains:"add to bowl"
 		for (const section of recipe.sections) {
 			const stringified = sectionToText(section.parsed);
@@ -224,7 +224,7 @@ const filterMatchers = {
 } as const;
 
 export function recipeMatchesFilter(
-	recipe: InstanceType<Recipe>,
+	recipe: Recipe,
 	filters: readonly QueryFilter[],
 ) {
 	return filters.every(filter =>
