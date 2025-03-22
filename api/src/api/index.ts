@@ -105,7 +105,7 @@ export function createApi(options: ApiOptions): Api {
 		database,
 		imageDirectory,
 		// Cyclical dependency
-		// passing object by reference so it will be fine 🙃
+		// They don't need to access each other during creation
 		Recipe: undefined!,
 		User: undefined!,
 	};
@@ -132,7 +132,7 @@ export function createApi(options: ApiOptions): Api {
 
 	// @ts-expect-error They depend on each other cyclically
 	internalApiOptions.Recipe = RecipeInjected;
-	// @ts-expect-error I'd still like them readonly though
+	// @ts-expect-error They are readonly, but that is only important afterwards
 	internalApiOptions.User = UserInjected;
 
 	return {
