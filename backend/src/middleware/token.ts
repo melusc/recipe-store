@@ -128,6 +128,13 @@ class Session extends Token<{user: number}> {
 			expires,
 		});
 	}
+
+	clearCookie(response: Response) {
+		response.clearCookie('session', {
+			httpOnly: true,
+			secure: true,
+		});
+	}
 }
 
 export const session = new Session();

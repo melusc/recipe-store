@@ -84,7 +84,7 @@ export function setupServer(api: Api) {
 
 	app.use('/static', staticRouter);
 
-	app.use('/login', loginRouter);
+	app.use('/', loginRouter);
 
 	app.get('/', (_request, response) => {
 		response

@@ -24,7 +24,7 @@ import {formdataMiddleware} from '../upload.ts';
 
 export const loginRouter = Router();
 
-loginRouter.get('/', (request, response) => {
+loginRouter.get('/login', (request, response) => {
 	if (response.locals.user) {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(302, redirect.href);
@@ -33,7 +33,12 @@ loginRouter.get('/', (request, response) => {
 	}
 });
 
-loginRouter.post('/', formdataMiddleware.none(), (request, response) => {
+loginRouter.get('/logout', (_request, response) => {
+	session.clearCookie(response);
+	response.redirect(302, '/');
+});
+
+loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	if (typeof request.body !== 'object' || request.body === null) {
 		response
 			.status(400)
