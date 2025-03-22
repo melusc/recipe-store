@@ -83,6 +83,7 @@ class Session extends Token<{user: number}> {
 
 			Object.defineProperty(response.locals, 'user', {
 				value: api.User.fromUserid(jwtPayload.user),
+				enumerable: true,
 			});
 
 			console.log(response.locals);

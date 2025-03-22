@@ -65,9 +65,11 @@ export function setupServer(api: Api) {
 	app.use((request, response, next) => {
 		Object.defineProperty(request, 'search', {
 			value: new RelativeUrl(request.url).searchParams,
+			enumerable: true,
 		});
 		Object.defineProperty(response.locals, 'api', {
 			value: api,
+			enumerable: true,
 		});
 
 		next();
