@@ -86,8 +86,6 @@ class Session extends Token<{user: number}> {
 				enumerable: true,
 			});
 
-			console.log(response.locals);
-
 			const {exp} = jwtPayload;
 			const now = Math.floor(Date.now() / 1000);
 
