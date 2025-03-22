@@ -25,6 +25,7 @@ import morgan from 'morgan';
 
 import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
+import {loginRouter} from './routes/login.ts';
 import {staticRouter} from './routes/static.ts';
 
 export function setupServer(api: Api) {
@@ -80,6 +81,8 @@ export function setupServer(api: Api) {
 	app.use(session.middleware(api));
 
 	app.use('/static', staticRouter);
+
+	app.use('/login', loginRouter);
 
 	app.get('/', (_request, response) => {
 		response

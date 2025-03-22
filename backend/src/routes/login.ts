@@ -22,9 +22,9 @@ import {render} from 'frontend';
 import {session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
-const loginRouter = Router();
+export const loginRouter = Router();
 
-loginRouter.get('/login', (request, response) => {
+loginRouter.get('/', (request, response) => {
 	if (response.locals.user) {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(302, redirect.href);
@@ -33,7 +33,7 @@ loginRouter.get('/login', (request, response) => {
 	}
 });
 
-loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
+loginRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	if (typeof request.body !== 'object' || request.body === null) {
 		response
 			.status(400)
