@@ -14,7 +14,31 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export * from './author.js';
-export * from './header.js';
-export * from './recipe-table.js';
-export * from './recipe-card.js';
+import type {Request} from 'express';
+
+const LIMIT_DEFAULT = 20;
+const LIMIT_MIN = 10;
+const LIMIT_MAX = 50;
+
+export function resolvePaginationParameters(request: Request) {
+	let page = Number.parseInt(request.search.get('page') ?? '1', 10);
+	let limit = Number.parseInt(
+		request.search.get('limit') ?? String(LIMIT_DEFAULT),
+		10,
+	);
+
+	if (!Number.isSafeInteger(page)) {
+		page = 1;
+	}
+
+	if (!Number.isSafeInteger(limit)) {
+		limit = LIMIT_DEFAULT;
+	}
+
+	limit = Math.min(limit, LIMIT_MAX);
+	limit = Math.max(limit, LIMIT_MIN);
+
+	page = Math.max(page, 1);
+
+	return {limit, page} as const;
+}

@@ -14,24 +14,37 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {Recipe} from 'api';
+import {type PaginationResult, type Recipe} from 'api';
 
 import {$} from '../$.js';
-import {recipeCard} from '../components/index.js';
+import {pagination} from '../components/pagination.js';
+import {recipeCard} from '../components/recipe-card.js';
 
 import {createRoute} from './_utilities.js';
 
 export const renderIndex = createRoute(
 	'Recipes',
-	(recipes: readonly Recipe[]) => $`
-		<div class="row g-3">
-			${recipes.map(
-				recipe => $`
-				<div class="col-sm-3">
-					${recipeCard(recipe)}
-				</div>
-			`,
-			)}
-		</div>
-	`,
+	(recipes: PaginationResult<Recipe>) => {
+		const paginationButtons = pagination('/', recipes);
+
+		if (recipes.items.length === 0) {
+			return paginationButtons;
+		}
+
+		return $`
+			${paginationButtons}
+
+			<div class="row g-3">
+				${recipes.items.map(
+					recipe => $`
+					<div class="col-sm-3">
+						${recipeCard(recipe)}
+					</div>
+				`,
+				)}
+			</div>
+
+			${paginationButtons}
+		`;
+	},
 );

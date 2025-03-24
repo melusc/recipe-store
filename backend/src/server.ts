@@ -25,6 +25,7 @@ import morgan from 'morgan';
 
 import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
+import {resolvePaginationParameters} from './pagination.ts';
 import {loginRouter} from './routes/login.ts';
 import {staticRouter} from './routes/static.ts';
 
@@ -86,10 +87,18 @@ export function setupServer(api: Api) {
 
 	app.use('/', loginRouter);
 
-	app.get('/', (_request, response) => {
+	app.get('/', (request, response) => {
+		const {page, limit} = resolvePaginationParameters(request);
+
 		response
 			.status(200)
-			.send(render.index(response.locals.user, '/', api.Recipe.all()));
+			.send(
+				render.index(
+					response.locals.user,
+					'/',
+					api.Recipe.paginate({limit, page}),
+				),
+			);
 	});
 
 	app.use((_request, response) => {

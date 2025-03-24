@@ -87,6 +87,18 @@ await api.Recipe.create(
 	['Add @pineapple'],
 );
 
+await Promise.all(
+	Array.from({length: 200}, (_v, index) =>
+		api.Recipe.create(
+			`recipe ${index + 3}`,
+			user,
+			undefined,
+			['pineapple', 'example'],
+			[`Add @pineapple${index + 3}`],
+		),
+	),
+);
+
 const app = setupServer(api);
 const port = 3108;
 
