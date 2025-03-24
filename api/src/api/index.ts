@@ -21,10 +21,6 @@ import {makeSlug} from '@lusc/util/slug';
 import {Recipe} from './recipe.js';
 import {User} from './user.js';
 
-export {ApiError} from './error.js';
-export {type User, UserRoles} from './user.js';
-export type {Recipe, RecipeSection} from './recipe.js';
-
 export type ApiOptions = {
 	readonly database: DatabaseSync;
 	readonly imageDirectory: URL;

@@ -14,11 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {
-	type Recipe,
-	type User,
-	type Api,
-	UserRoles,
-	createApi,
-	ApiError,
-} from './api/index.js';
+export {ApiError} from './api/error.js';
+export {createApi, type Api} from './api/index.js';
+export type {Recipe} from './api/recipe.js';
+export {UserRoles, type User} from './api/user.js';

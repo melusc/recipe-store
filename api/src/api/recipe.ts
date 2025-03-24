@@ -26,15 +26,15 @@ import {
 import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
+import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
 import {QueryParser, recipeMatchesFilter} from './search.js';
+import {UserRoles, type User} from './user.js';
 import {
 	DynamicPaginationResult,
 	PaginationResult,
 	type ReadonlyDate,
 } from './utilities.js';
-
-import {ApiError, UserRoles, type User} from './index.js';
 
 export type RecipeSection = {
 	source: string;
