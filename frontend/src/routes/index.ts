@@ -32,8 +32,6 @@ export const renderIndex = createRoute(
 		}
 
 		return $`
-			${paginationButtons}
-
 			<div class="row g-3">
 				${recipes.items.map(
 					recipe => $`
