@@ -32,7 +32,7 @@ export const renderIndex = createRoute(
 		}
 
 		return $`
-			<div class="row g-3">
+			<main class="row g-3">
 				${recipes.items.map(
 					recipe => $`
 					<div class="col-sm-3">
@@ -40,7 +40,7 @@ export const renderIndex = createRoute(
 					</div>
 				`,
 				)}
-			</div>
+			</main>
 
 			${paginationButtons}
 		`;
