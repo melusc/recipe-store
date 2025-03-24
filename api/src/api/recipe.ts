@@ -298,6 +298,7 @@ export class Recipe extends InjectableApi {
 				page,
 				items: [],
 				hasNextPage: false,
+				perPageLimit: limit,
 			});
 		}
 
@@ -326,6 +327,7 @@ export class Recipe extends InjectableApi {
 					page,
 					items: items.slice(0, -1),
 					hasNextPage: true,
+					perPageLimit: limit,
 				});
 			}
 		}
@@ -335,16 +337,18 @@ export class Recipe extends InjectableApi {
 				page,
 				items,
 				hasNextPage: false,
-				pageCount: page,
+				lastPage: page,
+				perPageLimit: limit,
 			});
 		}
 
-		const pageCount = Math.ceil(hasSkipped / limit);
+		const lastPage = Math.ceil(hasSkipped / limit);
 		return new DynamicPaginationResult({
 			page,
 			items: [],
 			hasNextPage: false,
-			pageCount,
+			lastPage,
+			perPageLimit: limit,
 		});
 	}
 
@@ -359,11 +363,16 @@ export class Recipe extends InjectableApi {
 	}): PaginationResult<Recipe> {
 		const recipeCount = this._count(userId);
 
-		const pageCount = Math.ceil(recipeCount / limit);
+		const lastPage = Math.ceil(recipeCount / limit);
 		const skip = (page - 1) * limit;
 
 		if (recipeCount < skip) {
-			return new PaginationResult({pageCount, page, items: []});
+			return new PaginationResult({
+				lastPage,
+				perPageLimit: limit,
+				page,
+				items: [],
+			});
 		}
 
 		const parameters: Record<string, number> = {
@@ -388,7 +397,8 @@ export class Recipe extends InjectableApi {
 			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
 		return new PaginationResult({
-			pageCount,
+			lastPage,
+			perPageLimit: limit,
 			page,
 			items: recipes.map(row => this.Recipe._fromRow(row)),
 		});

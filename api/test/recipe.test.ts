@@ -311,21 +311,24 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	const firstTen = Recipe.paginate({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);
 	expect(firstTen.page).toStrictEqual(1);
-	expect(firstTen.pageCount).toStrictEqual(3);
+	expect(firstTen.lastPage).toStrictEqual(3);
+	expect(firstTen.perPageLimit).toStrictEqual(10);
 	expect(firstTen.getPreviousPage()).toStrictEqual(false);
 	expect(firstTen.getNextPage()).toStrictEqual(2);
 
 	const nextTen = Recipe.paginate({page: 2, limit: 10});
 	expect(nextTen.items).toHaveLength(10);
 	expect(nextTen.page).toStrictEqual(2);
-	expect(nextTen.pageCount).toStrictEqual(3);
+	expect(nextTen.lastPage).toStrictEqual(3);
+	expect(nextTen.perPageLimit).toStrictEqual(10);
 	expect(nextTen.getPreviousPage()).toStrictEqual(1);
 	expect(nextTen.getNextPage()).toStrictEqual(3);
 
 	const lastFive = Recipe.paginate({page: 3, limit: 10});
 	expect(lastFive.items).toHaveLength(5);
 	expect(lastFive.page).toStrictEqual(3);
-	expect(lastFive.pageCount).toStrictEqual(3);
+	expect(lastFive.lastPage).toStrictEqual(3);
+	expect(lastFive.perPageLimit).toStrictEqual(10);
 	expect(lastFive.getPreviousPage()).toStrictEqual(2);
 	expect(lastFive.getNextPage()).toStrictEqual(false);
 
@@ -446,7 +449,8 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page1_5per.items).toHaveLength(5);
 	expect(page1_5per.getPreviousPage()).toStrictEqual(false);
 	expect(page1_5per.getNextPage()).toStrictEqual(2);
-	expect(page1_5per.pageCount).toBeUndefined();
+	expect(page1_5per.lastPage).toBeUndefined();
+	expect(page1_5per.perPageLimit).toStrictEqual(5);
 
 	// Last page, page can be filled with limit
 	const page10_5per = Recipe.search({
@@ -458,7 +462,8 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page10_5per.items).toHaveLength(5);
 	expect(page10_5per.getPreviousPage()).toStrictEqual(9);
 	expect(page10_5per.getNextPage()).toStrictEqual(false);
-	expect(page10_5per.pageCount).toStrictEqual(10);
+	expect(page10_5per.lastPage).toStrictEqual(10);
+	expect(page10_5per.perPageLimit).toStrictEqual(5);
 
 	// Recipes running on next page means it won't know how many pages
 	// 43..=49 means next page will have 1
@@ -470,7 +475,8 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page7_7per.items).toHaveLength(7);
 	expect(page7_7per.getPreviousPage()).toStrictEqual(6);
 	expect(page7_7per.getNextPage()).toStrictEqual(8);
-	expect(page7_7per.pageCount).toBeUndefined();
+	expect(page7_7per.lastPage).toBeUndefined();
+	expect(page7_7per.perPageLimit).toStrictEqual(7);
 
 	// Recipes run out before limit is reached
 	const page8_7per = Recipe.search({
@@ -481,7 +487,8 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page8_7per.items).toHaveLength(1);
 	expect(page8_7per.getPreviousPage()).toStrictEqual(7);
 	expect(page8_7per.getNextPage()).toStrictEqual(false);
-	expect(page8_7per.pageCount).toStrictEqual(8);
+	expect(page8_7per.lastPage).toStrictEqual(8);
+	expect(page8_7per.perPageLimit).toStrictEqual(7);
 
 	// Short-circuit. Even though query matches all recipes
 	// there aren't enough recipes for there to be a page 20
@@ -495,5 +502,6 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	// what the max page count is
 	expect(page20_5per.getPreviousPage()).toStrictEqual(19);
 	expect(page20_5per.getNextPage()).toStrictEqual(false);
-	expect(page20_5per.pageCount).toBeUndefined();
+	expect(page20_5per.lastPage).toBeUndefined();
+	expect(page20_5per.perPageLimit).toStrictEqual(5);
 });

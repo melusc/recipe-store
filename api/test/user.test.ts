@@ -238,21 +238,24 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 	const firstTen = user1.paginateRecipes({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);
 	expect(firstTen.page).toStrictEqual(1);
-	expect(firstTen.pageCount).toStrictEqual(3);
+	expect(firstTen.lastPage).toStrictEqual(3);
+	expect(firstTen.perPageLimit).toStrictEqual(10);
 	expect(firstTen.getPreviousPage()).toStrictEqual(false);
 	expect(firstTen.getNextPage()).toStrictEqual(2);
 
 	const nextTen = user1.paginateRecipes({page: 2, limit: 10});
 	expect(nextTen.items).toHaveLength(10);
 	expect(nextTen.page).toStrictEqual(2);
-	expect(nextTen.pageCount).toStrictEqual(3);
+	expect(nextTen.lastPage).toStrictEqual(3);
+	expect(nextTen.perPageLimit).toStrictEqual(10);
 	expect(nextTen.getPreviousPage()).toStrictEqual(1);
 	expect(nextTen.getNextPage()).toStrictEqual(3);
 
 	const finalFive = user1.paginateRecipes({page: 3, limit: 10});
 	expect(finalFive.items).toHaveLength(5);
 	expect(finalFive.page).toStrictEqual(3);
-	expect(finalFive.pageCount).toStrictEqual(3);
+	expect(finalFive.lastPage).toStrictEqual(3);
+	expect(finalFive.perPageLimit).toStrictEqual(10);
 	expect(finalFive.getPreviousPage()).toStrictEqual(2);
 	expect(finalFive.getNextPage()).toStrictEqual(false);
 

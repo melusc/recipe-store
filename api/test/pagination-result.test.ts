@@ -25,12 +25,14 @@ describe('PaginationResult', () => {
 	test('normal usage', () => {
 		const paginationResult = new PaginationResult({
 			page: 30,
-			pageCount: 50,
+			lastPage: 50,
+			perPageLimit: 20,
 			items: ['abc', 'def'],
 		});
 
 		expect(paginationResult.page).toStrictEqual(30);
-		expect(paginationResult.pageCount).toStrictEqual(50);
+		expect(paginationResult.lastPage).toStrictEqual(50);
+		expect(paginationResult.perPageLimit).toStrictEqual(20);
 		expect(paginationResult.items).toStrictEqual(['abc', 'def']);
 
 		expect(paginationResult.getPreviousPage()).toStrictEqual(29);
@@ -40,11 +42,13 @@ describe('PaginationResult', () => {
 	test('first page', () => {
 		const paginationResult = new PaginationResult({
 			page: 1,
-			pageCount: 20,
+			lastPage: 20,
+			perPageLimit: 4,
 			items: ['you', 'lost', 'the', 'game'],
 		});
 
 		expect(paginationResult.page).toStrictEqual(1);
+		expect(paginationResult.perPageLimit).toStrictEqual(4);
 		expect(paginationResult.getPreviousPage()).toStrictEqual(false);
 		expect(paginationResult.getNextPage()).toStrictEqual(2);
 	});
@@ -52,7 +56,8 @@ describe('PaginationResult', () => {
 	test('last page', () => {
 		const paginationResult = new PaginationResult({
 			page: 15,
-			pageCount: 15,
+			lastPage: 15,
+			perPageLimit: 20,
 			items: ['alpha', 'beta'],
 		});
 
@@ -65,7 +70,8 @@ describe('PaginationResult', () => {
 	test('only page', () => {
 		const paginationResult = new PaginationResult({
 			page: 1,
-			pageCount: 1,
+			lastPage: 1,
+			perPageLimit: 20,
 			items: ['banana', 'bread'],
 		});
 
@@ -77,7 +83,8 @@ describe('PaginationResult', () => {
 	test('out of bounds lower', () => {
 		const paginationResult = new PaginationResult({
 			page: -3,
-			pageCount: 3,
+			lastPage: 3,
+			perPageLimit: 20,
 			items: [],
 		});
 
@@ -89,7 +96,8 @@ describe('PaginationResult', () => {
 	test('out of bounds upper', () => {
 		const paginationResult = new PaginationResult({
 			page: 25,
-			pageCount: 20,
+			lastPage: 20,
+			perPageLimit: 20,
 			items: [],
 		});
 
@@ -104,6 +112,7 @@ describe('DynamicPaginationResult', () => {
 		const paginationResult = new DynamicPaginationResult({
 			page: 30,
 			items: ['abc', 'def'],
+			perPageLimit: 20,
 			hasNextPage: true,
 		});
 
@@ -118,6 +127,7 @@ describe('DynamicPaginationResult', () => {
 		const paginationResult = new DynamicPaginationResult({
 			page: 1,
 			items: ['you', 'lost', 'the', 'game'],
+			perPageLimit: 20,
 			hasNextPage: true,
 		});
 
@@ -130,6 +140,7 @@ describe('DynamicPaginationResult', () => {
 		const paginationResult = new DynamicPaginationResult({
 			page: 15,
 			items: ['alpha', 'beta'],
+			perPageLimit: 20,
 			hasNextPage: false,
 		});
 
@@ -143,6 +154,7 @@ describe('DynamicPaginationResult', () => {
 		const paginationResult = new DynamicPaginationResult({
 			page: 1,
 			items: ['banana', 'bread'],
+			perPageLimit: 20,
 			hasNextPage: false,
 		});
 
@@ -156,6 +168,7 @@ describe('DynamicPaginationResult', () => {
 			page: -3,
 			items: [],
 			hasNextPage: true,
+			perPageLimit: 20,
 		});
 
 		expect(paginationResult.page).toStrictEqual(-3);
@@ -167,8 +180,9 @@ describe('DynamicPaginationResult', () => {
 		const paginationResult = new DynamicPaginationResult({
 			page: 25,
 			items: [],
-			pageCount: 20,
+			lastPage: 20,
 			hasNextPage: false,
+			perPageLimit: 20,
 		});
 
 		expect(paginationResult.page).toStrictEqual(25);

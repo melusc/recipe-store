@@ -20,23 +20,27 @@ export class DynamicPaginationResult<T> {
 	public readonly page: number;
 	public readonly items: readonly T[];
 	private readonly hasNextPage: boolean;
-	public readonly pageCount: number | undefined;
+	public readonly lastPage: number | undefined;
+	public readonly perPageLimit: number;
 
 	constructor({
 		page,
 		items,
 		hasNextPage,
-		pageCount,
+		lastPage,
+		perPageLimit,
 	}: {
 		readonly page: number;
 		readonly items: readonly T[];
 		readonly hasNextPage: boolean;
-		readonly pageCount?: number | undefined;
+		readonly lastPage?: number | undefined;
+		readonly perPageLimit: number;
 	}) {
 		this.page = page;
 		this.items = items;
 		this.hasNextPage = hasNextPage;
-		this.pageCount = pageCount;
+		this.lastPage = lastPage;
+		this.perPageLimit = perPageLimit;
 	}
 
 	getNextPage() {
@@ -57,8 +61,8 @@ export class DynamicPaginationResult<T> {
 		// If page is way too high
 		// skip to last page
 
-		if (this.pageCount !== undefined) {
-			return Math.min(this.pageCount, this.page - 1);
+		if (this.lastPage !== undefined) {
+			return Math.min(this.lastPage, this.page - 1);
 		}
 
 		return this.page - 1;
@@ -66,23 +70,26 @@ export class DynamicPaginationResult<T> {
 }
 
 export class PaginationResult<T> extends DynamicPaginationResult<T> {
-	public override readonly pageCount: number;
+	public override readonly lastPage: number;
 
 	constructor({
-		pageCount,
+		lastPage,
 		page,
 		items,
+		perPageLimit,
 	}: {
-		readonly pageCount: number;
+		readonly lastPage: number;
 		readonly page: number;
 		readonly items: readonly T[];
+		readonly perPageLimit: number;
 	}) {
 		super({
 			page,
 			items,
-			hasNextPage: page < pageCount,
+			hasNextPage: page < lastPage,
+			perPageLimit,
 		});
-		this.pageCount = pageCount;
+		this.lastPage = lastPage;
 	}
 
 	override getPreviousPage() {
@@ -92,6 +99,6 @@ export class PaginationResult<T> extends DynamicPaginationResult<T> {
 
 		// If page is way too high
 		// skip to last page
-		return Math.min(this.pageCount, this.page - 1);
+		return Math.min(this.lastPage, this.page - 1);
 	}
 }
