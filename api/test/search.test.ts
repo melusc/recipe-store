@@ -16,63 +16,38 @@
 
 import {describe, expect, test} from 'vitest';
 
-import {
-	QueryParser,
-	recipeMatchesFilter,
-	type QueryFilter,
-} from '../src/api/search.js';
+import {QueryParser, recipeMatchesFilter} from '../src/api/search.js';
 import {UserRoles} from '../src/index.js';
 
 import {apiTest} from './utilities.js';
 
 describe('QueryParser', () => {
-	test.for<[string, QueryFilter[]]>([
-		['abc', [{qualifier: 'any', filterValue: 'abc'}]],
-		['tag:abc', [{qualifier: 'tagged', filterValue: 'abc'}]],
-		['"contains:abc"', [{qualifier: 'contains', filterValue: 'abc'}]],
-		["'by:abc\"'", [{qualifier: 'author', filterValue: 'abc"'}]],
-		['author:"abc def"', [{qualifier: 'author', filterValue: 'abc def'}]],
-		[
-			'abc def',
-			[
-				{qualifier: 'any', filterValue: 'abc'},
-				{qualifier: 'any', filterValue: 'def'},
-			],
-		],
-		["'abc def'", [{qualifier: 'any', filterValue: 'abc def'}]],
-		['"abc def"', [{qualifier: 'any', filterValue: 'abc def'}]],
-		['"abc', [{qualifier: 'any', filterValue: 'abc'}]],
-		['   intext:abc  ', [{qualifier: 'contains', filterValue: 'abc'}]],
-		['   user: abc ', [{qualifier: 'author', filterValue: 'abc'}]],
-		[
-			'tagged:contains:ABC',
-			[{qualifier: 'tagged', filterValue: 'contains:ABC'}],
-		],
-		[
-			'tagged:cookie author:Sophia',
-			[
-				{qualifier: 'tagged', filterValue: 'cookie'},
-				{qualifier: 'author', filterValue: 'Sophia'},
-			],
-		],
-		['tagged: "abc"', [{qualifier: 'tagged', filterValue: 'abc'}]],
-		[
-			'tagged:abc"def"',
-			[
-				{qualifier: 'tagged', filterValue: 'abc'},
-				{qualifier: 'any', filterValue: 'def'},
-			],
-		],
-		['title:coolyo', [{qualifier: 'title', filterValue: 'coolyo'}]],
-		['intitle:pie', [{qualifier: 'title', filterValue: 'pie'}]],
-		['TitLeD: "soft cake"', [{qualifier: 'title', filterValue: 'soft cake'}]],
-		['', []],
-		[' ', []],
-	])('parse(%j)', ([query, expectedParsed]) => {
+	test.for<string>([
+		'abc',
+		'tag:abc',
+		'"contains:abc"',
+		`'by:abc"'`,
+		'author:"abc def"',
+		'abc def',
+		"'abc def'",
+		'"abc def"',
+		'"abc',
+		'   intext:abc  ',
+		'   user: abc ',
+		'tagged:contains:ABC',
+		'tagged:cookie author:Sophia',
+		'tagged: "abc"',
+		'tagged:abc"def"',
+		'title:coolyo',
+		'intitle:pie',
+		'TitLeD: "soft cake"',
+		'',
+		' ',
+	])('parse(%j)', query => {
 		const queryParser = new QueryParser(query);
 		const parsed = queryParser.parse();
 
-		expect(parsed).toStrictEqual(expectedParsed);
+		expect(parsed).toMatchSnapshot();
 	});
 });
 

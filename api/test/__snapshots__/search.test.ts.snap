@@ -1,0 +1,179 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`QueryParser > parse("   intext:abc  ") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "contains",
+  },
+]
+`;
+
+exports[`QueryParser > parse("   user: abc ") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "author",
+  },
+]
+`;
+
+exports[`QueryParser > parse(" ") 1`] = `[]`;
+
+exports[`QueryParser > parse("") 1`] = `[]`;
+
+exports[`QueryParser > parse("'abc def'") 1`] = `
+[
+  {
+    "filterValue": "abc def",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("'by:abc\\"'") 1`] = `
+[
+  {
+    "filterValue": "abc"",
+    "qualifier": "author",
+  },
+]
+`;
+
+exports[`QueryParser > parse("\\"abc def\\"") 1`] = `
+[
+  {
+    "filterValue": "abc def",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("\\"abc") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("\\"contains:abc\\"") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "contains",
+  },
+]
+`;
+
+exports[`QueryParser > parse("TitLeD: \\"soft cake\\"") 1`] = `
+[
+  {
+    "filterValue": "soft cake",
+    "qualifier": "title",
+  },
+]
+`;
+
+exports[`QueryParser > parse("abc def") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "any",
+  },
+  {
+    "filterValue": "def",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("abc") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("author:\\"abc def\\"") 1`] = `
+[
+  {
+    "filterValue": "abc def",
+    "qualifier": "author",
+  },
+]
+`;
+
+exports[`QueryParser > parse("intitle:pie") 1`] = `
+[
+  {
+    "filterValue": "pie",
+    "qualifier": "title",
+  },
+]
+`;
+
+exports[`QueryParser > parse("tag:abc") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "tagged",
+  },
+]
+`;
+
+exports[`QueryParser > parse("tagged: \\"abc\\"") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "tagged",
+  },
+]
+`;
+
+exports[`QueryParser > parse("tagged:abc\\"def\\"") 1`] = `
+[
+  {
+    "filterValue": "abc",
+    "qualifier": "tagged",
+  },
+  {
+    "filterValue": "def",
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("tagged:contains:ABC") 1`] = `
+[
+  {
+    "filterValue": "contains:ABC",
+    "qualifier": "tagged",
+  },
+]
+`;
+
+exports[`QueryParser > parse("tagged:cookie author:Sophia") 1`] = `
+[
+  {
+    "filterValue": "cookie",
+    "qualifier": "tagged",
+  },
+  {
+    "filterValue": "Sophia",
+    "qualifier": "author",
+  },
+]
+`;
+
+exports[`QueryParser > parse("title:coolyo") 1`] = `
+[
+  {
+    "filterValue": "coolyo",
+    "qualifier": "title",
+  },
+]
+`;
