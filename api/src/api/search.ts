@@ -23,6 +23,7 @@ type Qualifier = 'any' | 'tagged' | 'author' | 'contains' | 'title';
 export type QueryFilter = {
 	readonly qualifier: Qualifier;
 	readonly filterValue: string;
+	readonly invert: boolean;
 };
 
 const qualifiers: Record<string, Qualifier> = {
@@ -107,7 +108,7 @@ export class QueryParser {
 		return this.readUntil(/[\s"']/);
 	}
 
-	readQuotedValue(): QueryFilter {
+	readQuotedValue(invert: boolean): QueryFilter {
 		const stop = this.readChar();
 		const filter = this.readUntil(stop);
 		this.next();
@@ -118,11 +119,14 @@ export class QueryParser {
 			return {
 				qualifier,
 				filterValue: search.join(':'),
+				invert,
 			};
 		}
+
 		return {
 			qualifier: 'any',
 			filterValue: filter,
+			invert,
 		};
 	}
 
@@ -131,9 +135,19 @@ export class QueryParser {
 
 		const filters: QueryFilter[] = [];
 
+		let invert = false;
+
 		while ((this.skipWS(), this.hasChar())) {
+			invert = false;
+
+			if (this.peek() === '-') {
+				invert = true;
+				this.next();
+				this.skipWS();
+			}
+
 			if (this.peek() === '"' || this.peek() === "'") {
-				filters.push(this.readQuotedValue());
+				filters.push(this.readQuotedValue(invert));
 
 				continue;
 			}
@@ -148,11 +162,13 @@ export class QueryParser {
 				filters.push({
 					qualifier,
 					filterValue: filter,
+					invert,
 				});
 			} else {
 				filters.push({
 					qualifier: 'any',
 					filterValue: part,
+					invert,
 				});
 			}
 		}
@@ -227,7 +243,12 @@ export function recipeMatchesFilter(
 	recipe: Recipe,
 	filters: readonly QueryFilter[],
 ) {
-	return filters.every(filter =>
-		filterMatchers[filter.qualifier](filter.filterValue, recipe),
-	);
+	return filters.every(filter => {
+		const matches = filterMatchers[filter.qualifier](
+			filter.filterValue,
+			recipe,
+		);
+
+		return filter.invert ? !matches : matches;
+	});
 }

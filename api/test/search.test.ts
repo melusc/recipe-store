@@ -43,6 +43,15 @@ describe('QueryParser', () => {
 		'TitLeD: "soft cake"',
 		'',
 		' ',
+		'-abc',
+		'-"abc"',
+		'"-abc"',
+		'-tagged:abc',
+		'- abc',
+		'-abc def',
+		'-abc -def',
+		'abc -def',
+		'abc -"def"',
 	])('parse(%j)', query => {
 		const queryParser = new QueryParser(query);
 		const parsed = queryParser.parse();
@@ -67,6 +76,10 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 	['tagged:unique', 'Banana Cake'],
 	['contains:unique', 'Chocolate Cake'],
 	['unique banana', 'Banana Cake'],
+	['-cake', 'Mushroom Risotto'],
+	['-tagged:unique', 'Chocolate Cake', 'Mushroom Risotto'],
+	['-"contains:unique" easy', 'Banana Cake'],
+	['-"contains:unique" -easy', 'Mushroom Risotto'],
 ])(
 	'recipeMatchesFilter(%j)',
 	async ([query, ...expectedTitles], {api: {User, Recipe}}) => {
