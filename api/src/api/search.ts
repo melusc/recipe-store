@@ -95,6 +95,15 @@ export class QueryParser {
 		return result;
 	}
 
+	resolveQualifier(inputQualifier: string): Qualifier {
+		inputQualifier = inputQualifier.toLowerCase();
+		if (Object.hasOwn(qualifiers, inputQualifier)) {
+			return qualifiers[inputQualifier]!;
+		}
+
+		return 'any';
+	}
+
 	readQualifierFilter() {
 		this.skipWS();
 
@@ -115,7 +124,7 @@ export class QueryParser {
 
 		if (filter.includes(':')) {
 			const [left, ...search] = filter.split(':');
-			const qualifier = qualifiers[left!.toLowerCase()] ?? 'any';
+			const qualifier = this.resolveQualifier(left!);
 			return {
 				qualifier,
 				filterValue: search.join(':'),
@@ -158,7 +167,7 @@ export class QueryParser {
 				this.next();
 				const filter = this.readQualifierFilter();
 
-				const qualifier = qualifiers[part.toLowerCase()] ?? 'any';
+				const qualifier = this.resolveQualifier(part);
 				filters.push({
 					qualifier,
 					filterValue: filter,
