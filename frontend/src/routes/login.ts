@@ -19,7 +19,7 @@ import {createRoute} from './_utilities.js';
 
 export const renderLogin = createRoute(
 	'Login',
-	(_user, error: string | undefined) => $`
+	(_user, csrfToken: string, error: string | undefined) => $`
 		<div class="row mt-5 justify-content-center">
 			<div class="col-sm-10 col-md-6 col-lg-4">
 				<h2>Login</h2>
@@ -34,6 +34,8 @@ export const renderLogin = createRoute(
             	${error}
         		</div>`
 					}
+
+					<input type="hidden" name="csrf-token" value="${csrfToken}">
 
 					<div>
 						<label for="username" class="form-label">Username</label>

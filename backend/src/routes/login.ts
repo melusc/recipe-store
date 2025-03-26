@@ -19,7 +19,7 @@ import type {User} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {session} from '../middleware/token.ts';
+import {csrf, CsrfFormType, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
 export const loginRouter = Router();
@@ -29,7 +29,16 @@ loginRouter.get('/login', (request, response) => {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(302, redirect.href);
 	} else {
-		response.status(200).send(render.login(undefined, '/login', undefined));
+		response.status(200).send(
+			render.login(
+				undefined,
+				'/login',
+
+				csrf.generate(undefined, CsrfFormType.login),
+
+				undefined,
+			),
+		);
 	}
 });
 
@@ -46,11 +55,27 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 				render.login(
 					undefined,
 					'/login',
+					csrf.generate(undefined, CsrfFormType.login),
 					'Something went wrong! Please try again.',
 				),
 			);
 		return;
 	}
+
+	if (!csrf.validate(CsrfFormType.login, request, response)) {
+		response
+			.status(400)
+			.send(
+				render.login(
+					undefined,
+					'/login',
+					csrf.generate(undefined, CsrfFormType.login),
+					'Could not validate CSRF Token. Please try again.',
+				),
+			);
+		return;
+	}
+
 	const body = request.body as {username?: string; password?: string};
 	const username = body.username;
 	const password = body.password;
@@ -58,7 +83,14 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	if (typeof username !== 'string' || typeof password !== 'string') {
 		response
 			.status(400)
-			.send(render.login(undefined, '/login', 'Please fill all inputs.'));
+			.send(
+				render.login(
+					undefined,
+					'/login',
+					csrf.generate(undefined, CsrfFormType.login),
+					'Please fill all inputs.',
+				),
+			);
 		return;
 	}
 
@@ -72,6 +104,7 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 				render.login(
 					undefined,
 					'/login',
+					csrf.generate(undefined, CsrfFormType.login),
 					'Incorrect credentials. Please try again.',
 				),
 			);
