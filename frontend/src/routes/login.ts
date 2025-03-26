@@ -25,7 +25,6 @@ export const renderLogin = createRoute(
 				<h2>Login</h2>
 				<form
 					method="POST"
-					action="/login"
 					enctype="multipart/form-data"
 					class="d-flex flex-column gap-2"
 				>
