@@ -112,7 +112,7 @@ class Session extends Token<{user: number}> {
 				secure: true,
 			});
 
-			response.redirect(302, redirect.href);
+			response.redirect(303, redirect.href);
 		};
 	}
 

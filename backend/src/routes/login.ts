@@ -27,7 +27,7 @@ export const loginRouter = Router();
 loginRouter.get('/login', (request, response) => {
 	if (response.locals.user) {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
-		response.redirect(302, redirect.href);
+		response.redirect(303, redirect.href);
 	} else {
 		response.status(200).send(
 			render.login(
@@ -44,7 +44,7 @@ loginRouter.get('/login', (request, response) => {
 
 loginRouter.get('/logout', (_request, response) => {
 	session.clearCookie(response);
-	response.redirect(302, '/');
+	response.redirect(303, '/');
 });
 
 loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
@@ -114,5 +114,5 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	session.setCookie(user.userId, response);
 
 	const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
-	response.redirect(302, redirect.href);
+	response.redirect(303, redirect.href);
 });
