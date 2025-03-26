@@ -32,15 +32,27 @@ export function header(user: User | undefined, path: string) {
 			href: '/',
 			name: 'Home',
 		},
-		user
-			? {
-					href: '/logout',
-					name: 'Logout',
-				}
-			: {
-					href: '/login',
-					name: 'Login',
-				},
+		...(user
+			? [
+					{
+						href: `/profile/${user.userId}`,
+						name: 'Profile',
+					},
+					{
+						href: '/account',
+						name: 'Account',
+					},
+					{
+						href: '/logout',
+						name: 'Logout',
+					},
+				]
+			: [
+					{
+						href: '/login',
+						name: 'Login',
+					},
+				]),
 	];
 
 	return $`
