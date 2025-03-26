@@ -164,21 +164,6 @@ exports[`QueryParser > parse("TitLeD: \\"soft cake\\"") 1`] = `
 ]
 `;
 
-exports[`QueryParser > parse("abc \\"-def\\"") 1`] = `
-[
-  {
-    "filterValue": "abc",
-    "invert": false,
-    "qualifier": "any",
-  },
-  {
-    "filterValue": "-def",
-    "invert": false,
-    "qualifier": "any",
-  },
-]
-`;
-
 exports[`QueryParser > parse("abc -\\"def\\"") 1`] = `
 [
   {
