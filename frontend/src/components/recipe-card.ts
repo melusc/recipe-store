@@ -52,7 +52,7 @@ export function recipeCard(recipe: Recipe) {
 
 					<p class="small">
 						By ${smallAuthor(recipe.author)} from
-						<time datetime="${recipe.updatedAt.toISOString()}">
+						<time datetime="${recipe.updatedAt.toISOString()}" data-display="date">
 							${recipe.updatedAt.toDateString()}
 						</time>
 					</p>
