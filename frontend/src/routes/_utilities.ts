@@ -46,7 +46,7 @@ export function createRoute<Parameters extends readonly unknown[]>(
 
 		${header(user, path)}
 
-		<div id="App" class="m-3">
+		<div id="App" class="m-3 d-flex flex-column">
 			${template(user, ...templateParameters)}
 		</div>
 	`.render();

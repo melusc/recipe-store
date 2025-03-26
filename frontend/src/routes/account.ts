@@ -23,8 +23,8 @@ export const renderAccount = createRoute(
 	(user, csrfToken: string, errors?: string[]) => $`
 		<main class="
 			col-sm-10 col-md-6 col-lg-4
-			w-100
-			d-flex flex-column align-items-center
+			align-self-center
+			d-flex flex-column gap-3
 		">
 			<section>
 				<h1>Account</H1>

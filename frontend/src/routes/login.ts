@@ -20,45 +20,43 @@ import {createRoute} from './_utilities.js';
 export const renderLogin = createRoute(
 	'Login',
 	(_user, csrfToken: string, error: string | undefined) => $`
-		<div class="row mt-5 justify-content-center">
-			<div class="col-sm-10 col-md-6 col-lg-4">
-				<h2>Login</h2>
-				<form
-					method="POST"
-					enctype="multipart/form-data"
-					class="d-flex flex-column gap-2"
-				>
-					${
-						error &&
-						$`<div class="alert alert-danger" role="alert">
-            	${error}
-        		</div>`
-					}
+		<div class="col-sm-10 col-md-6 col-lg-4 align-self-center">
+			<h2>Login</h2>
+			<form
+				method="POST"
+				enctype="multipart/form-data"
+				class="d-flex flex-column gap-2"
+			>
+				${
+					error &&
+					$`<div class="alert alert-danger" role="alert">
+						${error}
+					</div>`
+				}
 
-					<input type="hidden" name="csrf-token" value="${csrfToken}">
+				<input type="hidden" name="csrf-token" value="${csrfToken}">
 
-					<div>
-						<label for="username" class="form-label">Username</label>
-						<input
-							type="text"
-							class="form-control"
-							id="username"
-							name="username"
-						>
-					</div>
-					<div class="mb-2">
-						<label for="password" class="form-label">Password</label>
-						<input
-							type="password"
-							class="form-control"
-							id="password"
-							name="password"
-						>
-					</div>
+				<div>
+					<label for="username" class="form-label">Username</label>
+					<input
+						type="text"
+						class="form-control"
+						id="username"
+						name="username"
+					>
+				</div>
+				<div class="mb-2">
+					<label for="password" class="form-label">Password</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						name="password"
+					>
+				</div>
 
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</form>
-			</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
 		</div>
 	`,
 );
