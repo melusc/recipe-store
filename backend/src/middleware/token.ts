@@ -17,7 +17,7 @@
 import {randomBytes} from 'node:crypto';
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import type {Api} from 'api';
+import type {Api, User} from 'api';
 import type {Request, RequestHandler, Response} from 'express';
 import jwtProvider from 'jsonwebtoken';
 import type {StringValue} from 'ms';
@@ -99,7 +99,7 @@ class Session extends Token<{user: number}> {
 
 	guard(): RequestHandler {
 		return (request, response, next) => {
-			if (this.#verifyRequest(request)) {
+			if (response.locals.user) {
 				next();
 				return;
 			}
@@ -138,25 +138,28 @@ class Session extends Token<{user: number}> {
 export const session = new Session();
 
 export const enum CsrfFormType {
-	uploadDelete,
-	uploadCreate,
 	login,
+	account,
 }
-class Csrf extends Token<{form: CsrfFormType}> {
+class Csrf extends Token<{form: CsrfFormType; user: number | undefined}> {
 	constructor() {
 		super('recipe-store/csrf', '15 min');
 	}
 
-	generate(form: CsrfFormType) {
-		return this.sign({form});
+	generate(user: User | undefined, form: CsrfFormType) {
+		return this.sign({form, user: user?.userId});
 	}
 
-	validate(form: CsrfFormType, request: Request): boolean {
+	validate(form: CsrfFormType, request: Request, response: Response): boolean {
 		const body = (request.body ?? {}) as Record<string, string>;
 		const token = body['csrf-token'];
 
 		const jwtPayload = this.verify(token);
-		return jwtPayload && jwtPayload.form === form;
+		return (
+			jwtPayload &&
+			jwtPayload.form === form &&
+			jwtPayload.user === response.locals.user?.userId
+		);
 	}
 }
 
