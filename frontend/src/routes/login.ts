@@ -21,10 +21,22 @@ export const renderLogin = createRoute(
 	'Login',
 	(error: string | undefined) => $`
 		<div class="row mt-5 justify-content-center">
-			<div class="col-4">
+			<div class="col-sm-10 col-md-6 col-lg-4">
 				<h2>Login</h2>
-				<form method="POST" action="/login" enctype="multipart/form-data">
-					<div class="mb-3">
+				<form
+					method="POST"
+					action="/login"
+					enctype="multipart/form-data"
+					class="d-flex flex-column gap-2"
+				>
+					${
+						error &&
+						$`<div class="alert alert-danger" role="alert">
+            	${error}
+        		</div>`
+					}
+
+					<div>
 						<label for="username" class="form-label">Username</label>
 						<input
 							type="text"
@@ -33,7 +45,7 @@ export const renderLogin = createRoute(
 							name="username"
 						>
 					</div>
-					<div class="mb-3">
+					<div class="mb-2">
 						<label for="password" class="form-label">Password</label>
 						<input
 							type="password"
@@ -42,13 +54,6 @@ export const renderLogin = createRoute(
 							name="password"
 						>
 					</div>
-
-					${
-						error &&
-						$`<div class="alert alert-danger" role="alert">
-            	${error}
-        		</div>`
-					}
 
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
