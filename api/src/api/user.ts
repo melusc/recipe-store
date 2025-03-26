@@ -314,26 +314,27 @@ export class User extends InjectableApi {
 			});
 	}
 
-	changePassword(oldPassword: string, newPassword: string) {
-		const oldHash = this.database
+	confirmPassword(password: string) {
+		const hash = this.database
 			.prepare(
 				`SELECT password FROM users
 					WHERE user_id = :userId`,
 			)
 			.get({userId: this.userId}) as {password: string} | undefined;
 
-		if (!oldHash) {
+		if (!hash) {
 			throw new ApiError('Internal error! Try refreshing the page.');
 		}
 
-		const oldPasswordMatches = bcrypt.compareSync(
-			oldPassword,
-			oldHash.password,
-		);
+		const oldPasswordMatches = bcrypt.compareSync(password, hash.password);
 
 		if (!oldPasswordMatches) {
 			throw new ApiError('Incorrect current password.');
 		}
+	}
+
+	changePassword(oldPassword: string, newPassword: string) {
+		this.confirmPassword(oldPassword);
 
 		const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
 		this.database

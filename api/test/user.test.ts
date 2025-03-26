@@ -94,6 +94,20 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
 });
 
+apiTest('Confirm password of user', ({api: {User}}) => {
+	const username = 'cafzy';
+	const password = 'arcsj';
+
+	const user = User.create(username, username, password, UserRoles.User);
+
+	// Doesn't throw
+	user.confirmPassword(password);
+
+	expect(() => {
+		user.confirmPassword('not-password');
+	}).toThrow(ApiError);
+});
+
 apiTest('Change username', ({api: {User}}) => {
 	const usernameOld = 'abotw';
 	const usernameNew = 'mqyzc';
