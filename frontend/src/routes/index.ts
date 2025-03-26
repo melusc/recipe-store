@@ -34,11 +34,7 @@ export const renderIndex = createRoute(
 		return $`
 			<main class="row g-3">
 				${recipes.items.map(
-					recipe => $`
-					<div class="col-sm-3">
-						${recipeCard(recipe)}
-					</div>
-				`,
+					recipe => recipeCard(recipe),
 				)}
 			</main>
 

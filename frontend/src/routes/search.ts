@@ -55,11 +55,7 @@ export const renderSearch = createRoute<
 			${searchForm('inline', query)}
 
 			${recipes.items.map(
-				recipe => $`
-					<div class="col-sm-3">
-						${recipeCard(recipe)}
-					</div>
-				`,
+				recipe => recipeCard(recipe)
 			)}
 		</main>
 
