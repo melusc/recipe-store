@@ -14,6 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {renderAccountDelete} from './routes/account-delete.js';
 import {renderAccount} from './routes/account.js';
 import {renderError404} from './routes/error-404.js';
 import {renderIndex} from './routes/index.js';
@@ -26,4 +27,5 @@ export const render = {
 	login: renderLogin,
 	search: renderSearch,
 	account: renderAccount,
+	accountDelete: renderAccountDelete,
 } as const;

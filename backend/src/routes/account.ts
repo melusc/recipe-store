@@ -14,7 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {ApiError} from 'api';
+import {ApiError, UserDeletion} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
@@ -148,5 +148,92 @@ accountRouter.post(
 				errors,
 			),
 		);
+	},
+);
+
+accountRouter.get('/account/delete', (_request, response) => {
+	response.send(
+		render.accountDelete(
+			response.locals.user,
+			'/account/delete',
+			csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+		),
+	);
+});
+
+accountRouter.post(
+	'/account/delete',
+	formdataMiddleware.none(),
+	async (request, response) => {
+		if (!csrf.validate(CsrfFormType.accountDelete, request, response)) {
+			response
+				.status(400)
+				.send(
+					render.accountDelete(
+						response.locals.user,
+						'/account/delete',
+						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						'Could not validate CSRF Token. Please try again.',
+					),
+				);
+			return;
+		}
+
+		const body = (request.body ?? {}) as Record<string, unknown>;
+		const password = body['password'];
+		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
+
+		if (typeof password !== 'string' || !password) {
+			response
+				.status(400)
+				.send(
+					render.accountDelete(
+						response.locals.user,
+						'/account/delete',
+						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						'Missing password.',
+					),
+				);
+			return;
+		}
+
+		try {
+			response.locals.user!.confirmPassword(password);
+		} catch {
+			response
+				.status(400)
+				.send(
+					render.accountDelete(
+						response.locals.user,
+						'/account/delete',
+						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						'Incorrect password. Please try again.',
+					),
+				);
+			return;
+		}
+
+		try {
+			await response.locals.user?.deleteUser(
+				shouldDeleteRecipes
+					? UserDeletion.DeleteRecipes
+					: UserDeletion.KeepRecipes,
+			);
+		} catch {
+			response
+				.status(400)
+				.send(
+					render.accountDelete(
+						response.locals.user,
+						'/account/delete',
+						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						'Could not complete your request. Please try again or contact an admin.',
+					),
+				);
+			return;
+		}
+
+		session.clearCookie(response);
+		response.redirect(303, '/');
 	},
 );

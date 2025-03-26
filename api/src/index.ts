@@ -17,7 +17,7 @@
 export {ApiError} from './api/error.js';
 export {createApi, type Api} from './api/index.js';
 export type {Recipe} from './api/recipe.js';
-export {UserRoles, type User} from './api/user.js';
+export {UserDeletion, UserRoles, type User} from './api/user.js';
 export {
 	type DynamicPaginationResult,
 	type PaginationResult,

@@ -140,6 +140,7 @@ export const session = new Session();
 export const enum CsrfFormType {
 	login,
 	account,
+	accountDelete,
 }
 class Csrf extends Token<{form: CsrfFormType; user: number | undefined}> {
 	constructor() {

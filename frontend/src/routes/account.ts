@@ -133,6 +133,13 @@ export const renderAccount = createRoute(
 				</form>
 
 				<script src="/static/progressive-enhancement/account-form.js"></script>
+
+				<a
+					href="/account/delete"
+					class="btn btn-danger w-100 mt-3"
+				>
+					Delete Account
+				</a>
 			</section>
 		</main>
 	`,
