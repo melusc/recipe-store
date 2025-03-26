@@ -33,7 +33,7 @@ export function searchForm(
 
 	const button = $`
 		<button
-			class="btn btn-outline-success"
+			class="btn btn-primary"
 			type="submit"
 		>
 			Search
