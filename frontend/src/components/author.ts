@@ -23,7 +23,7 @@ export function smallAuthor(author: User | undefined) {
 		<span class="author-small">
 			${
 				author
-					? $`<a href="/users/${String(author.userId)}">${author.username}</a>`
+					? $`<a href="/users/${String(author.userId)}">${author.displayName}</a>`
 					: 'Deleted User'
 			}
 		</span>
