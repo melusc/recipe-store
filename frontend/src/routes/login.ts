@@ -46,8 +46,8 @@ export const renderLogin = createRoute(
 					${
 						error &&
 						$`<div class="alert alert-danger" role="alert">
-            ${error}
-        	</div>`
+            	${error}
+        		</div>`
 					}
 
 					<button type="submit" class="btn btn-primary">Submit</button>
