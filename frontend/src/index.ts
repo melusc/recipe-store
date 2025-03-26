@@ -14,6 +14,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {renderAccount} from './routes/account.js';
 import {renderError404} from './routes/error-404.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
@@ -24,4 +25,5 @@ export const render = {
 	error404: renderError404,
 	login: renderLogin,
 	search: renderSearch,
+	account: renderAccount,
 } as const;

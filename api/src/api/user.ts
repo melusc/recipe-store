@@ -332,7 +332,7 @@ export class User extends InjectableApi {
 		);
 
 		if (!oldPasswordMatches) {
-			throw new ApiError('Incorrect password.');
+			throw new ApiError('Incorrect current password.');
 		}
 
 		const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
