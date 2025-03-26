@@ -27,7 +27,7 @@ import {createRoute} from './_utilities.js';
 export const renderSearch = createRoute<
 	| [query: undefined, recipes: undefined]
 	| [query: string, recipes: DynamicPaginationResult<Recipe>]
->('Search', (query, recipes) => {
+>('Search', (_user, query, recipes) => {
 	if (query === undefined) {
 		return $`
 			<main>
@@ -38,9 +38,9 @@ export const renderSearch = createRoute<
 
 	const paginationBaseUrl = new RelativeUrl('/search');
 	paginationBaseUrl.searchParams.set('q', query);
-	const paginationButtons = pagination(paginationBaseUrl, recipes);
+	const paginationButtons = pagination(paginationBaseUrl, recipes!);
 
-	if (recipes.items.length === 0) {
+	if (recipes!.items.length === 0) {
 		return $`
 			<main>
 				${searchForm('inline', query)}
@@ -54,9 +54,7 @@ export const renderSearch = createRoute<
 		<main class="row g-3">
 			${searchForm('inline', query)}
 
-			${recipes.items.map(
-				recipe => recipeCard(recipe)
-			)}
+			${recipes!.items.map(recipe => recipeCard(recipe))}
 		</main>
 
 		${paginationButtons}

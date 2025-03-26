@@ -24,7 +24,7 @@ import {createRoute} from './_utilities.js';
 
 export const renderIndex = createRoute(
 	'Recipes',
-	(recipes: PaginationResult<Recipe>) => {
+	(_user, recipes: PaginationResult<Recipe>) => {
 		const paginationButtons = pagination('/', recipes);
 
 		if (recipes.items.length === 0) {
@@ -33,9 +33,7 @@ export const renderIndex = createRoute(
 
 		return $`
 			<main class="row g-3">
-				${recipes.items.map(
-					recipe => recipeCard(recipe),
-				)}
+				${recipes.items.map(recipe => recipeCard(recipe))}
 			</main>
 
 			${paginationButtons}
