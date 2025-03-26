@@ -20,10 +20,10 @@ import express, {Router} from 'express';
 
 const router = Router();
 
-const cssDirectory = fileURLToPath(import.meta.resolve('frontend/static'));
+const staticDirectory = fileURLToPath(import.meta.resolve('frontend/static'));
 router.use(
 	'/',
-	express.static(cssDirectory, {
+	express.static(staticDirectory, {
 		index: false,
 		dotfiles: 'ignore',
 	}),

@@ -27,10 +27,7 @@
 
 <link rel="stylesheet" href="/static/main.css" />
 
-<script type="module">
-	document.querySelectorAll('time').forEach(timeElement => {
-		timeElement.textContent = new Date(
-			timeElement.dateTime,
-		).toLocaleDateString();
-	});
-</script>
+<script
+	type="module"
+	src="/static/progressive-enhancement/date-time-l10n.js"
+></script>

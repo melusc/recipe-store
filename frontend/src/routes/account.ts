@@ -133,7 +133,7 @@ export const renderAccount = createRoute(
 					<button type="submit" class="btn btn-primary">Save</button>
 				</form>
 
-				<script src="/static/enhance-account-form.js"></script>
+				<script src="/static/progressive-enhancement/account-form.js"></script>
 			</section>
 		</main>
 	`,
