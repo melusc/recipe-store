@@ -104,7 +104,6 @@ export const renderAccount = createRoute(
 							class="form-control"
 							id="current-password"
 							name="current-password"
-							minlength="4"
 						>
 					</div>
 
@@ -115,7 +114,7 @@ export const renderAccount = createRoute(
 							class="form-control"
 							id="new-password"
 							name="new-password"
-							minlength="4"
+							minlength="10"
 						>
 					</div>
 
@@ -126,7 +125,7 @@ export const renderAccount = createRoute(
 							class="form-control"
 							id="new-password-repeat"
 							name="new-password-repeat"
-							minlength="4"
+							minlength="10"
 						>
 					</div>
 
