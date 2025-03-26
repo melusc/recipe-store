@@ -20,7 +20,7 @@ import {type DynamicPaginationResult, type Recipe} from 'api';
 import {$} from '../$.js';
 
 export function pagination(
-	baseUrl: string,
+	baseUrl: string | RelativeUrl,
 	paginationResult: DynamicPaginationResult<Recipe>,
 ) {
 	const {
@@ -62,6 +62,13 @@ export function pagination(
 		{length: high - low + 1},
 		(_v, index) => low + index,
 	);
+
+	// Don't show pagination if it is just going
+	// to show only Previous and Next with both disabled
+	// Though do show pagination even if it is the only page
+	if (paginationResult.items.length === 0 && !previousPage && !nextPage) {
+		return;
+	}
 
 	return $`
 		<nav aria-label="Page navigation" class="mt-3">

@@ -29,7 +29,7 @@ const baseHtml = await readFile(
 
 export function createRoute<Parameters extends readonly unknown[]>(
 	title: string,
-	template: (...parameters: Parameters) => SafeString,
+	template: (...parameters: Parameters) => SafeString | undefined,
 ) {
 	return (
 		user: User | undefined,

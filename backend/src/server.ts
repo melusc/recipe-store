@@ -90,15 +90,39 @@ export function setupServer(api: Api) {
 	app.get('/', (request, response) => {
 		const {page, limit} = resolvePaginationParameters(request);
 
-		response
-			.status(200)
-			.send(
-				render.index(
-					response.locals.user,
-					'/',
-					api.Recipe.paginate({limit, page}),
-				),
+		response.send(
+			render.index(
+				response.locals.user,
+				'/',
+				api.Recipe.paginate({limit, page}),
+			),
+		);
+	});
+
+	app.get('/search', (request, response) => {
+		const query = request.search.get('q');
+
+		if (!query) {
+			response.send(
+				render.search(response.locals.user, '/search', undefined, undefined),
 			);
+			return;
+		}
+
+		const {page, limit} = resolvePaginationParameters(request);
+
+		response.send(
+			render.search(
+				response.locals.user,
+				'/search',
+				query,
+				api.Recipe.search({
+					limit,
+					page,
+					query,
+				}),
+			),
+		);
 	});
 
 	app.use((_request, response) => {

@@ -14,14 +14,35 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {renderError404} from './routes/error-404.js';
-import {renderIndex} from './routes/index.js';
-import {renderLogin} from './routes/login.js';
-import {renderSearch} from './routes/search.js';
+import {$} from '../$.js';
 
-export const render = {
-	index: renderIndex,
-	error404: renderError404,
-	login: renderLogin,
-	search: renderSearch,
-} as const;
+export function searchForm(
+	location: 'header' | 'inline',
+	prefillQuery?: string,
+) {
+	const input = $`
+		<input
+			class="form-control"
+			type="search"
+			placeholder="Search"
+			aria-label="Search"
+			name="q"
+			value="${prefillQuery || ''}"
+		>
+	`;
+
+	const button = $`
+		<button
+			class="btn btn-outline-success"
+			type="submit"
+		>
+			Search
+		</button>
+	`;
+
+	return $`
+		<form class="d-flex gap-2" role="search" action="/search" method="GET">
+			${location === 'header' ? [input, button] : [button, input]}
+		</form>
+	`;
+}

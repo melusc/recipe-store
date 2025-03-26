@@ -18,6 +18,8 @@ import type {User} from 'api';
 
 import {$} from '../$.js';
 
+import {searchForm} from './search-form.js';
+
 export function header(user: User | undefined, path: string) {
 	const active = {
 		'/login': 'login-logout',
@@ -73,21 +75,7 @@ export function header(user: User | undefined, path: string) {
 							)}
 						</ul>
 
-						<form class="d-flex" role="search" action="/search">
-        			<input
-								class="form-control me-2"
-								type="search"
-								placeholder="Search"
-								aria-label="Search"
-								name="q"
-							>
-        			<button
-								class="btn btn-outline-success"
-								type="submit"
-							>
-								Search
-							</button>
-      			</form>
+						${searchForm('header')}
 					</div>
 				</div>
 			</nav>
