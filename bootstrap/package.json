@@ -14,9 +14,11 @@
 		".": "./dist"
 	},
 	"scripts": {
-		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=bundle --minify src/bootstrap.ts",
-		"css": "sass src/bootstrap.scss | csso -o dist/bootstrap.css",
-		"build": "node --run esbuild && node --run css"
+		"build:js": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=bundle --minify src/bootstrap.ts",
+		"scss": "sass src/bootstrap.scss dist/bootstrap.css",
+		"csso": "csso -i dist/bootstrap.css --input-source-map dist/bootstrap.css.map -o dist/bootstrap.min.css -s file",
+		"build:css": "node --run scss && node --run csso",
+		"build": "node --run build:js && node --run build:css"
 	},
 	"license": "GPL-3.0-only"
 }
