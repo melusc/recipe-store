@@ -37,7 +37,7 @@ function generateTag(inputText) {
 	const parent = document.createElement('div');
 	parent.classList.add(
 		'btn',
-		'btn-primary',
+		'btn-theme',
 		'd-flex',
 		'flex-row',
 		'col-12',

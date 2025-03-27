@@ -60,7 +60,7 @@ export function header(user: User | undefined, path: string) {
 	];
 
 	return $`
-		<header class="sticky-top bg-primary shadow-sm">
+		<header class="sticky-top shadow-sm bg-theme">
 			<nav class="navbar navbar-expand-lg p-3">
 			  <div class="container-fluid">
 					<a
