@@ -27,7 +27,7 @@ export function recipeTag(tagName: string) {
 
 	return $`<a
 		href="/tag/${slug}"
-		class="badge text-bg-primary shadow-sm"
+		class="badge shadow-sm bg-theme"
 	>
 		${tagName}
 	</a>`;

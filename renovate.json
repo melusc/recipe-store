@@ -1,4 +1,7 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["melusc/.github:renovate-config"]
+	"extends": ["melusc/.github:renovate-config"],
+	"git-submodules": {
+		"enabled": true
+	}
 }
