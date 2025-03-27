@@ -16,7 +16,8 @@
 		"api/",
 		"backend/",
 		"cooklang/",
-		"frontend/"
+		"frontend/",
+		"bootstrap/"
 	],
 	"license": "GPL-3.0-only",
 	"resolutions": {

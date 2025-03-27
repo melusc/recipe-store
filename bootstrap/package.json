@@ -1,0 +1,19 @@
+{
+	"type": "module",
+	"name": "bootstrap-slim",
+	"private": true,
+	"devDependencies": {
+		"csso-cli": "^4.0.2",
+		"esbuild": "^0.25.1",
+		"sass": "^1.86.0"
+	},
+	"engines": {
+		"node": ">=22.14.0"
+	},
+	"scripts": {
+		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=bundle --minify src/bootstrap.ts",
+		"css": "sass src/bootstrap.scss | csso -o dist/bootstrap.css",
+		"build": "node --run esbuild && node --run css"
+	},
+	"license": "GPL-3.0-only"
+}
