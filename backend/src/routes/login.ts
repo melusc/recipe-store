@@ -33,16 +33,16 @@ loginRouter.get('/login', (request, response) => {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(303, redirect.href);
 	} else {
-		response.status(200).send(
-			render.login(
-				undefined,
-				'/login',
-
-				csrf.generate(undefined, CsrfFormType.login),
-
-				undefined,
-			),
-		);
+		response
+			.status(200)
+			.send(
+				render.login(
+					undefined,
+					'/login',
+					csrf.generate(undefined, CsrfFormType.login),
+					undefined,
+				),
+			);
 	}
 });
 
