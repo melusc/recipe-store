@@ -16,7 +16,7 @@
 	"scripts": {
 		"build:js": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=bundle --minify src/bootstrap.ts",
 		"scss": "sass src/bootstrap.scss dist/bootstrap.css",
-		"csso": "csso -i dist/bootstrap.css --input-source-map dist/bootstrap.css.map -o dist/bootstrap.min.css -s file",
+		"csso": "csso -i dist/bootstrap.css -o dist/bootstrap.min.css -s file",
 		"build:css": "node --run scss && node --run csso",
 		"build": "node --run build:js && node --run build:css"
 	},
