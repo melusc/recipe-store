@@ -1556,6 +1556,7 @@ __metadata:
     "@types/multer": "npm:^1.4.12"
     "@types/node": "npm:^22.13.14"
     api: "workspace:^"
+    bootstrap-slim: "workspace:^"
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.5"
     esbuild: "npm:^0.25.1"
@@ -1636,7 +1637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap-slim@workspace:bootstrap":
+"bootstrap-slim@workspace:^, bootstrap-slim@workspace:bootstrap":
   version: 0.0.0-use.local
   resolution: "bootstrap-slim@workspace:bootstrap"
   dependencies:

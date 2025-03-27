@@ -24,13 +24,15 @@ import express, {Router} from 'express';
 
 const router = Router();
 
+const options = {
+	index: false,
+	dotfiles: 'ignore',
+};
+
 const staticDirectory = fileURLToPath(import.meta.resolve('frontend/static'));
-router.use(
-	'/',
-	express.static(staticDirectory, {
-		index: false,
-		dotfiles: 'ignore',
-	}),
-);
+router.use('/', express.static(staticDirectory, options));
+
+const bootstrapDirectory = fileURLToPath(import.meta.resolve('bootstrap-slim'));
+router.use('/', express.static(bootstrapDirectory, options));
 
 export {router as staticRouter};

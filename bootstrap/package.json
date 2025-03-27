@@ -10,6 +10,9 @@
 	"engines": {
 		"node": ">=22.14.0"
 	},
+	"exports": {
+		".": "./dist"
+	},
 	"scripts": {
 		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=bundle --minify src/bootstrap.ts",
 		"css": "sass src/bootstrap.scss | csso -o dist/bootstrap.css",
