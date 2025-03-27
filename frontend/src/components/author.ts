@@ -24,10 +24,15 @@ import {$} from '../$.js';
 
 export function smallAuthor(author: User | undefined) {
 	return $`
-		<span class="author-small">
+		<span>
 			${
 				author
-					? $`<a href="/users/${String(author.userId)}">${author.displayName}</a>`
+					? $`<a
+						href="/users/${String(author.userId)}"
+						class="text-dark"
+					>
+						${author.displayName}
+					</a>`
 					: 'Deleted User'
 			}
 		</span>

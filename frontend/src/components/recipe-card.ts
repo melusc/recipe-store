@@ -49,7 +49,7 @@ export function recipeCard(recipe: Recipe) {
 
 				<div class="card-body">
 					<h5 class="card-title">
-						<a href="/recipe/${String(recipe.recipeId)}">
+						<a href="/recipe/${String(recipe.recipeId)}" class="text-dark">
 							${recipe.title}
 						</a>
 					</h5>
