@@ -7,9 +7,9 @@
 		"@lusc/eslint-config": "^7.1.0",
 		"@lusc/tsconfig": "^6.0.2",
 		"@types/bcrypt": "^5.0.2",
-		"@types/node": "^22.13.10",
+		"@types/node": "^22.13.14",
 		"@vitest/runner": "^3.0.9",
-		"eslint": "^9.22.0",
+		"eslint": "^9.23.0",
 		"typescript": "^5.8.2",
 		"vitest": "^3.0.9"
 	},
