@@ -29,7 +29,7 @@ export const accountRouter = Router();
 
 accountRouter.use(session.guard());
 
-accountRouter.get('/account', (_request, response) => {
+accountRouter.get('/', (_request, response) => {
 	response.send(
 		render.account(
 			response.locals.user,
@@ -49,113 +49,109 @@ function checkPasswordRules(password: string) {
 	);
 }
 
-accountRouter.post(
-	'/account',
-	formdataMiddleware.none(),
-	(request, response) => {
-		const user = response.locals.user!;
+accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
+	const user = response.locals.user!;
 
-		const errors = [];
+	const errors = [];
 
-		if (typeof request.body !== 'object' || request.body === null) {
-			response
-				.send(400)
-				.send(
-					render.account(
-						response.locals.user,
-						'/account',
-						csrf.generate(response.locals.user, CsrfFormType.account),
-						['Unknown error. Please try again.'],
-					),
-				);
-			return;
+	if (typeof request.body !== 'object' || request.body === null) {
+		response
+			.send(400)
+			.send(
+				render.account(
+					response.locals.user,
+					'/account',
+					csrf.generate(response.locals.user, CsrfFormType.account),
+					['Unknown error. Please try again.'],
+				),
+			);
+		return;
+	}
+
+	const body = request.body as Record<string, unknown>;
+	if (!csrf.validate(CsrfFormType.account, request, response)) {
+		response
+			.send(400)
+			.send(
+				render.account(
+					response.locals.user,
+					'/account',
+					csrf.generate(response.locals.user, CsrfFormType.account),
+					['Could not validate CSRF Token. Please try again.'],
+				),
+			);
+		return;
+	}
+
+	const username = body['username'];
+	if (username && username !== user.username) {
+		if (typeof username !== 'string' || username.length < 4) {
+			errors.push('Username is too short.');
+		} else {
+			try {
+				user.changeUsername(username);
+			} catch {
+				errors.push('Username is already in use.');
+			}
 		}
+	}
 
-		const body = request.body as Record<string, unknown>;
-		if (!csrf.validate(CsrfFormType.account, request, response)) {
-			response
-				.send(400)
-				.send(
-					render.account(
-						response.locals.user,
-						'/account',
-						csrf.generate(response.locals.user, CsrfFormType.account),
-						['Could not validate CSRF Token. Please try again.'],
-					),
-				);
-			return;
+	const displayName = body['displayname'];
+	if (displayName && displayName !== user.displayName) {
+		if (typeof displayName !== 'string' || displayName.length < 4) {
+			errors.push('Display-Name is too short.');
+		} else {
+			user.changeDisplayName(displayName);
 		}
+	}
 
-		const username = body['username'];
-		if (username && username !== user.username) {
-			if (typeof username !== 'string' || username.length < 4) {
-				errors.push('Username is too short.');
-			} else {
-				try {
-					user.changeUsername(username);
-				} catch {
-					errors.push('Username is already in use.');
+	const newPassword = body['new-password'];
+	if (newPassword) {
+		const newPasswordRepeat = body['new-password-repeat'];
+		const currentPassword = body['current-password'];
+
+		if (
+			typeof newPassword !== 'string' ||
+			!newPasswordRepeat ||
+			newPasswordRepeat !== newPassword
+		) {
+			errors.push('The two new passwords did not match.');
+		} else if (!currentPassword || typeof currentPassword !== 'string') {
+			errors.push(
+				'Cannot change password without confirming current password.',
+			);
+		}
+		// eslint-disable-next-line unicorn/no-negated-condition
+		else if (!checkPasswordRules(newPassword)) {
+			errors.push('New password does not match password requirements.');
+		} else {
+			try {
+				user.changePassword(currentPassword, newPassword);
+			} catch (error: unknown) {
+				if (error instanceof ApiError) {
+					errors.push(error.message);
+				} else {
+					errors.push('Internal Error. Please try again.');
 				}
 			}
 		}
+	}
 
-		const displayName = body['displayname'];
-		if (displayName && displayName !== user.displayName) {
-			if (typeof displayName !== 'string' || displayName.length < 4) {
-				errors.push('Display-Name is too short.');
-			} else {
-				user.changeDisplayName(displayName);
-			}
-		}
+	if (errors.length > 0) {
+		response.status(400);
+	}
 
-		const newPassword = body['new-password'];
-		if (newPassword) {
-			const newPasswordRepeat = body['new-password-repeat'];
-			const currentPassword = body['current-password'];
+	response.send(
+		render.account(
+			response.locals.user,
+			'/account',
+			csrf.generate(response.locals.user, CsrfFormType.account),
+			errors,
+		),
+	);
+});
 
-			if (
-				typeof newPassword !== 'string' ||
-				!newPasswordRepeat ||
-				newPasswordRepeat !== newPassword
-			) {
-				errors.push('The two new passwords did not match.');
-			} else if (!currentPassword || typeof currentPassword !== 'string') {
-				errors.push(
-					'Cannot change password without confirming current password.',
-				);
-			}
-			// eslint-disable-next-line unicorn/no-negated-condition
-			else if (!checkPasswordRules(newPassword)) {
-				errors.push('New password does not match password requirements.');
-			} else {
-				try {
-					user.changePassword(currentPassword, newPassword);
-				} catch (error: unknown) {
-					if (error instanceof ApiError) {
-						errors.push(error.message);
-					} else {
-						errors.push('Internal Error. Please try again.');
-					}
-				}
-			}
-		}
-
-		if (errors.length > 0) {
-			response.status(400);
-		}
-
-		response.send(
-			render.account(
-				response.locals.user,
-				'/account',
-				csrf.generate(response.locals.user, CsrfFormType.account),
-				errors,
-			),
-		);
-	},
-);
-
-accountRouter.get('/account/delete', (_request, response) => {
+accountRouter.get('/delete', (_request, response) => {
 	response.send(
 		render.accountDelete(
 			response.locals.user,
@@ -166,7 +162,7 @@ accountRouter.get('/account/delete', (_request, response) => {
 });
 
 accountRouter.post(
-	'/account/delete',
+	'/delete',
 	formdataMiddleware.none(),
 	async (request, response) => {
 		if (!csrf.validate(CsrfFormType.accountDelete, request, response)) {

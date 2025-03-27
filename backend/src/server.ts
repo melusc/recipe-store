@@ -130,7 +130,7 @@ export function setupServer(api: Api) {
 		);
 	});
 
-	app.use('/', accountRouter);
+	app.use('/account', accountRouter);
 
 	app.use((_request, response) => {
 		response.status(404);
