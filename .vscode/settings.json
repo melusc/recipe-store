@@ -1,0 +1,5 @@
+{
+	"files.exclude": {
+		"bootstrap/src/bootstrap/": true
+	}
+}
