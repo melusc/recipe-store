@@ -89,7 +89,7 @@ SELECT recipe_id,
        created_at,
        updated_at,
        sections,
-			 source,
+       source,
        image,
        json_group_array(recipe_tags.tag_name) AS tags
 FROM   recipes
