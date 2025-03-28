@@ -166,7 +166,7 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 	const user1 = User.create('fadus', 'abccm', 'fnudy', UserRoles.User);
 	const user2 = User.create('tdjdj', 'paqfn', 'xaoyu', UserRoles.User);
 
-	await Recipe.create(
+	const recipe1 = await Recipe.create(
 		'recipe 1',
 		user1,
 		undefined,
@@ -175,7 +175,7 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 		['add @sunflower seeds{}'],
 	);
 
-	await Recipe.create(
+	const recipe2 = await Recipe.create(
 		'recipe 2',
 		user2,
 		undefined,
@@ -191,8 +191,11 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 	const recipes = Recipe.all();
 	expect(recipes).toHaveLength(2);
 
-	expect(new Set(recipes.map(({author}) => author?.username))).toStrictEqual(
-		new Set([undefined, 'tdjdj']),
+	// `recipe1` will not "know" that `user1` has been deleted
+	// Only on requery will it "know"
+	expect(Recipe.fromRecipeId(recipe1.recipeId)!.author).toBeUndefined();
+	expect(Recipe.fromRecipeId(recipe2.recipeId)!.author!.username).toStrictEqual(
+		'tdjdj',
 	);
 });
 
