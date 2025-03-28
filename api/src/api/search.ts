@@ -22,7 +22,7 @@ import {sectionToText} from 'cooklang';
 
 import type {Recipe} from './recipe.js';
 
-type Qualifier = 'any' | 'tagged' | 'author' | 'contains' | 'title';
+type Qualifier = 'any' | 'tagged' | 'author' | 'contains' | 'title' | 'source';
 
 export type QueryFilter = {
 	readonly qualifier: Qualifier;
@@ -41,6 +41,7 @@ const qualifiers: Record<string, Qualifier> = {
 	by: 'author',
 	contains: 'contains',
 	intext: 'contains',
+	source: 'source',
 };
 
 /*
@@ -195,7 +196,7 @@ function normaliseSearchValue(value: string) {
 	// "abc\r\ndef" == "abc\tdef"
 	// Ignore punctuation: "Firstly, add" == "firstly add"
 	// Don't care about case
-	return value.toLowerCase().replaceAll(/[\s,.:;\-!?]+/g, ' ');
+	return value.toLowerCase().replaceAll(/[\s,.:;\-!?\\/]+/g, ' ');
 }
 
 function searchContains(needle: string, haystack: string) {
@@ -210,6 +211,7 @@ const filterMatchers = {
 		// `contains:` last because it is probably the slowest, because it has to stringify the sections
 		return (
 			this.title(filterValue, recipe) ||
+			this.source(filterValue, recipe) ||
 			this.tagged(filterValue, recipe) ||
 			this.author(filterValue, recipe) ||
 			this.contains(filterValue, recipe)
@@ -249,6 +251,11 @@ const filterMatchers = {
 		}
 
 		return false;
+	},
+	source(filterValue: string, recipe: Recipe) {
+		return (
+			recipe.source !== undefined && searchContains(filterValue, recipe.source)
+		);
 	},
 } as const;
 

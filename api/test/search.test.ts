@@ -45,6 +45,9 @@ describe('QueryParser', () => {
 		'title:coolyo',
 		'intitle:pie',
 		'TitLeD: "soft cake"',
+		'source:https://google.com/',
+		'source:google.com',
+		'source:https://google.com/?q=rick%20roll',
 		'',
 		' ',
 		'-abc',
@@ -84,6 +87,10 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 	['-tagged:unique', 'Chocolate Cake', 'Mushroom Risotto'],
 	['-"contains:unique" easy', 'Banana Cake'],
 	['-"contains:unique" -easy', 'Mushroom Risotto'],
+	['source:google.com', 'Mushroom Risotto'],
+	['google.com', 'Mushroom Risotto'],
+	['source:https://www.google.com/', 'Mushroom Risotto'],
+	['-source:', 'Banana Cake'],
 ])(
 	'recipeMatchesFilter(%j)',
 	async ([query, ...expectedTitles], {api: {User, Recipe}}) => {
@@ -121,7 +128,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				'Chocolate Cake',
 				user2,
 				undefined,
-				undefined,
+				'https://www.bing.com/search?q=bing',
 				// Badly tagged
 				['chocolate cake'],
 				[
@@ -135,7 +142,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				'Mushroom Risotto',
 				user1,
 				undefined,
-				undefined,
+				'https://www.google.com/search?q=google',
 				['risotto', 'mushroom'],
 				['Go to #restaurant{}.', 'Ask waiter for risotto with mushroom.'],
 			),
