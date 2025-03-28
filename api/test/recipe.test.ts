@@ -39,6 +39,7 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 		'recipe 1',
 		user,
 		undefined,
+		undefined,
 		['vegetarian'],
 		['Add @eggs'],
 	);
@@ -59,6 +60,7 @@ apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
+		undefined,
 		undefined,
 		['vegetarian'],
 		['Add @banana'],
@@ -91,6 +93,7 @@ apiTest('Removing tags', async ({api: {User, Recipe}}) => {
 		'recipe 1',
 		user,
 		undefined,
+		undefined,
 		['tag1', 'tag2', 'tag3'],
 		['add @salt'],
 	);
@@ -118,6 +121,7 @@ apiTest(
 		const recipe = await Recipe.create(
 			'recipe 1',
 			user,
+			undefined,
 			undefined,
 			[],
 			['add @cinnamon'],
@@ -156,6 +160,7 @@ apiTest(
 			'recipe',
 			user,
 			firstImage,
+			undefined,
 			[],
 			['add @rice'],
 		);
@@ -195,6 +200,7 @@ apiTest(
 			'recipe',
 			user,
 			image,
+			undefined,
 			[],
 			['add @pasta'],
 		);
@@ -227,6 +233,7 @@ apiTest(
 			'recipe',
 			user,
 			undefined,
+			undefined,
 			[],
 			['add @popcorn'],
 		);
@@ -250,6 +257,7 @@ apiTest(
 		const recipe = await Recipe.create(
 			'recipe',
 			user,
+			undefined,
 			undefined,
 			[],
 			['add @apples'],
@@ -281,6 +289,7 @@ apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 		'recipe',
 		user,
 		undefined,
+		undefined,
 		[],
 		['add @tofu'],
 	);
@@ -306,7 +315,7 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 
 	await Promise.all(
 		Array.from({length: 25}, (_v, index) =>
-			Recipe.create(`recipe ${index}`, user, undefined, [], []),
+			Recipe.create(`recipe ${index}`, user, undefined, undefined, [], []),
 		),
 	);
 
@@ -351,6 +360,7 @@ apiTest('Updating sections', async ({api: {User, Recipe}}) => {
 		'recipe 1',
 		user,
 		undefined,
+		undefined,
 		[],
 		['Add @pineapple', 'Stir with #mixer'],
 	);
@@ -369,6 +379,7 @@ apiTest('Updating title', async ({api: {User, Recipe}}) => {
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
+		undefined,
 		undefined,
 		[],
 		['add @sugar'],
@@ -393,6 +404,7 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 		'recipe 1',
 		user,
 		undefined,
+		undefined,
 		[],
 		['add @broccoli'],
 	);
@@ -400,12 +412,14 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 		'recipe 2',
 		admin,
 		undefined,
+		undefined,
 		[],
 		['add @peaches'],
 	);
 	const recipeOwner = await Recipe.create(
 		'recipe 3',
 		owner,
+		undefined,
 		undefined,
 		[],
 		['add @chocolate'],
@@ -436,6 +450,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 			Recipe.create(
 				`Banana Cake ${index}`,
 				user,
+				undefined,
 				undefined,
 				['banana', 'cake', index.toString(10)],
 				[`Banana Cake No. ${index}`],

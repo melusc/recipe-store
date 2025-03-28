@@ -79,6 +79,7 @@ type SqlRecipeRow = {
 	sections: string;
 	image: string | null;
 	tags: string;
+	source: string | null;
 };
 
 const BASE_SQL_RECIPE_SELECT = `
@@ -88,6 +89,7 @@ SELECT recipe_id,
        created_at,
        updated_at,
        sections,
+			 source,
        image,
        json_group_array(recipe_tags.tag_name) AS tags
 FROM   recipes
@@ -114,6 +116,8 @@ export class Recipe extends InjectableApi {
 	_sections: readonly RecipeSection[];
 	/** @internal */
 	_author: User | undefined;
+	/** @internal */
+	_source: string | undefined;
 
 	constructor(
 		readonly recipeId: number,
@@ -122,6 +126,7 @@ export class Recipe extends InjectableApi {
 		createdAt: ReadonlyDate,
 		updatedAt: ReadonlyDate,
 		image: string | undefined,
+		source: string | undefined,
 		tags: readonly string[],
 		sections: readonly RecipeSection[],
 		constructorKey: symbol,
@@ -137,6 +142,7 @@ export class Recipe extends InjectableApi {
 		this._createdAt = createdAt;
 		this._updatedAt = updatedAt;
 		this._image = image;
+		this._source = source;
 		this._tags = tags;
 		this._sections = sections;
 	}
@@ -159,6 +165,10 @@ export class Recipe extends InjectableApi {
 
 	get image() {
 		return this._image;
+	}
+
+	get source() {
+		return this._source;
 	}
 
 	get tags() {
@@ -188,6 +198,7 @@ export class Recipe extends InjectableApi {
 		title: string,
 		author: User,
 		image: Buffer | undefined,
+		source: string | undefined,
 		tags: readonly string[],
 		sections: readonly string[],
 	) {
@@ -204,8 +215,8 @@ export class Recipe extends InjectableApi {
 		const {recipe_id: recipeId} = this.database
 			.prepare(
 				`INSERT INTO recipes
-				(title, author, created_at, updated_at, sections, image)
-				VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath)
+				(title, author, created_at, updated_at, sections, image, source)
+				VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath, :source)
 				RETURNING recipe_id`,
 			)
 			.get({
@@ -214,6 +225,7 @@ export class Recipe extends InjectableApi {
 				createdAt: createdAt.getTime(),
 				sections: JSON.stringify(sectionsParsed),
 				imagePath: null,
+				source: source ?? null,
 			}) as {recipe_id: number};
 
 		const recipe = new this.Recipe(
@@ -223,6 +235,7 @@ export class Recipe extends InjectableApi {
 			createdAt,
 			createdAt,
 			undefined,
+			source,
 			[],
 			sectionsParsed,
 			privateConstructorKey,
@@ -439,6 +452,7 @@ export class Recipe extends InjectableApi {
 			new Date(row.created_at),
 			new Date(row.updated_at),
 			row.image ?? undefined,
+			row.source ?? undefined,
 			tags,
 			parsedSections,
 			privateConstructorKey,
@@ -601,6 +615,23 @@ export class Recipe extends InjectableApi {
 			});
 
 		this._title = newTitle;
+
+		this._triggerUpdated();
+	}
+
+	updateSource(newSource: string | undefined) {
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET source = :source
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				source: newSource ?? null,
+			});
+
+		this._source = newSource;
 
 		this._triggerUpdated();
 	}

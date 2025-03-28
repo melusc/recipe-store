@@ -108,6 +108,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				'Banana Cake',
 				user1,
 				undefined,
+				undefined,
 				// "unique" appears only in tags
 				['cake', 'banana', 'dessert', 'easy cakes', 'unique'],
 				[
@@ -119,6 +120,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 			Recipe.create(
 				'Chocolate Cake',
 				user2,
+				undefined,
 				undefined,
 				// Badly tagged
 				['chocolate cake'],
@@ -132,6 +134,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 			Recipe.create(
 				'Mushroom Risotto',
 				user1,
+				undefined,
 				undefined,
 				['risotto', 'mushroom'],
 				['Go to #restaurant{}.', 'Ask waiter for risotto with mushroom.'],
