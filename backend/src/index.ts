@@ -79,6 +79,7 @@ await api.Recipe.create(
 	'recipe 1',
 	user,
 	undefined,
+	undefined,
 	['milk', 'example'],
 	['Add @milk'],
 );
@@ -86,6 +87,7 @@ await api.Recipe.create(
 await api.Recipe.create(
 	'recipe 2',
 	user,
+	undefined,
 	undefined,
 	['pineapple', 'example'],
 	['Add @pineapple'],
@@ -96,6 +98,7 @@ await Promise.all(
 		api.Recipe.create(
 			`recipe ${index + 3}`,
 			user,
+			undefined,
 			undefined,
 			['pineapple', 'example'],
 			[`Add @pineapple${index + 3}`],
