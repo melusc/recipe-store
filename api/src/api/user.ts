@@ -199,6 +199,11 @@ export class User extends InjectableApi {
 	}
 
 	static fromUserid(userId: number): User | undefined {
+		// fast path for deleted user
+		if (userId === -1) {
+			return;
+		}
+
 		const result = this.database
 			.prepare(
 				`SELECT username, displayname, role, updated_at, created_at FROM users
