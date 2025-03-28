@@ -239,6 +239,36 @@ exports[`QueryParser > parse("intitle:pie") 1`] = `
 ]
 `;
 
+exports[`QueryParser > parse("source:google.com") 1`] = `
+[
+  {
+    "filterValue": "google.com",
+    "invert": false,
+    "qualifier": "source",
+  },
+]
+`;
+
+exports[`QueryParser > parse("source:https://google.com/") 1`] = `
+[
+  {
+    "filterValue": "https://google.com/",
+    "invert": false,
+    "qualifier": "source",
+  },
+]
+`;
+
+exports[`QueryParser > parse("source:https://google.com/?q=rick%20roll") 1`] = `
+[
+  {
+    "filterValue": "https://google.com/?q=rick%20roll",
+    "invert": false,
+    "qualifier": "source",
+  },
+]
+`;
+
 exports[`QueryParser > parse("tag:abc") 1`] = `
 [
   {
