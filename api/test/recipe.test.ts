@@ -47,7 +47,7 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	expect(recipe.author?.userId).toStrictEqual(user.userId);
 	expect(recipe.createdAt.getTime()).toBeGreaterThanOrEqual(timeBeforeCreation);
 	expect(recipe.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
-	expect(recipe.image).toStrictEqual(undefined);
+	expect(recipe.image).toBeUndefined()
 	expect(recipe.sections).toHaveLength(1);
 	expect(recipe.tags).toStrictEqual(['vegetarian']);
 	expect(recipe.title).toStrictEqual('recipe 1');
@@ -282,6 +282,45 @@ apiTest(
 		await expect(listImages()).resolves.toHaveLength(0);
 	},
 );
+
+apiTest('Recipe source without starting source', async ({api: {Recipe, User}}) => {
+	const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User);
+	const recipe = await Recipe.create(
+		'recipe 1',
+		user,
+		undefined,
+		undefined,
+		[],
+		[],
+	);
+
+	expect(recipe.source).toBeUndefined()
+	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined()
+
+	recipe.updateSource('https://bing.com/');
+	expect(recipe.source).toStrictEqual('https://bing.com/');
+	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual('https://bing.com/')
+});
+
+
+apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
+	const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
+	const recipe = await Recipe.create(
+		'recipe 2',
+		user,
+		undefined,
+		'https://google.com/',
+		[],
+		[],
+	);
+
+	expect(recipe.source).toStrictEqual('https://google.com/');
+	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual('https://google.com/');
+
+	recipe.updateSource(undefined);
+	expect(recipe.source).toBeUndefined();
+	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
+});
 
 apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User);
