@@ -44,7 +44,6 @@ function generateTag(inputText) {
 		'col-md-4',
 		'col-lg-2',
 	);
-	parent.dataset.bsTheme = 'dark';
 
 	const input = document.createElement('input');
 	input.type = 'text';
