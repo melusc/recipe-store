@@ -29,11 +29,11 @@ import {
 	type UnitlessQuantity,
 } from '../../src/schema/quantity.js';
 
-test.for([
+test.for<[string, string]>([
 	['one%slice', 'one slice'],
 	['one slice', 'one slice'],
-	['100*', '100'],
-	['100*%g', '100 g'],
+	['100*', '100*'],
+	['100*%g', '100* g'],
 	['100', '100'],
 	['100%m', '100 m'],
 	['1.5%ft', '1.5 ft'],
