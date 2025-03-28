@@ -170,11 +170,12 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 		'recipe 1',
 		user1,
 		undefined,
+		undefined,
 		[],
 		['add @sunflower seeds{}'],
 	);
 
-	await Recipe.create('recipe 2', user2, undefined, [], ['add @basil']);
+	await Recipe.create('recipe 2', user2, undefined, undefined, [], ['add @basil']);
 
 	await user1.deleteUser(UserDeletion.KeepRecipes);
 
@@ -192,11 +193,12 @@ apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
 	const user1 = User.create('cnjxu', 'pzypq', 'lskih', UserRoles.User);
 	const user2 = User.create('grnly', 'kfksr', 'ccfqi', UserRoles.User);
 
-	await Recipe.create('recipe 1', user1, undefined, [], ['add @milk']);
+	await Recipe.create('recipe 1', user1, undefined, undefined, [], ['add @milk']);
 
 	const recipe2 = await Recipe.create(
 		'recipe 2',
 		user2,
+		undefined,
 		undefined,
 		[],
 		['add @carrots'],
@@ -216,6 +218,7 @@ apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
 		await Recipe.create(
 			`recipe ${index}`,
 			index & 1 ? user1 : user2,
+			undefined,
 			undefined,
 			[],
 			[`Add @salt{${index}%tbsp}`],
@@ -247,6 +250,7 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 		await Recipe.create(
 			`recipe ${index}`,
 			index & 1 ? user1 : user2,
+			undefined,
 			undefined,
 			[],
 			[`Add @salt{${index}%tbsp}`],
