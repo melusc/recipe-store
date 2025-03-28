@@ -102,22 +102,14 @@ export class Recipe extends InjectableApi {
 	// That makes then readonly externally
 	// Internally, they are r/w
 
-	/** @internal */
-	_title: string;
-	/** @internal */
-	readonly _createdAt: ReadonlyDate;
-	/** @internal */
-	_updatedAt: ReadonlyDate;
-	/** @internal */
-	_image: string | undefined;
-	/** @internal */
-	_tags: readonly string[];
-	/** @internal */
-	_sections: readonly RecipeSection[];
-	/** @internal */
-	_author: User | undefined;
-	/** @internal */
-	_source: string | undefined;
+	private _title: string;
+	private readonly _createdAt: ReadonlyDate;
+	private _updatedAt: ReadonlyDate;
+	private _image: string | undefined;
+	private _tags: readonly string[];
+	private _sections: readonly RecipeSection[];
+	private _author: User | undefined;
+	private _source: string | undefined;
 
 	constructor(
 		readonly recipeId: number,
@@ -179,8 +171,7 @@ export class Recipe extends InjectableApi {
 		return this._sections;
 	}
 
-	/** @internal */
-	_triggerUpdated() {
+	private _triggerUpdated() {
 		this._updatedAt = new Date();
 		this.database
 			.prepare(
@@ -277,8 +268,7 @@ export class Recipe extends InjectableApi {
 	// Internal parameters `userId` is for use via `User#paginateRecipes`
 	// Adding this optional parameter allows for deduplication instead
 	// of one method here and one there
-	/** @internal */
-	static _count(userId?: number) {
+	private static _count(userId?: number) {
 		let query = `SELECT count(recipe_id) as count
 				FROM recipes`;
 
@@ -421,11 +411,9 @@ export class Recipe extends InjectableApi {
 		});
 	}
 
-	/** @internal */
-	static _fromRow(row: SqlRecipeRow): Recipe;
-	/** @internal */
-	static _fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
-	static _fromRow(row: SqlRecipeRow | undefined) {
+	private static _fromRow(row: SqlRecipeRow): Recipe;
+	private static _fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
+	private static _fromRow(row: SqlRecipeRow | undefined) {
 		if (!row) {
 			return;
 		}
@@ -528,8 +516,7 @@ export class Recipe extends InjectableApi {
 	// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
 	// that means it is possible `a !== b`
 	// For simplicity just requery the tags
-	/** @internal */
-	_syncTags() {
+	private _syncTags() {
 		const tags = this.database
 			.prepare(
 				`SELECT tag_name FROM recipe_tags

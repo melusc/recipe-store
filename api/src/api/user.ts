@@ -46,17 +46,12 @@ const privateConstructorKey = Symbol();
 
 export class User extends InjectableApi {
 	// Internally r/w, externally readonly
-	/** @internal */
-	_username: string;
-	/** @internal */
-	_displayName: string;
-	/** @internal */
-	_role: UserRoles;
-	/** @internal */
-	_updatedAt: ReadonlyDate;
+	private _username: string;
+	private _displayName: string;
+	private _role: UserRoles;
+	private _updatedAt: ReadonlyDate;
 
-	/** @internal */
-	readonly _createdAt: ReadonlyDate;
+	private readonly _createdAt: ReadonlyDate;
 
 	constructor(
 		readonly userId: number,
@@ -303,8 +298,7 @@ export class User extends InjectableApi {
 		return this.role === UserRoles.Owner;
 	}
 
-	/** @internal */
-	_triggerUpdated() {
+	private _triggerUpdated() {
 		this._updatedAt = new Date();
 		this.database
 			.prepare(
