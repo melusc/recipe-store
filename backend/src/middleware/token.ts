@@ -109,7 +109,7 @@ class Session extends Token<{user: number}> {
 			}
 
 			const redirect = new RelativeUrl('/login');
-			redirect.searchParams.set('continue', request.url);
+			redirect.searchParams.set('continue', request.originalUrl);
 
 			response.clearCookie('session', {
 				httpOnly: true,
