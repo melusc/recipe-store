@@ -19,16 +19,14 @@
 */
 
 import {$} from '../$.js';
+import {centeredMain} from '../components/centered-main.js';
 
 import {createRoute} from './_utilities.js';
 
 export const renderAccountDelete = createRoute(
 	'Delete Account',
-	(_user, csrfToken: string, error?: string) => $`
-		<main class="
-			col-sm-10 col-md-6 col-lg-4
-			align-self-center
-		">
+	(_user, csrfToken: string, error?: string) =>
+		centeredMain($`
 			<section>
 				<h1>Delete Account</H1>
 
@@ -75,6 +73,5 @@ export const renderAccountDelete = createRoute(
 					<button type="submit" class="btn btn-danger">Permanently delete account</button>
 				</form>
 			</section>
-		</main>
-	`,
+		`),
 );

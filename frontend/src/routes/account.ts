@@ -19,17 +19,14 @@
 */
 
 import {$} from '../$.js';
+import {centeredMain} from '../components/centered-main.js';
 
 import {createRoute} from './_utilities.js';
 
 export const renderAccount = createRoute(
 	'Account',
-	(user, csrfToken: string, errors?: string[]) => $`
-		<main class="
-			col-sm-10 col-md-6 col-lg-4
-			align-self-center
-			d-flex flex-column gap-3
-		">
+	(user, csrfToken: string, errors?: string[]) =>
+		centeredMain($`
 			<section>
 				<h1>Account</H1>
 
@@ -145,6 +142,5 @@ export const renderAccount = createRoute(
 					Delete Account
 				</a>
 			</section>
-		</main>
-	`,
+		`),
 );
