@@ -44,14 +44,14 @@ export function createRoute<Parameters extends readonly unknown[]>(
 		...templateParameters: Parameters
 	) =>
 		$`
-		${$.trusted(baseHtml)}
+			${$.trusted(baseHtml)}
 
-		${title ? $`<title>${title} | Recipe Store</title>` : undefined}
+			${title ? $`<title>${title} | Recipe Store</title>` : undefined}
 
-		${header(user, path)}
+			${header(user, path)}
 
-		<div id="App" class="m-3 d-flex flex-column">
-			${template(user, ...templateParameters)}
-		</div>
-	`.render();
+			<div id="App" class="m-3 d-flex flex-column">
+				${template(user, ...templateParameters)}
+			</div>
+		`.render();
 }
