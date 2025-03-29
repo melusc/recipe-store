@@ -18,104 +18,106 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {HTMLDivElement} */
-const noJsInput = document.querySelector('#no-js-tags');
-noJsInput.classList.add('d-none');
+(() => {
+	/** @type {HTMLDivElement} */
+	const noJsInput = document.querySelector('#no-js-tags');
+	noJsInput.classList.add('d-none');
 
-/** @type {HTMLDivElement} */
-const jsInput = document.querySelector('#js-tags');
-jsInput.classList.remove('d-none');
+	/** @type {HTMLDivElement} */
+	const jsInput = document.querySelector('#js-tags');
+	jsInput.classList.remove('d-none');
 
-/** @type {HTMLInputElement} */
-const tagsInput = document.querySelector('#tags-input');
+	/** @type {HTMLInputElement} */
+	const tagsInput = document.querySelector('#tags-input');
 
-/**
- * @param {string} inputText
- * @returns {HTMLDivElement}
- */
-function generateTag(inputText) {
-	const parent = document.createElement('div');
-	parent.classList.add(
-		'btn',
-		'btn-theme',
-		'd-flex',
-		'flex-row',
-		'col-12',
-		'col-md-4',
-		'col-lg-2',
-	);
+	/**
+	 * @param {string} inputText
+	 * @returns {HTMLDivElement}
+	 */
+	function generateTag(inputText) {
+		const parent = document.createElement('div');
+		parent.classList.add(
+			'btn',
+			'btn-theme',
+			'd-flex',
+			'flex-row',
+			'col-12',
+			'col-md-4',
+			'col-lg-2',
+		);
 
-	const input = document.createElement('input');
-	input.type = 'text';
-	input.name = 'tags-js';
-	input.classList.add('bg-transparent', 'border-0', 'flex-grow-1');
-	input.value = inputText;
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.name = 'tags-js';
+		input.classList.add('bg-transparent', 'border-0', 'flex-grow-1');
+		input.value = inputText;
 
-	const removeButton = document.createElement('button');
-	removeButton.type = 'button';
-	removeButton.ariaLabel = 'Remove tag';
-	removeButton.classList.add('btn-close');
+		const removeButton = document.createElement('button');
+		removeButton.type = 'button';
+		removeButton.ariaLabel = 'Remove tag';
+		removeButton.classList.add('btn-close');
 
-	parent.append(input, removeButton);
+		parent.append(input, removeButton);
 
-	return parent;
-}
+		return parent;
+	}
 
-/**
- * @param {boolean} shouldAddAll
- */
-function splitIntoTags(shouldAddAll) {
-	const text = tagsInput.value;
-	let cursorLocation =
-		tagsInput.selectionDirection === 'backward'
-			? tagsInput.selectionStart
-			: tagsInput.selectionEnd;
+	/**
+	 * @param {boolean} shouldAddAll
+	 */
+	function splitIntoTags(shouldAddAll) {
+		const text = tagsInput.value;
+		let cursorLocation =
+			tagsInput.selectionDirection === 'backward'
+				? tagsInput.selectionStart
+				: tagsInput.selectionEnd;
 
-	const split = text.split(',');
+		const split = text.split(',');
 
-	if (split.length > 1 || shouldAddAll) {
-		const relevantParts = shouldAddAll ? split : split.slice(0, -1);
-		for (let item of relevantParts) {
-			cursorLocation -= item.length + 1;
-			item = item.trim();
+		if (split.length > 1 || shouldAddAll) {
+			const relevantParts = shouldAddAll ? split : split.slice(0, -1);
+			for (let item of relevantParts) {
+				cursorLocation -= item.length + 1;
+				item = item.trim();
 
-			if (!item) {
-				continue;
+				if (!item) {
+					continue;
+				}
+
+				const tag = generateTag(item);
+				tagsInput.before(tag);
 			}
 
-			const tag = generateTag(item);
-			tagsInput.before(tag);
+			tagsInput.value = shouldAddAll ? '' : split.at(-1);
+
+			tagsInput.selectionStart = tagsInput.selectionEnd = Math.max(
+				cursorLocation,
+				0,
+			);
+		}
+	}
+
+	tagsInput.addEventListener('keydown', event => {
+		if (event.code && event.code.toLowerCase() === 'enter') {
+			event.stopImmediatePropagation();
+			splitIntoTags(true);
+		}
+	});
+
+	tagsInput.addEventListener('input', () => {
+		splitIntoTags();
+	});
+
+	jsInput.addEventListener('click', event => {
+		const {target} = event;
+		if (!(target instanceof HTMLElement)) {
+			return;
 		}
 
-		tagsInput.value = shouldAddAll ? '' : split.at(-1);
+		if (target.classList.contains('btn-close')) {
+			target.parentElement.remove();
+		}
+	});
 
-		tagsInput.selectionStart = tagsInput.selectionEnd = Math.max(
-			cursorLocation,
-			0,
-		);
-	}
-}
-
-tagsInput.addEventListener('keydown', event => {
-	if (event.code && event.code.toLowerCase() === 'enter') {
-		event.stopImmediatePropagation();
-		splitIntoTags(true);
-	}
-});
-
-tagsInput.addEventListener('input', () => {
-	splitIntoTags();
-});
-
-jsInput.addEventListener('click', event => {
-	const {target} = event;
-	if (!(target instanceof HTMLElement)) {
-		return;
-	}
-
-	if (target.classList.contains('btn-close')) {
-		target.parentElement.remove();
-	}
-});
-
-splitIntoTags(true);
+	splitIntoTags(true);
+})();
