@@ -24,12 +24,12 @@ export function recipeTagsInput(tags?: string[]) {
 	tags ??= [];
 
 	return $`
-		<div id="no-js-tags">
-			<label for="tags-no-js" class="form-label">Tags</label>
+		<div id="tags-nojs-parent">
+			<label for="tags-nojs" class="form-label">Tags</label>
 			<input
 				type="text"
-				name="tags-no-js"
-				id="tags-no-js"
+				name="tags-nojs"
+				id="tags-nojs"
 				placeholder="Enter comma separated tags"
 				class="form-control"
 				value="${tags.join(', ')}"
@@ -37,7 +37,7 @@ export function recipeTagsInput(tags?: string[]) {
 			/>
 		</div>
 		<div class="d-none" id="js-tags">
-			<label for="tags-no-js" class="form-label">Tags</label>
+			<label for="tags-input" class="form-label">Tags</label>
 			<div class="
 				border border-1 rounded p-2
 				d-flex flex-wrap gap-2

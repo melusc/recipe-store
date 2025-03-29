@@ -20,8 +20,13 @@
 
 (() => {
 	/** @type {HTMLDivElement} */
-	const noJsInput = document.querySelector('#no-js-tags');
+	const noJsInput = document.querySelector('#tags-nojs-parent');
 	noJsInput.classList.add('d-none');
+	// Prevent stale data being used
+	// Don't even send it to the server
+	// Scenario in mind: User wants to remove all tags,
+	// server sees no `tags-js` so it uses `tags-nojs`
+	noJsInput.querySelector('input').name = '';
 
 	/** @type {HTMLDivElement} */
 	const jsInput = document.querySelector('#js-tags');
