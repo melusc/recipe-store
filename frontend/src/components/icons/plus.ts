@@ -18,29 +18,14 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {type PaginationResult, type Recipe} from 'api';
+import {$} from '../../$.js';
 
-import {$} from '../$.js';
-import {createRecipeButton} from '../components/create-recipe-button.js';
-import {pagination} from '../components/pagination.js';
-import {recipeCard} from '../components/recipe-card.js';
-
-import {createRoute} from './_utilities.js';
-
-export const renderIndex = createRoute(
-	'Recipes',
-	(user, recipes: PaginationResult<Recipe>) => {
-		return $`
-			${user && createRecipeButton()}
-
-			${
-				recipes.items.length > 0 &&
-				$`<main class="row g-3">
-					${recipes.items.map(recipe => recipeCard(recipe))}
-				</main>`
-			}
-
-			${pagination('/', recipes)}
-		`;
-	},
-);
+export function iconPlus() {
+	return $`<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 67.733 67.733"
+		style="vertical-align: top"
+	>
+  	<path d="M62.869 38.694H38.622v24.175a4.8643 4.8643 135 0 1-4.8643 4.8643 4.7923 4.7923 45.867 0 1-4.7192-4.8643V38.694H4.8635a4.8643 4.8643 45 0 1-4.8643-4.8643 4.8279 4.8279 135.43 0 1 4.8643-4.7913h24.175V4.8634a4.8643 4.8643 135 0 1 4.8643-4.8643 4.7923 4.7923 45.867 0 1 4.7192 4.8643v24.175h24.247a4.8643 4.8643 45 0 1 4.8643 4.8643 4.8279 4.8279 135.43 0 1-4.8643 4.7913z"/>
+	</svg>`;
+}

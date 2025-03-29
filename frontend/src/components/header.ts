@@ -39,6 +39,10 @@ export function header(user: User | undefined, path: string) {
 		...(user
 			? [
 					{
+						href: '/recipe/new',
+						name: 'Create New Recipe',
+					},
+					{
 						href: `/profile/${user.userId}`,
 						name: 'Profile',
 					},
