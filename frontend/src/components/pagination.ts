@@ -75,7 +75,7 @@ export function pagination(
 	}
 
 	return $`
-		<nav aria-label="Page navigation" class="mt-3">
+		<nav aria-label="Page navigation">
 			<ul class="pagination justify-content-center">
 				<li class="page-item ${previousPage === false ? 'disabled' : ''}">
 					<a class="page-link" href="${resolveUrl(previousPage)}" aria-label="Previous">
