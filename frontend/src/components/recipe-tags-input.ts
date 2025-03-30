@@ -20,7 +20,9 @@
 
 import {$} from '../$.js';
 
-export function recipeTagsInput(tags?: string[]) {
+import {iconCross} from './icons/cross.js';
+
+export function recipeTagsInput(tags?: readonly string[]) {
 	tags ??= [];
 
 	return $`
@@ -38,12 +40,13 @@ export function recipeTagsInput(tags?: string[]) {
 		</div>
 		<div class="d-none" id="js-tags">
 			<label for="tags-input" class="form-label">Tags</label>
+			<div class="d-none" id="js-icon-cross">${iconCross()}</div>
 			<div class="
 				border border-1 rounded p-2
-				d-flex flex-wrap gap-2
+				grid gap-2
 			">
 				<input
-					class="border-0 form-control w-auto flex-grow-1"
+					class="border-0 form-control g-col-12"
 					type="text"
 					id="tags-input"
 					placeholder="Enter comma separated tags"

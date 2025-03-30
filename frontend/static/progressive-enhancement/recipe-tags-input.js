@@ -32,6 +32,8 @@
 	const jsInput = document.querySelector('#js-tags');
 	jsInput.classList.remove('d-none');
 
+	const iconCross = document.querySelector('#js-icon-cross > svg');
+
 	/** @type {HTMLInputElement} */
 	const tagsInput = document.querySelector('#tags-input');
 
@@ -46,21 +48,25 @@
 			'btn-primary',
 			'd-flex',
 			'flex-row',
-			'col-12',
-			'col-md-4',
-			'col-lg-2',
+			'align-items-center',
+			'g-col-12',
+			'g-col-sm-6',
+			'g-col-lg-3',
 		);
 
 		const input = document.createElement('input');
 		input.type = 'text';
 		input.name = 'tags-js';
-		input.classList.add('bg-transparent', 'border-0', 'flex-grow-1');
+		input.classList.add('bg-transparent', 'border-0', 'flex-grow-1', 'w-100');
 		input.value = inputText;
 
 		const removeButton = document.createElement('button');
 		removeButton.type = 'button';
 		removeButton.ariaLabel = 'Remove tag';
-		removeButton.classList.add('btn-close');
+		removeButton.classList.add('btn', 'p-0');
+		removeButton.style.width = '1em';
+		removeButton.style.height = '1em';
+		removeButton.append(iconCross.cloneNode(true));
 
 		parent.append(input, removeButton);
 
