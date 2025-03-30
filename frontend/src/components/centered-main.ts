@@ -2,7 +2,7 @@ import {$, type Substitution} from '../$.js';
 
 export function centeredMain(children: Substitution) {
 	return $`<main class="
-		col-sm-10 col-md-6 col-lg-4
+		col-sm-10 col-md-6
 		align-self-center
 		d-flex flex-column gap-3
 	">
