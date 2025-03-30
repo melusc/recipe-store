@@ -43,7 +43,7 @@
 		const parent = document.createElement('div');
 		parent.classList.add(
 			'btn',
-			'btn-theme',
+			'btn-primary',
 			'd-flex',
 			'flex-row',
 			'col-12',

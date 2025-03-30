@@ -26,7 +26,7 @@ export function createRecipeButton() {
 	return $`
 		<a
 			href="/recipe/new"
-			class="btn btn-theme align-self-end icon-link"
+			class="btn btn-primary align-self-end icon-link"
 		>
 			Create recipe
 			<span style="height: 1em; width: 1em">${iconPlus()}</span>

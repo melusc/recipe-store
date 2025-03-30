@@ -37,7 +37,7 @@ export function searchForm(
 
 	const button = $`
 		<button
-			class="btn btn-primary"
+			class="btn btn-secondary"
 			type="submit"
 		>
 			Search
