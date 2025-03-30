@@ -145,10 +145,11 @@ export const enum CsrfFormType {
 	login,
 	account,
 	accountDelete,
+	recipe,
 }
 class Csrf extends Token<{form: CsrfFormType; user: number | undefined}> {
 	constructor() {
-		super('recipe-store/csrf', '15 min');
+		super('recipe-store/csrf', '30 min');
 	}
 
 	generate(user: User | undefined, form: CsrfFormType) {
