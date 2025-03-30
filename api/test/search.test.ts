@@ -116,6 +116,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				user1,
 				undefined,
 				undefined,
+				undefined,
 				// "unique" appears only in tags
 				['cake', 'banana', 'dessert', 'easy cakes', 'unique'],
 				[
@@ -129,6 +130,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				user2,
 				undefined,
 				'https://www.bing.com/search?q=bing',
+				undefined,
 				// Badly tagged
 				['chocolate cake'],
 				[
@@ -143,6 +145,7 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 				user1,
 				undefined,
 				'https://www.google.com/search?q=google',
+				undefined,
 				['risotto', 'mushroom'],
 				['Go to #restaurant{}.', 'Ask waiter for risotto with mushroom.'],
 			),

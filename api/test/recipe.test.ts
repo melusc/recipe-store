@@ -40,6 +40,7 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 		user,
 		undefined,
 		undefined,
+		undefined,
 		['vegetarian'],
 		['Add @eggs'],
 	);
@@ -60,6 +61,7 @@ apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
+		undefined,
 		undefined,
 		undefined,
 		['vegetarian'],
@@ -94,6 +96,7 @@ apiTest('Removing tags', async ({api: {User, Recipe}}) => {
 		user,
 		undefined,
 		undefined,
+		undefined,
 		['tag1', 'tag2', 'tag3'],
 		['add @salt'],
 	);
@@ -121,6 +124,7 @@ apiTest(
 		const recipe = await Recipe.create(
 			'recipe 1',
 			user,
+			undefined,
 			undefined,
 			undefined,
 			[],
@@ -160,6 +164,7 @@ apiTest(
 			'recipe',
 			user,
 			firstImage,
+			undefined,
 			undefined,
 			[],
 			['add @rice'],
@@ -201,6 +206,7 @@ apiTest(
 			user,
 			image,
 			undefined,
+			undefined,
 			[],
 			['add @pasta'],
 		);
@@ -234,6 +240,7 @@ apiTest(
 			user,
 			undefined,
 			undefined,
+			undefined,
 			[],
 			['add @popcorn'],
 		);
@@ -257,6 +264,7 @@ apiTest(
 		const recipe = await Recipe.create(
 			'recipe',
 			user,
+			undefined,
 			undefined,
 			undefined,
 			[],
@@ -292,6 +300,7 @@ apiTest(
 			user,
 			undefined,
 			undefined,
+			undefined,
 			[],
 			[],
 		);
@@ -314,6 +323,7 @@ apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
 		user,
 		undefined,
 		'https://google.com/',
+		undefined,
 		[],
 		[],
 	);
@@ -328,11 +338,81 @@ apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
 	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
 });
 
+apiTest(
+	'Recipe duration without initial duration',
+	async ({api: {Recipe, User}}) => {
+		const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User);
+		const recipe = await Recipe.create(
+			'recipe 1',
+			user,
+			undefined,
+			undefined,
+			undefined,
+			[],
+			[],
+		);
+
+		expect(recipe.duration).toBeUndefined();
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
+
+		recipe.updateDuration('60 minutes');
+		expect(recipe.duration).toStrictEqual('1 hour');
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
+			'1 hour',
+		);
+	},
+);
+
+apiTest(
+	'Recipe duration with starting duration',
+	async ({api: {Recipe, User}}) => {
+		const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
+		const recipe = await Recipe.create(
+			'recipe 2',
+			user,
+			undefined,
+			'https://google.com/',
+			'60 min',
+			[],
+			[],
+		);
+
+		expect(recipe.source).toStrictEqual('1 hour');
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual(
+			'1 hour',
+		);
+
+		recipe.updateSource(undefined);
+		expect(recipe.source).toBeUndefined();
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
+	},
+);
+
+apiTest('Recipe duration invalid durations', async ({api: {Recipe, User}}) => {
+	const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
+	const recipe = await Recipe.create(
+		'recipe 2',
+		user,
+		undefined,
+		'https://google.com/',
+		'60 min',
+		[],
+		[],
+	);
+
+	recipe.updateDuration('-3 minutes');
+	expect(recipe.duration).toBeUndefined();
+
+	recipe.updateDuration('NaN');
+	expect(recipe.duration).toBeUndefined();
+});
+
 apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User);
 	const recipe = await Recipe.create(
 		'recipe',
 		user,
+		undefined,
 		undefined,
 		undefined,
 		[],
@@ -360,7 +440,15 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 
 	await Promise.all(
 		Array.from({length: 25}, (_v, index) =>
-			Recipe.create(`recipe ${index}`, user, undefined, undefined, [], []),
+			Recipe.create(
+				`recipe ${index}`,
+				user,
+				undefined,
+				undefined,
+				undefined,
+				[],
+				[],
+			),
 		),
 	);
 
@@ -406,6 +494,7 @@ apiTest('Updating sections', async ({api: {User, Recipe}}) => {
 		user,
 		undefined,
 		undefined,
+		undefined,
 		[],
 		['Add @pineapple', 'Stir with #mixer'],
 	);
@@ -424,6 +513,7 @@ apiTest('Updating title', async ({api: {User, Recipe}}) => {
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
+		undefined,
 		undefined,
 		undefined,
 		[],
@@ -450,6 +540,7 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 		user,
 		undefined,
 		undefined,
+		undefined,
 		[],
 		['add @broccoli'],
 	);
@@ -458,12 +549,14 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 		admin,
 		undefined,
 		undefined,
+		undefined,
 		[],
 		['add @peaches'],
 	);
 	const recipeOwner = await Recipe.create(
 		'recipe 3',
 		owner,
+		undefined,
 		undefined,
 		undefined,
 		[],
@@ -495,6 +588,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 			Recipe.create(
 				`Banana Cake ${index}`,
 				user,
+				undefined,
 				undefined,
 				undefined,
 				['banana', 'cake', index.toString(10)],

@@ -79,7 +79,8 @@ function initDatabase(database: DatabaseSync) {
 			updated_at  INTEGER NOT NULL,
 			sections    TEXT NOT NULL, -- JSON
 			image       TEXT, -- optional
-			source      TEXT -- optional
+			source      TEXT, -- optional
+			duration    INTEGER -- optional
 		);
 
 		CREATE TABLE IF NOT EXISTS recipe_tags (

@@ -28,6 +28,7 @@ import {
 	type CooklangSection,
 } from 'cooklang';
 import {fileTypeFromBuffer} from 'file-type';
+import ms from 'ms';
 import {array, object, string} from 'zod';
 
 import {ApiError} from './error.js';
@@ -80,6 +81,7 @@ type SqlRecipeRow = {
 	image: string | null;
 	tags: string;
 	source: string | null;
+	duration: number | null;
 };
 
 const BASE_SQL_RECIPE_SELECT = `
@@ -90,10 +92,24 @@ SELECT recipe_id,
        updated_at,
        sections,
        source,
+			 duration,
        image,
        json_group_array(recipe_tags.tag_name) AS tags
 FROM   recipes
        LEFT JOIN recipe_tags using (recipe_id)`;
+
+function parseDuration(duration_: string | undefined) {
+	if (duration_ === undefined) {
+		return;
+	}
+
+	const duration = ms(duration_ as ms.StringValue);
+	if (!duration || duration <= 0) {
+		return;
+	}
+
+	return duration;
+}
 
 const privateConstructorKey = Symbol();
 
@@ -110,6 +126,7 @@ export class Recipe extends InjectableApi {
 	private _sections: readonly RecipeSection[];
 	private _author: User | undefined;
 	private _source: string | undefined;
+	private _duration: number | undefined;
 
 	constructor(
 		readonly recipeId: number,
@@ -119,6 +136,7 @@ export class Recipe extends InjectableApi {
 		updatedAt: ReadonlyDate,
 		image: string | undefined,
 		source: string | undefined,
+		duration: number | undefined,
 		tags: readonly string[],
 		sections: readonly RecipeSection[],
 		constructorKey: symbol,
@@ -135,6 +153,7 @@ export class Recipe extends InjectableApi {
 		this._updatedAt = updatedAt;
 		this._image = image;
 		this._source = source;
+		this._duration = duration;
 		this._tags = tags;
 		this._sections = sections;
 	}
@@ -161,6 +180,12 @@ export class Recipe extends InjectableApi {
 
 	get source() {
 		return this._source;
+	}
+
+	get duration() {
+		return this._duration === undefined
+			? undefined
+			: ms(this._duration, {long: true});
 	}
 
 	get tags() {
@@ -190,6 +215,7 @@ export class Recipe extends InjectableApi {
 		author: User,
 		image: Buffer | undefined,
 		source: string | undefined,
+		duration_: string | undefined,
 		tags: readonly string[],
 		sections: readonly string[],
 	) {
@@ -203,11 +229,16 @@ export class Recipe extends InjectableApi {
 				}) satisfies RecipeSection,
 		);
 
+		const duration = parseDuration(duration_);
+
 		const {recipe_id: recipeId} = this.database
 			.prepare(
 				`INSERT INTO recipes
-				(title, author, created_at, updated_at, sections, image, source)
-				VALUES (:title, :author, :createdAt, :createdAt, :sections, :imagePath, :source)
+				(title, author, created_at, updated_at, sections, image, source, duration)
+				VALUES (
+					:title, :author, :createdAt, :createdAt,
+					:sections, :imagePath, :source, :duration
+				)
 				RETURNING recipe_id`,
 			)
 			.get({
@@ -217,6 +248,7 @@ export class Recipe extends InjectableApi {
 				sections: JSON.stringify(sectionsParsed),
 				imagePath: null,
 				source: source ?? null,
+				duration: duration ?? null,
 			}) as {recipe_id: number};
 
 		const recipe = new this.Recipe(
@@ -227,6 +259,7 @@ export class Recipe extends InjectableApi {
 			createdAt,
 			undefined,
 			source,
+			duration,
 			[],
 			sectionsParsed,
 			privateConstructorKey,
@@ -441,6 +474,7 @@ export class Recipe extends InjectableApi {
 			new Date(row.updated_at),
 			row.image ?? undefined,
 			row.source ?? undefined,
+			row.duration ?? undefined,
 			tags,
 			parsedSections,
 			privateConstructorKey,
@@ -619,6 +653,25 @@ export class Recipe extends InjectableApi {
 			});
 
 		this._source = newSource;
+
+		this._triggerUpdated();
+	}
+
+	updateDuration(newDuration: string | undefined) {
+		const duration = parseDuration(newDuration);
+
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET duration = :duration
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				recipeId: this.recipeId,
+				duration: duration ?? null,
+			});
+
+		this._duration = duration;
 
 		this._triggerUpdated();
 	}
