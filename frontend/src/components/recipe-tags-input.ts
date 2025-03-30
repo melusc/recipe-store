@@ -22,6 +22,34 @@ import {$} from '../$.js';
 
 import {iconCross} from './icons/cross.js';
 
+function jsTag(value?: string) {
+	return $`
+		<div
+			id="tag-parent"
+			class="
+				btn btn-primary
+				d-flex flex-row align-items-center
+				g-col-12 g-col-sm-6 g-col-lg-3
+			"
+		>
+			<input
+				type="text"
+				name="tags-js"
+				class="bg-transparent border-0 w-100"
+				value="${value}"
+			>
+			<button
+				type="button"
+				aria-label="Remove tag"
+				class="btn p-0"
+				id="btn-remove-tag"
+				style="width: 1em; height: 1em"
+			>
+				${iconCross()}
+			</button>
+		</div>`;
+}
+
 export function recipeTagsInput(tags?: readonly string[]) {
 	tags ??= [];
 
@@ -40,17 +68,19 @@ export function recipeTagsInput(tags?: readonly string[]) {
 		</div>
 		<div class="d-none" id="js-tags">
 			<label for="tags-input" class="form-label">Tags</label>
-			<div class="d-none" id="js-icon-cross">${iconCross()}</div>
+			<template id="tag-template">
+				${jsTag()}
+			</template>
 			<div class="
 				border border-1 rounded p-2
 				grid gap-2
 			">
+				${tags.map(tag => jsTag(tag))}
 				<input
 					class="border-0 form-control g-col-12"
 					type="text"
 					id="tags-input"
 					placeholder="Enter comma separated tags"
-					value="${tags.join(', ')}"
 					autocomplete="off"
 				/>
 			</div>

@@ -32,46 +32,11 @@
 	const jsInput = document.querySelector('#js-tags');
 	jsInput.classList.remove('d-none');
 
-	const iconCross = document.querySelector('#js-icon-cross > svg');
-
 	/** @type {HTMLInputElement} */
 	const tagsInput = document.querySelector('#tags-input');
 
-	/**
-	 * @param {string} inputText
-	 * @returns {HTMLDivElement}
-	 */
-	function generateTag(inputText) {
-		const parent = document.createElement('div');
-		parent.classList.add(
-			'btn',
-			'btn-primary',
-			'd-flex',
-			'flex-row',
-			'align-items-center',
-			'g-col-12',
-			'g-col-sm-6',
-			'g-col-lg-3',
-		);
-
-		const input = document.createElement('input');
-		input.type = 'text';
-		input.name = 'tags-js';
-		input.classList.add('bg-transparent', 'border-0', 'flex-grow-1', 'w-100');
-		input.value = inputText;
-
-		const removeButton = document.createElement('button');
-		removeButton.type = 'button';
-		removeButton.ariaLabel = 'Remove tag';
-		removeButton.classList.add('btn', 'p-0');
-		removeButton.style.width = '1em';
-		removeButton.style.height = '1em';
-		removeButton.append(iconCross.cloneNode(true));
-
-		parent.append(input, removeButton);
-
-		return parent;
-	}
+	/** @type {HTMLTemplateElement} */
+	const tagTemplate = document.querySelector('#tag-template');
 
 	/**
 	 * @param {boolean} shouldAddAll
@@ -95,7 +60,9 @@
 					continue;
 				}
 
-				const tag = generateTag(item);
+				/** @type {HTMLElement} */
+				const tag = tagTemplate.content.cloneNode(true);
+				tag.querySelector('input[name="tags-js"]').value = item;
 				tagsInput.before(tag);
 			}
 
@@ -115,20 +82,30 @@
 		}
 	});
 
+	/** @param {Event} event */
+	function handleButton(event) {
+		const target = event.target;
+		if (!(target instanceof Element)) {
+			return;
+		}
+
+		if (target.matches('#btn-remove-tag, #btn-remove-tag *')) {
+			target.closest('#tag-parent').remove();
+			event.stopImmediatePropagation();
+		}
+	}
+
 	tagsInput.addEventListener('input', () => {
 		splitIntoTags();
 	});
 
 	jsInput.addEventListener('click', event => {
-		const {target} = event;
-		if (!(target instanceof HTMLElement)) {
-			return;
-		}
-
-		if (target.classList.contains('btn-close')) {
-			target.parentElement.remove();
+		handleButton(event);
+	});
+	jsInput.addEventListener('keypress', event => {
+		const code = event.code.toLowerCase();
+		if (code === 'enter' || code === 'space') {
+			handleButton(event);
 		}
 	});
-
-	splitIntoTags(true);
 })();
