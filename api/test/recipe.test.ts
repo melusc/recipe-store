@@ -377,14 +377,14 @@ apiTest(
 			[],
 		);
 
-		expect(recipe.source).toStrictEqual('1 hour');
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual(
+		expect(recipe.duration).toStrictEqual('1 hour');
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
 			'1 hour',
 		);
 
-		recipe.updateSource(undefined);
-		expect(recipe.source).toBeUndefined();
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
+		recipe.updateDuration(undefined);
+		expect(recipe.duration).toBeUndefined();
+		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
 	},
 );
 
