@@ -50,7 +50,7 @@ const allowedImageMimes: ReadonlySet<string> = new Set([
 	'image/png',
 	'image/webp',
 ]);
-async function validateImageType(image: Buffer): Promise<string> {
+export async function validateImageType(image: Buffer): Promise<string> {
 	if (image.byteLength > 10e6) {
 		throw new ApiError('Image is too large. Maximum of 10 MB is allowed.');
 	}
@@ -65,7 +65,7 @@ async function validateImageType(image: Buffer): Promise<string> {
 	);
 }
 
-function randomImageName(extension: string) {
+export function randomImageName(extension: string) {
 	const name = randomBytes(30).toString('base64url');
 	return `${name}.${extension}`;
 }
