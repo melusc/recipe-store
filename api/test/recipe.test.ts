@@ -273,18 +273,15 @@ apiTest(
 
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const gifImage = await readFile(sampleImagePaths.gif);
-		await expect(
-			(async () => {
-				await recipe.updateImage(gifImage);
-			})(),
-		).rejects.to.throw(ApiError, /unknown/i);
+		await expect(recipe.updateImage(gifImage)).rejects.to.throw(
+			ApiError,
+			/unknown/i,
+		);
 
 		await expect(listImages()).resolves.toHaveLength(0);
 
 		await expect(
-			(async () => {
-				await recipe.updateImage(Buffer.from('<!doctype html><html></html>'));
-			})(),
+			recipe.updateImage(Buffer.from('<!doctype html><html></html>')),
 		).rejects.to.throw(ApiError, /unknown/i);
 
 		await expect(listImages()).resolves.toHaveLength(0);
@@ -409,11 +406,7 @@ apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 		buffer = Buffer.concat([buffer, buffer]);
 	}
 
-	await expect(
-		(async () => {
-			await recipe.updateImage(buffer);
-		})(),
-	).rejects.to.throw(ApiError, /large/i);
+	await expect(recipe.updateImage(buffer)).rejects.to.throw(ApiError, /large/i);
 });
 
 apiTest('Paginate', async ({api: {User, Recipe}}) => {
