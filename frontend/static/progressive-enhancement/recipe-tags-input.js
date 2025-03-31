@@ -78,6 +78,7 @@
 	tagsInput.addEventListener('keydown', event => {
 		if (event.code && event.code.toLowerCase() === 'enter') {
 			event.stopImmediatePropagation();
+			event.preventDefault();
 			splitIntoTags(true);
 		}
 	});
@@ -92,6 +93,7 @@
 		if (target.matches('#btn-remove-tag, #btn-remove-tag *')) {
 			target.closest('#tag-parent').remove();
 			event.stopImmediatePropagation();
+			event.preventDefault();
 		}
 	}
 
