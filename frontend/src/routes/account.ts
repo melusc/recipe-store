@@ -20,6 +20,7 @@
 
 import {$} from '../$.js';
 import {centeredMain} from '../components/centered-main.js';
+import {formError} from '../components/form-error.js';
 
 import {createRoute} from './_utilities.js';
 
@@ -37,19 +38,7 @@ export const renderAccount = createRoute(
 					class="d-flex flex-column gap-3"
 					id="account-form"
 				>
-					${
-						errors &&
-						errors.length > 0 &&
-						$`<div class="alert alert-danger" role="alert">
-							${
-								errors.length === 1
-									? errors[0]!
-									: $`<ul>
-									${errors.map(error => $`<li>${error}</li>`)}
-								</ul>`
-							}
-						</div>`
-					}
+					${formError(errors)}
 
 					${
 						errors?.length === 0 &&
