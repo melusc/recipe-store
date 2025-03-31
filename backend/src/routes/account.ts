@@ -18,7 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {ApiError, UserDeletion} from 'api';
+import {ApiError, UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
@@ -27,7 +27,7 @@ import {formdataMiddleware} from '../upload.ts';
 
 export const accountRouter = Router();
 
-accountRouter.use(session.guard());
+accountRouter.use(session.guard(UserRoles.User));
 
 accountRouter.get('/', (_request, response) => {
 	response.send(

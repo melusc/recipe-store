@@ -21,10 +21,12 @@
 import {randomBytes} from 'node:crypto';
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import type {Api, User} from 'api';
+import type {Api, User, UserRoles} from 'api';
 import type {Request, RequestHandler, Response} from 'express';
 import jwtProvider from 'jsonwebtoken';
 import type {StringValue} from 'ms';
+
+import {UnauthorisedError} from '../errors.ts';
 
 class Token<T extends Record<string, unknown>> {
 	// Separate secret per type
@@ -101,10 +103,16 @@ class Session extends Token<{user: number}> {
 		};
 	}
 
-	guard(): RequestHandler {
+	guard(minimumRole: UserRoles): RequestHandler {
 		return (request, response, next) => {
-			if (response.locals.user) {
+			const user = response.locals.user;
+			if (user && user.role > minimumRole) {
 				next();
+				return;
+			}
+
+			if (user) {
+				next(new UnauthorisedError());
 				return;
 			}
 
