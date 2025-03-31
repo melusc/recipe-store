@@ -18,24 +18,24 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {fileURLToPath} from 'node:url';
+import {$} from '../../$.js';
+import {centeredMain} from '../../components/centered-main.js';
+import {recipeForm, type RecipePrefill} from '../../components/recipe-form.js';
+import {createRoute} from '../_utilities.js';
 
-import express, {Router} from 'express';
+export const renderNewRecipe = createRoute(
+	'New Recipe',
+	(
+		_user,
+		csrfToken: string,
+		prefill: RecipePrefill,
+		errors?: readonly string[],
+	) =>
+		centeredMain($`
+		<section>
+			<h1>Create new recipe</h1>
 
-import {imageDirectory} from '../data.ts';
-
-export const staticRouter = Router();
-
-const options = {
-	index: false,
-	dotfiles: 'ignore',
-};
-
-const staticDirectory = fileURLToPath(import.meta.resolve('frontend/static'));
-staticRouter.use('/', express.static(staticDirectory, options));
-
-const bootstrapDirectory = fileURLToPath(import.meta.resolve('bootstrap-slim'));
-staticRouter.use('/', express.static(bootstrapDirectory, options));
-
-const userContentImages = fileURLToPath(imageDirectory);
-staticRouter.use('/user-content', express.static(userContentImages, options));
+			${recipeForm('/recipe/new', csrfToken, prefill, errors)}
+		</section>
+	`),
+);

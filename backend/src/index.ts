@@ -97,7 +97,7 @@ await api.Recipe.create(
 );
 
 await Promise.all(
-	Array.from({length: 200}, (_v, index) =>
+	Array.from({length: 30}, (_v, index) =>
 		api.Recipe.create(
 			`recipe ${index + 3}`,
 			user,

@@ -32,8 +32,10 @@ import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account.ts';
+import {apiRouter} from './routes/api.ts';
 import {loginRouter} from './routes/login.ts';
 import {requiredPasswordChangeRouter} from './routes/required-password-change.ts';
+import {newRecipeRouter} from './routes/new-recipe.ts';
 import {staticRouter} from './routes/static.ts';
 
 export function setupServer(api: Api) {
@@ -130,6 +132,8 @@ export function setupServer(api: Api) {
 
 	app.use('/account', accountRouter);
 	app.use('/required-password-change', requiredPasswordChangeRouter);
+	app.use('/recipe/new', newRecipeRouter);
+	app.use('/api', apiRouter);
 
 	app.use(((error, request, response, _next) => {
 		if (error instanceof UnauthorisedError) {

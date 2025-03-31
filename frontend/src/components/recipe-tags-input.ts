@@ -55,7 +55,7 @@ export function recipeTagsInput(tags?: readonly string[]) {
 
 	return $`
 		<div id="tags-nojs-parent">
-			<label for="tags-nojs" class="form-label">Tags</label>
+			<label for="tags-nojs" class="form-label">Tags (optional)</label>
 			<input
 				type="text"
 				name="tags-nojs"
@@ -67,7 +67,7 @@ export function recipeTagsInput(tags?: readonly string[]) {
 			/>
 		</div>
 		<div class="d-none" id="js-tags">
-			<label for="tags-input" class="form-label">Tags</label>
+			<label for="tags-input" class="form-label">Tags (optional)</label>
 			<template id="tag-template">
 				${jsTag()}
 			</template>
