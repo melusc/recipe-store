@@ -45,8 +45,6 @@ apiRouter.post(
 	'/temp-image/upload',
 	formdataMiddleware.single('image'),
 	async (request, response) => {
-		const file = request.file;
-
 		if (!csrf.validate(request, response)) {
 			response.status(401).json({
 				error: 'Could not validate CSRF Token. Please try again.',
@@ -54,6 +52,7 @@ apiRouter.post(
 			return;
 		}
 
+		const file = request.file;
 		let image: FormImage | undefined;
 		try {
 			image = await readForm.image({}, file);
@@ -101,7 +100,12 @@ apiRouter.post(
 	'/temp-image/delete',
 	formdataMiddleware.none(),
 	async (request, response) => {
-		response.setHeader('X-CSRF-Token', csrf.generate(response.locals.user));
+		if (!csrf.validate(request, response)) {
+			response.status(401).json({
+				error: 'Could not validate CSRF Token. Please try again.',
+			});
+			return;
+		}
 
 		const body = (request.body ?? {}) as Record<string, unknown>;
 		const key = body['deletion-key'];
