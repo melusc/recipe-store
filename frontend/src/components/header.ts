@@ -24,13 +24,7 @@ import {$} from '../$.js';
 
 import {searchForm} from './search-form.js';
 
-export function header(user: User | undefined, path: string) {
-	const active = {
-		'/login': 'login-logout',
-		'/logout': 'login-logout',
-		'/': 'frontpage',
-	}[path];
-
+export function header(user: User | undefined, path: string | undefined) {
 	const routes = [
 		{
 			href: '/',
@@ -68,8 +62,8 @@ export function header(user: User | undefined, path: string) {
 			<nav class="navbar navbar-expand-lg p-3">
 			  <div class="container-fluid">
 					<a
-						class="navbar-brand ${active === 'frontpage' ? 'active' : ''}"
-						aria-current="${active === 'frontpage' ? 'page' : 'false'}"
+						class="navbar-brand ${path === '/' ? 'active' : ''}"
+						aria-current="${path === '/' ? 'page' : 'false'}"
 						href="/"
 					>Recipe Store</a>
 

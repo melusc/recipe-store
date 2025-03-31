@@ -40,7 +40,7 @@ export function createRoute<Parameters extends readonly unknown[]>(
 ) {
 	return (
 		user: User | undefined,
-		path: string,
+		path: string | undefined,
 		...templateParameters: Parameters
 	) =>
 		$`
