@@ -24,7 +24,7 @@ import path from 'node:path';
 
 import {validateImageType} from 'api';
 
-import {imageUploadDirectory} from './data.ts';
+import {imageUploadDirectory} from '../data.ts';
 
 export type FormImage = {
 	savedName: string | undefined;

@@ -22,7 +22,7 @@ import {UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {readAccountForm} from '../account-form.ts';
+import {readAccountForm} from '../form-validation/account.ts';
 import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
