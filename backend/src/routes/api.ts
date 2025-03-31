@@ -26,7 +26,7 @@ import {ApiError, randomImageName, UserRoles} from 'api';
 import express, {Router} from 'express';
 
 import {imageUploadDirectory} from '../data.ts';
-import {readForm, type FormImage} from '../form.ts';
+import {readForm, type FormImage} from '../recipe-form.ts';
 import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
