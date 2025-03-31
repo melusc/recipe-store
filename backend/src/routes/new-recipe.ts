@@ -20,7 +20,7 @@
 
 import {writeFile} from 'node:fs/promises';
 
-import {ApiError, randomImageName} from 'api';
+import {ApiError, randomImageName, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
@@ -31,7 +31,7 @@ import {formdataMiddleware} from '../upload.ts';
 
 export const newRecipeRouter = Router();
 
-newRecipeRouter.use(session.guard());
+newRecipeRouter.use(session.guard(UserRoles.User));
 
 newRecipeRouter.post(
 	'/',

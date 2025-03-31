@@ -22,7 +22,7 @@ import {randomBytes} from 'node:crypto';
 import {rm, writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 
-import {ApiError, randomImageName} from 'api';
+import {ApiError, randomImageName, UserRoles} from 'api';
 import express, {Router} from 'express';
 
 import {imageUploadDirectory} from '../data.ts';
@@ -32,7 +32,7 @@ import {formdataMiddleware} from '../upload.ts';
 
 export const apiRouter = Router();
 
-apiRouter.use(session.guard());
+apiRouter.use(session.guard(UserRoles.User));
 
 const deletionKeys = new Map<string, URL>();
 
