@@ -64,14 +64,8 @@ await Promise.all(
 	api.User.all().map(user => user.deleteUser(UserDeletion.DeleteRecipes)),
 );
 
-const username = generatePassword({
-	length: 5,
-	lowercase: true,
-	uppercase: false,
-	special: false,
-	number: false,
-});
-const password = generatePassword();
+const username = 'lnjfs';
+const password = 'c4,y4dDE(T=XP(4y(GM~PnZT>Dwk?sa)';
 console.log(username, password);
 const user = api.User.create(username, username, password, UserRoles.Owner);
 
