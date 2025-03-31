@@ -144,6 +144,6 @@ export const readForm = {
 
 		return title.trim();
 	},
-	resolveSource: getOptionalField('source'),
+	source: getOptionalField('source'),
 	duration: getOptionalField('duration'),
 } as const;

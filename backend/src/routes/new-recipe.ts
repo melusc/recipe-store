@@ -75,7 +75,7 @@ newRecipeRouter.post(
 			errors.push((error as Error).message);
 		}
 		const duration = readForm.duration(body);
-		const source = readForm.resolveSource(body);
+		const source = readForm.source(body);
 
 		if (errors.length > 0) {
 			let savedLocationName = image?.savedName;
