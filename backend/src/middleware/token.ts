@@ -99,6 +99,20 @@ class Session extends Token<{user: number}> {
 				this.setCookie(jwtPayload.user, response);
 			}
 
+			if (response.locals.user) {
+				const user = response.locals.user;
+				const url = request.originalUrl;
+				if (
+					user.requirePasswordChange &&
+					!url.startsWith('/static') &&
+					!url.startsWith('/required-password-change') &&
+					!url.startsWith('/logout')
+				) {
+					response.redirect(303, '/required-password-change');
+					return;
+				}
+			}
+
 			next();
 		};
 	}

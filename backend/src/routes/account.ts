@@ -18,10 +18,11 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {ApiError, UserDeletion, UserRoles} from 'api';
+import {UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
+import {readAccountForm} from '../account-form.ts';
 import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
@@ -40,37 +41,11 @@ accountRouter.get('/', (_request, response) => {
 	);
 });
 
-function checkPasswordRules(password: string) {
-	return (
-		password.length >= 10 &&
-		/\d/.test(password) &&
-		/[a-z]/.test(password) &&
-		/[A-Z]/.test(password) &&
-		/[^a-z\d]/i.test(password)
-	);
-}
-
 accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	const user = response.locals.user!;
-
+	const body = (request.body ?? {}) as Record<string, unknown>;
 	const errors = [];
 
-	if (typeof request.body !== 'object' || request.body === null) {
-		response
-			.send(400)
-			.send(
-				render.account(
-					response.locals.user,
-					'/account',
-					csrf.generate(response.locals.user),
-					false,
-					['Unknown error. Please try again.'],
-				),
-			);
-		return;
-	}
-
-	const body = request.body as Record<string, unknown>;
 	if (!csrf.validate(request, response)) {
 		response
 			.send(400)
@@ -108,34 +83,17 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 		}
 	}
 
-	const newPassword = body['new-password'];
-	if (newPassword) {
-		const newPasswordRepeat = body['new-password-repeat'];
-		const currentPassword = body['current-password'];
+	if (body['new-password']) {
+		try {
+			const newPassword = readAccountForm.newPasswords(body);
+			const currentPassword = readAccountForm.currentPassword(body);
 
-		if (
-			typeof newPassword !== 'string' ||
-			!newPasswordRepeat ||
-			newPasswordRepeat !== newPassword
-		) {
-			errors.push('The two new passwords did not match.');
-		} else if (!currentPassword || typeof currentPassword !== 'string') {
-			errors.push(
-				'Cannot change password without confirming current password.',
-			);
-		}
-		// eslint-disable-next-line unicorn/no-negated-condition
-		else if (!checkPasswordRules(newPassword)) {
-			errors.push('New password does not match password requirements.');
-		} else {
-			try {
-				user.changePassword(currentPassword, newPassword);
-			} catch (error: unknown) {
-				if (error instanceof ApiError) {
-					errors.push(error.message);
-				} else {
-					errors.push('Internal Error. Please try again.');
-				}
+			user.changePassword(currentPassword, newPassword);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				errors.push(error.message);
+			} else {
+				errors.push('Internal error.');
 			}
 		}
 	}

@@ -34,7 +34,7 @@ import {
 
 apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	const timeBeforeCreation = Date.now();
-	const user = User.create('vaoeo', 'fybec', 'lqizk', UserRoles.User);
+	const user = User.create('vaoeo', 'fybec', 'lqizk', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
@@ -57,7 +57,7 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Adding tags', async ({api: {User, Recipe}}) => {
-	const user = User.create('ioxow', 'fphkp', 'xsxrg', UserRoles.User);
+	const user = User.create('ioxow', 'fphkp', 'xsxrg', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
@@ -90,7 +90,7 @@ apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Removing tags', async ({api: {User, Recipe}}) => {
-	const user = User.create('zwpfg', 'rcufb', 'vpjzj', UserRoles.User);
+	const user = User.create('zwpfg', 'rcufb', 'vpjzj', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
@@ -120,7 +120,7 @@ apiTest('Removing tags', async ({api: {User, Recipe}}) => {
 apiTest(
 	'Adding image',
 	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User);
+		const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe 1',
 			user,
@@ -156,7 +156,7 @@ apiTest(
 apiTest(
 	'Replacing image',
 	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User);
+		const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User, false);
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const firstImage = await readFile(sampleImagePaths.webp);
 
@@ -197,7 +197,7 @@ apiTest(
 apiTest(
 	'Deleting image',
 	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User);
+		const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User, false);
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const image = await readFile(sampleImagePaths.png);
 
@@ -234,7 +234,7 @@ apiTest(
 apiTest(
 	'Accepts image/jpeg, image/png, image/webp',
 	async ({api: {Recipe, User}}) => {
-		const user = User.create('pvcif', 'omkdm', 'kjpzh', UserRoles.User);
+		const user = User.create('pvcif', 'omkdm', 'kjpzh', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe',
 			user,
@@ -260,7 +260,7 @@ apiTest(
 apiTest(
 	'Rejects non-images or unsupported image types',
 	async ({api: {Recipe, User, listImages}}) => {
-		const user = User.create('gxdwb', 'fjiug', 'aznpe', UserRoles.User);
+		const user = User.create('gxdwb', 'fjiug', 'aznpe', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe',
 			user,
@@ -291,7 +291,7 @@ apiTest(
 apiTest(
 	'Recipe source without starting source',
 	async ({api: {Recipe, User}}) => {
-		const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User);
+		const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe 1',
 			user,
@@ -314,7 +314,7 @@ apiTest(
 );
 
 apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
-	const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
+	const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 2',
 		user,
@@ -338,7 +338,7 @@ apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
 apiTest(
 	'Recipe duration without initial duration',
 	async ({api: {Recipe, User}}) => {
-		const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User);
+		const user = User.create('jfthz', 'fmypp', 'uneff', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe 1',
 			user,
@@ -363,7 +363,7 @@ apiTest(
 apiTest(
 	'Recipe duration with starting duration',
 	async ({api: {Recipe, User}}) => {
-		const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
+		const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe 2',
 			user,
@@ -386,7 +386,7 @@ apiTest(
 );
 
 apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
-	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User);
+	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe',
 		user,
@@ -410,7 +410,7 @@ apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 });
 
 apiTest('Paginate', async ({api: {User, Recipe}}) => {
-	const user = User.create('ctiah', 'sdfaa', 'sevbq', UserRoles.User);
+	const user = User.create('ctiah', 'sdfaa', 'sevbq', UserRoles.User, false);
 
 	await Promise.all(
 		Array.from({length: 25}, (_v, index) =>
@@ -462,7 +462,7 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Updating sections', async ({api: {User, Recipe}}) => {
-	const user = User.create('tlgwb', 'xumdn', 'uammq', UserRoles.User);
+	const user = User.create('tlgwb', 'xumdn', 'uammq', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
@@ -483,7 +483,7 @@ apiTest('Updating sections', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Updating title', async ({api: {User, Recipe}}) => {
-	const user = User.create('vxswz', 'pywkf', 'jiqje', UserRoles.User);
+	const user = User.create('vxswz', 'pywkf', 'jiqje', UserRoles.User, false);
 	const recipe = await Recipe.create(
 		'recipe 1',
 		user,
@@ -505,9 +505,9 @@ apiTest('Updating title', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
-	const user = User.create('aqrjl', 'lsfen', 'raukq', UserRoles.User);
-	const admin = User.create('asbwf', 'jdhyn', 'taknj', UserRoles.Admin);
-	const owner = User.create('nfrpb', 'pwnnb', 'mfncj', UserRoles.Owner);
+	const user = User.create('aqrjl', 'lsfen', 'raukq', UserRoles.User, false);
+	const admin = User.create('asbwf', 'jdhyn', 'taknj', UserRoles.Admin, false);
+	const owner = User.create('nfrpb', 'pwnnb', 'mfncj', UserRoles.Owner, false);
 
 	const recipeUser = await Recipe.create(
 		'recipe 1',
@@ -555,7 +555,7 @@ apiTest('Recipe permissions', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
-	const user = User.create('xdshb', 'dcuml', 'rkkec', UserRoles.User);
+	const user = User.create('xdshb', 'dcuml', 'rkkec', UserRoles.User, false);
 
 	await Promise.all(
 		Array.from({length: 50}).map((_v, index) =>
