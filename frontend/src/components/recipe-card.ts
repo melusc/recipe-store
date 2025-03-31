@@ -27,7 +27,7 @@ import {recipeTagList} from './recipe-tag.js';
 
 export function recipeCard(recipe: Recipe) {
 	const imageUrl =
-		(recipe.image && `/api/user-content/images/${recipe.image}`) ||
+		(recipe.image && `/static/user-content/${recipe.image}`) ||
 		`https://picsum.photos/${String(Math.floor(Math.random() * 200 + 400))}/${String(Math.floor(Math.random() * 200 + 400))}`;
 
 	return $`

@@ -18,15 +18,20 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {mkdir} from 'node:fs/promises';
+import {mkdir, rm} from 'node:fs/promises';
 import {DatabaseSync} from 'node:sqlite';
 import {fileURLToPath} from 'node:url';
 
 const dataDirectory = new URL('../../data/', import.meta.url);
 export const imageDirectory = new URL('img/', dataDirectory);
+export const imageUploadDirectory = new URL('uploads/', imageDirectory);
 
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 await mkdir(imageDirectory, {recursive: true});
+
+await rm(imageUploadDirectory, {recursive: true, force: true});
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+await mkdir(imageUploadDirectory);
 
 const databasePath = new URL('database.db', dataDirectory);
 export const database = new DatabaseSync(fileURLToPath(databasePath));
