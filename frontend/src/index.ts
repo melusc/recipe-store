@@ -20,14 +20,14 @@
 
 import {renderAccountDelete} from './routes/account-delete.js';
 import {renderAccount} from './routes/account.js';
-import {renderError404} from './routes/error-404.js';
+import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
 import {renderSearch} from './routes/search.js';
 
 export const render = {
 	index: renderIndex,
-	error404: renderError404,
+	error: renderError,
 	login: renderLogin,
 	search: renderSearch,
 	account: renderAccount,

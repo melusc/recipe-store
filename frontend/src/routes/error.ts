@@ -22,13 +22,20 @@ import {$} from '../$.js';
 
 import {createRoute} from './_utilities.js';
 
-export const renderError404 = createRoute(
-	'404 - Not Found',
-	() => $`
+const createErrorRoute = (title: string, body: string) =>
+	createRoute(
+		title,
+		() => $`
 		<div
 			class="position-absolute top-50 start-50 translate-middle"
 		>
-			<h1>Not Found :(</h1>
+			<h1>${body}</h1>
 		</div>
 	`,
-);
+	);
+
+export const renderError = {
+	404: createErrorRoute('404 - Not Found', '404 - Not Found :('),
+	401: createErrorRoute('401 - Unauthorised', 'Unauthorised'),
+	500: createErrorRoute('500 - Internal Error', 'Internal error.'),
+};

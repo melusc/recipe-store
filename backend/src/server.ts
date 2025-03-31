@@ -22,11 +22,12 @@ import {RelativeUrl} from '@lusc/util/relative-url';
 import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express from 'express';
+import express, {type ErrorRequestHandler} from 'express';
 import {render} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import {UnauthorisedError} from './errors.ts';
 import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
@@ -128,9 +129,34 @@ export function setupServer(api: Api) {
 
 	app.use('/account', accountRouter);
 
-	app.use((_request, response) => {
-		response.status(404);
-		response.send(render.error404(response.locals.user, '/404'));
+	app.use(((error, request, response, _next) => {
+		if (error instanceof UnauthorisedError) {
+			response.status(401);
+
+			if (request.accepts('html')) {
+				response.send(render.error[401](response.locals.user, undefined));
+			} else {
+				response.send({
+					error: 'Unauthorised',
+				});
+			}
+		} else {
+			response.status(500);
+
+			if (request.accepts('html')) {
+				response.send(render.error[500](response.locals.user, undefined));
+			} else {
+				response.send({
+					error: 'Internal error',
+				});
+			}
+		}
+	}) satisfies ErrorRequestHandler);
+
+	app.use((_request, response, _next) => {
+		response
+			.status(404)
+			.send(render.error[404](response.locals.user, undefined));
 	});
 
 	return app;
