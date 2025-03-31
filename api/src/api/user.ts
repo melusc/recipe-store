@@ -49,8 +49,8 @@ export class User extends InjectableApi {
 	private _username: string;
 	private _displayName: string;
 	private _role: UserRoles;
+	private _requirePasswordChange: boolean;
 	private _updatedAt: ReadonlyDate;
-
 	private readonly _createdAt: ReadonlyDate;
 
 	constructor(
@@ -58,6 +58,7 @@ export class User extends InjectableApi {
 		username: string,
 		displayName: string,
 		role: UserRoles,
+		requirePasswordChange: boolean | 0 | 1,
 		createdAt: ReadonlyDate,
 		updatedAt: ReadonlyDate,
 		constructorKey: symbol,
@@ -71,6 +72,7 @@ export class User extends InjectableApi {
 		this._username = username;
 		this._displayName = displayName;
 		this._role = role;
+		this._requirePasswordChange = requirePasswordChange ? true : false;
 		this._createdAt = createdAt;
 		this._updatedAt = updatedAt;
 	}
@@ -87,6 +89,10 @@ export class User extends InjectableApi {
 		return this._role;
 	}
 
+	get requirePasswordChange() {
+		return this._requirePasswordChange;
+	}
+
 	get updatedAt(): ReadonlyDate {
 		return new Date(this._updatedAt as Date);
 	}
@@ -100,6 +106,7 @@ export class User extends InjectableApi {
 		displayName: string,
 		password: string,
 		role: UserRoles,
+		requirePasswordChange: boolean,
 	) {
 		if (this.fromUsername(username)) {
 			throw new ApiError('User already exists. Use another username.');
@@ -110,15 +117,22 @@ export class User extends InjectableApi {
 
 		const {user_id: userId} = this.database
 			.prepare(
-				`INSERT INTO users (username, displayname, password, role, created_at, updated_at)
-					 VALUES (:username, :displayName, :passwordHash, :role, :createdAt, :createdAt)
-					 RETURNING user_id`,
+				`INSERT INTO users (
+					username, displayname, password, role,
+					require_pw_change, created_at, updated_at
+				)
+				VALUES (
+					:username, :displayName, :passwordHash, :role,
+					:requirePasswordChange, :createdAt, :createdAt
+				)
+				RETURNING user_id`,
 			)
 			.get({
 				username,
 				displayName,
 				passwordHash,
 				role,
+				requirePasswordChange: requirePasswordChange ? 1 : 0,
 				createdAt: createdAt.getTime(),
 			}) as {user_id: number};
 
@@ -127,6 +141,7 @@ export class User extends InjectableApi {
 			username,
 			displayName,
 			role,
+			requirePasswordChange,
 			createdAt,
 			createdAt,
 			privateConstructorKey,
@@ -136,8 +151,11 @@ export class User extends InjectableApi {
 	static login(username: string, password: string): User {
 		const result = this.database
 			.prepare(
-				`SELECT user_id, role, displayname, password, created_at, updated_at FROM users
-					WHERE username = :username`,
+				`SELECT
+					user_id, role, displayname, password,
+					require_pw_change, created_at, updated_at
+				FROM users
+				WHERE username = :username`,
 			)
 			.get({username}) as
 			| {
@@ -145,6 +163,7 @@ export class User extends InjectableApi {
 					role: UserRoles;
 					displayname: string;
 					password: string;
+					require_pw_change: 0 | 1;
 					created_at: number;
 					updated_at: number;
 			  }
@@ -161,6 +180,7 @@ export class User extends InjectableApi {
 			username,
 			result.displayname,
 			result.role,
+			result.require_pw_change,
 			new Date(result.created_at),
 			new Date(result.updated_at),
 			privateConstructorKey,
@@ -170,14 +190,17 @@ export class User extends InjectableApi {
 	static fromUsername(username: string): User | undefined {
 		const result = this.database
 			.prepare(
-				`SELECT user_id, displayname, role, updated_at, created_at
-					FROM users WHERE username = :username`,
+				`SELECT
+					user_id, displayname, role,
+					require_pw_change, updated_at, created_at
+				FROM users WHERE username = :username`,
 			)
 			.get({username}) as
 			| {
 					user_id: number;
 					displayname: string;
 					role: UserRoles;
+					require_pw_change: 0 | 1;
 					updated_at: number;
 					created_at: number;
 			  }
@@ -192,6 +215,7 @@ export class User extends InjectableApi {
 			username,
 			result.displayname,
 			result.role,
+			result.require_pw_change,
 			new Date(result.created_at),
 			new Date(result.updated_at),
 			privateConstructorKey,
@@ -206,14 +230,18 @@ export class User extends InjectableApi {
 
 		const result = this.database
 			.prepare(
-				`SELECT username, displayname, role, updated_at, created_at FROM users
-					WHERE user_id = :userId`,
+				`SELECT
+					username, displayname, role,
+					require_pw_change, updated_at, created_at
+				FROM users
+				WHERE user_id = :userId`,
 			)
 			.get({userId}) as
 			| {
 					username: string;
 					displayname: string;
 					role: UserRoles;
+					require_pw_change: 0 | 1;
 					updated_at: number;
 					created_at: number;
 			  }
@@ -228,6 +256,7 @@ export class User extends InjectableApi {
 			result.username,
 			result.displayname,
 			result.role,
+			result.require_pw_change,
 			new Date(result.created_at),
 			new Date(result.updated_at),
 			privateConstructorKey,
@@ -237,15 +266,18 @@ export class User extends InjectableApi {
 	static all(): readonly User[] {
 		const result = this.database
 			.prepare(
-				`SELECT username, displayname, role, user_id, created_at, updated_at
-					FROM users
-					ORDER BY user_id ASC`,
+				`SELECT
+					username, displayname, role, user_id,
+					require_pw_change, created_at, updated_at
+				FROM users
+				ORDER BY user_id ASC`,
 			)
 			.all() as ReadonlyArray<{
 			username: string;
 			displayname: string;
 			role: UserRoles;
 			user_id: number;
+			require_pw_change: 0 | 1;
 			created_at: number;
 			updated_at: number;
 		}>;
@@ -256,6 +288,7 @@ export class User extends InjectableApi {
 				displayname: displayName,
 				role,
 				user_id: userId,
+				require_pw_change: requirePasswordChange,
 				created_at: createdAt,
 				updated_at: updatedAt,
 			}) =>
@@ -264,6 +297,7 @@ export class User extends InjectableApi {
 					username,
 					displayName,
 					role,
+					requirePasswordChange,
 					new Date(createdAt),
 					new Date(updatedAt),
 					privateConstructorKey,
@@ -343,13 +377,17 @@ export class User extends InjectableApi {
 		this.database
 			.prepare(
 				`UPDATE users
-					SET password = :newHash
+					SET
+						password = :newHash,
+						require_pw_change = 0
 					WHERE user_id = :userId`,
 			)
 			.run({
 				newHash,
 				userId: this.userId,
 			});
+
+		this._requirePasswordChange = false;
 
 		this._triggerUpdated();
 	}
@@ -360,13 +398,17 @@ export class User extends InjectableApi {
 		this.database
 			.prepare(
 				`UPDATE users
-					SET password = :newHash
-					WHERE user_id = :userId`,
+				SET
+					password = :newHash,
+					require_pw_change = 0
+				WHERE user_id = :userId`,
 			)
 			.run({
 				newHash: newHash,
 				userId: this.userId,
 			});
+
+		this._requirePasswordChange = false;
 
 		this._triggerUpdated();
 	}
@@ -432,6 +474,24 @@ export class User extends InjectableApi {
 
 		this._triggerUpdated();
 		this._role = newRole;
+	}
+
+	updateRequirePasswordChange(requirePasswordChange: boolean) {
+		this.database
+			.prepare(
+				`UPDATE users
+				SET require_pw_change = :requirePasswordChange
+				WHERE user_id = :userId`,
+			)
+			.run({
+				requirePasswordChange: requirePasswordChange ? 1 : 0,
+				userId: this.userId,
+			});
+
+		this._requirePasswordChange = requirePasswordChange;
+		// Don't update `updatedAt`
+		// It is not really a user facing field in the same way
+		// that username or so are
 	}
 
 	async deleteUser(deleteRecipes: UserDeletion) {

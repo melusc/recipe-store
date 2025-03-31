@@ -27,8 +27,8 @@ import {apiTest} from './utilities.js';
 
 apiTest('User creation', ({api: {User}}) => {
 	const timeBeforeCreation = Date.now();
-	const user = User.create('dzvfo', 'xhyzd', 'ipdmy', UserRoles.Admin);
-	const other = User.create('aogqu', 'fliwc', 'zlqie', UserRoles.User);
+	const user = User.create('dzvfo', 'xhyzd', 'ipdmy', UserRoles.Admin, false);
+	const other = User.create('aogqu', 'fliwc', 'zlqie', UserRoles.User, false);
 
 	const userById = User.fromUserid(user.userId);
 	const userByUsername = User.fromUsername(user.username);
@@ -43,14 +43,22 @@ apiTest('User creation', ({api: {User}}) => {
 
 	expect(user.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
 	expect(user.createdAt.getTime()).toBeGreaterThanOrEqual(timeBeforeCreation);
+
+	expect(user.requirePasswordChange).toStrictEqual(false);
 });
 
 apiTest('User login', ({api: {User}}) => {
 	const username = 'nfdvi';
 	const password = 'nohpj';
 
-	void User.create('dasyq', 'pnyyj', 'yeadn', UserRoles.User);
-	const {userId} = User.create(username, username, password, UserRoles.Admin);
+	void User.create('dasyq', 'pnyyj', 'yeadn', UserRoles.User, false);
+	const {userId} = User.create(
+		username,
+		username,
+		password,
+		UserRoles.Admin,
+		false,
+	);
 
 	const userLogin = User.login(username, password);
 
@@ -62,8 +70,10 @@ apiTest('Change password of user', ({api: {User}}) => {
 	const password = 'ylloa';
 	const newPassword = 'trywo';
 
-	const user = User.create(username, username, password, UserRoles.User);
+	const user = User.create(username, username, password, UserRoles.User, true);
 	const oldUpdatedAt = user.updatedAt;
+
+	expect(user.requirePasswordChange).toStrictEqual(true);
 
 	expect(() => {
 		user.changePassword('wrong-old-password', newPassword);
@@ -77,6 +87,8 @@ apiTest('Change password of user', ({api: {User}}) => {
 
 	expect(User.login(username, newPassword)).toStrictEqual(user);
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
+
+	expect(user.requirePasswordChange).toStrictEqual(false);
 });
 
 apiTest('Reset password reset of user', ({api: {User}}) => {
@@ -84,9 +96,10 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 	const password = 'yctfp';
 	const newPassword = 'dxhhh';
 
-	const user = User.create(username, username, password, UserRoles.Admin);
+	const user = User.create(username, username, password, UserRoles.Admin, true);
 	const oldUpdatedAt = user.updatedAt;
 
+	expect(user.requirePasswordChange).toStrictEqual(true);
 	user.resetPassword(newPassword);
 
 	expect(() => {
@@ -96,13 +109,15 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 	expect(User.login(username, newPassword)).toStrictEqual(user);
 
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
+
+	expect(user.requirePasswordChange).toStrictEqual(false);
 });
 
 apiTest('Confirm password of user', ({api: {User}}) => {
 	const username = 'cafzy';
 	const password = 'arcsj';
 
-	const user = User.create(username, username, password, UserRoles.User);
+	const user = User.create(username, username, password, UserRoles.User, false);
 
 	// Doesn't throw
 	user.confirmPassword(password);
@@ -117,7 +132,13 @@ apiTest('Change username', ({api: {User}}) => {
 	const usernameNew = 'mqyzc';
 	const password = 'wtaae';
 
-	const user = User.create(usernameOld, usernameOld, password, UserRoles.User);
+	const user = User.create(
+		usernameOld,
+		usernameOld,
+		password,
+		UserRoles.User,
+		false,
+	);
 	expect(user.username).toStrictEqual(usernameOld);
 	const oldUpdatedAt = user.updatedAt;
 
@@ -133,7 +154,7 @@ apiTest('Change username', ({api: {User}}) => {
 });
 
 apiTest('Change role of user', ({api: {User}}) => {
-	const user = User.create('emjsd', 'wabjh', 'ribvw', UserRoles.User);
+	const user = User.create('emjsd', 'wabjh', 'ribvw', UserRoles.User, false);
 	const oldUpdatedAt = user.updatedAt;
 
 	expect(user.role).toStrictEqual(UserRoles.User);
@@ -152,7 +173,13 @@ apiTest('Change role of user', ({api: {User}}) => {
 apiTest('Delete user without recipes', async ({api: {User}}) => {
 	const username = 'prrmx';
 	const password = 'rftef';
-	const user = User.create(username, username, password, UserRoles.Admin);
+	const user = User.create(
+		username,
+		username,
+		password,
+		UserRoles.Admin,
+		false,
+	);
 
 	await user.deleteUser(UserDeletion.KeepRecipes);
 
@@ -163,8 +190,8 @@ apiTest('Delete user without recipes', async ({api: {User}}) => {
 });
 
 apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('fadus', 'abccm', 'fnudy', UserRoles.User);
-	const user2 = User.create('tdjdj', 'paqfn', 'xaoyu', UserRoles.User);
+	const user1 = User.create('fadus', 'abccm', 'fnudy', UserRoles.User, false);
+	const user2 = User.create('tdjdj', 'paqfn', 'xaoyu', UserRoles.User, false);
 
 	const recipe1 = await Recipe.create(
 		'recipe 1',
@@ -202,8 +229,8 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('cnjxu', 'pzypq', 'lskih', UserRoles.User);
-	const user2 = User.create('grnly', 'kfksr', 'ccfqi', UserRoles.User);
+	const user1 = User.create('cnjxu', 'pzypq', 'lskih', UserRoles.User, false);
+	const user2 = User.create('grnly', 'kfksr', 'ccfqi', UserRoles.User, false);
 
 	await Recipe.create(
 		'recipe 1',
@@ -232,8 +259,8 @@ apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('hoatt', 'zhvkn', 'sgghj', UserRoles.User);
-	const user2 = User.create('qhqkq', 'bhwod', 'enhgp', UserRoles.User);
+	const user1 = User.create('hoatt', 'zhvkn', 'sgghj', UserRoles.User, false);
+	const user2 = User.create('qhqkq', 'bhwod', 'enhgp', UserRoles.User, false);
 
 	for (let index = 0; index < 20; ++index) {
 		await Recipe.create(
@@ -265,8 +292,8 @@ apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
 });
 
 apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
-	const user1 = User.create('wacws', 'tejci', 'gmaiu', UserRoles.User);
-	const user2 = User.create('plvsh', 'yajsk', 'xumto', UserRoles.User);
+	const user1 = User.create('wacws', 'tejci', 'gmaiu', UserRoles.User, false);
+	const user2 = User.create('plvsh', 'yajsk', 'xumto', UserRoles.User, false);
 
 	for (let index = 0; index < 50; ++index) {
 		await Recipe.create(
@@ -314,7 +341,7 @@ apiTest('Change display name', ({api: {User}}) => {
 	const nameOld = 'yycek';
 	const nameNew = 'ndiqo';
 
-	const user = User.create(nameOld, nameOld, 'ituej', UserRoles.Owner);
+	const user = User.create(nameOld, nameOld, 'ituej', UserRoles.Owner, false);
 	const beforeUpdated = Date.now();
 
 	expect(user.displayName).toStrictEqual(nameOld);
@@ -329,14 +356,14 @@ apiTest('Change display name', ({api: {User}}) => {
 });
 
 apiTest('User permissions', ({api: {User}}) => {
-	const owner1 = User.create('rbzko', 'ciwdu', 'hvfpi', UserRoles.Owner);
-	const owner2 = User.create('lllwz', 'ehhzf', 'dzqzt', UserRoles.Owner);
+	const owner1 = User.create('rbzko', 'ciwdu', 'hvfpi', UserRoles.Owner, false);
+	const owner2 = User.create('lllwz', 'ehhzf', 'dzqzt', UserRoles.Owner, false);
 
-	const admin1 = User.create('xtwss', 'sfyps', 'gzrep', UserRoles.Admin);
-	const admin2 = User.create('vdzgf', 'agwbg', 'pfkyl', UserRoles.Admin);
+	const admin1 = User.create('xtwss', 'sfyps', 'gzrep', UserRoles.Admin, false);
+	const admin2 = User.create('vdzgf', 'agwbg', 'pfkyl', UserRoles.Admin, false);
 
-	const user1 = User.create('tmztj', 'dcufr', 'ziydr', UserRoles.User);
-	const user2 = User.create('tudcu', 'nogqf', 'mkbbg', UserRoles.User);
+	const user1 = User.create('tmztj', 'dcufr', 'ziydr', UserRoles.User, false);
+	const user2 = User.create('tudcu', 'nogqf', 'mkbbg', UserRoles.User, false);
 
 	// I think this is the most readable even though it is verbose AF
 	// No need for some abstraction

@@ -25,68 +25,24 @@ import {passwordRequirements} from '../components/password-requirements.js';
 
 import {createRoute} from './_utilities.js';
 
-export const renderAccount = createRoute(
+export const renderRequiredPasswordChange = createRoute(
 	'Account',
-	(user, csrfToken: string, showSuccess: boolean, errors?: string[]) =>
+	(_user, csrfToken: string, errors?: string[]) =>
 		centeredMain($`
 			<section>
-				<h1>Account</H1>
+				<h1>Please change your password</H1>
 
 				<form
 					enctype="multipart/form-data"
 					method="POST"
-					action="/account"
 					class="d-flex flex-column gap-3"
 					id="account-form"
 				>
 					${formError(errors)}
 
-					${
-						showSuccess &&
-						$`<div class="alert alert-success" role="alert">
-							Changes saved successfully.
-						</div>`
-					}
-
 					<input type="hidden" name="csrf-token" value="${csrfToken}">
 
-					<div>
-						<label for="username" class="form-label">New username:</label>
-						<input
-							type="text"
-							class="form-control"
-							id="username"
-							name="username"
-							minlength="4"
-							required
-							value="${user?.username}"
-						>
-					</div>
-
-					<div>
-						<label for="displayname" class="form-label">New display-name:</label>
-						<input
-							type="text"
-							class="form-control"
-							id="displayname"
-							name="displayname"
-							minlength="4"
-							required
-							value="${user?.displayName}"
-						>
-					</div>
-
-					${passwordRequirements(false)}
-
-					<div>
-						<label for="current-password" class="form-label">Current password:</label>
-						<input
-							type="password"
-							class="form-control"
-							id="current-password"
-							name="current-password"
-						>
-					</div>
+					${passwordRequirements(true)}
 
 					<div>
 						<label for="new-password" class="form-label">New password:</label>
@@ -114,13 +70,6 @@ export const renderAccount = createRoute(
 				</form>
 
 				<script src="/static/progressive-enhancement/password-form.js"></script>
-
-				<a
-					href="/account/delete"
-					class="btn btn-danger w-100 mt-3"
-				>
-					Delete Account
-				</a>
 			</section>
 		`),
 );

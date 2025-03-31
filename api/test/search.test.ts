@@ -102,12 +102,14 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 			'Michael Caine',
 			'vvnem',
 			UserRoles.User,
+			false,
 		);
 		const user2 = User.create(
 			'picklerick',
 			'Rick Sanchez',
 			'emaee',
 			UserRoles.User,
+			false,
 		);
 
 		const recipes = await Promise.all([

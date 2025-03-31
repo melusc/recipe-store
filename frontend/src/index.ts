@@ -23,6 +23,7 @@ import {renderAccount} from './routes/account.js';
 import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
+import {renderRequiredPasswordChange} from './routes/required-password-change.js';
 import {renderSearch} from './routes/search.js';
 
 export const render = {
@@ -32,4 +33,5 @@ export const render = {
 	search: renderSearch,
 	account: renderAccount,
 	accountDelete: renderAccountDelete,
+	requiredPasswordChange: renderRequiredPasswordChange,
 } as const;

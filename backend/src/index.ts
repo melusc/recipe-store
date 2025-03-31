@@ -51,6 +51,7 @@ if (createOwnerUsername) {
 		createOwnerUsername,
 		password,
 		UserRoles.Owner,
+		false,
 	);
 
 	console.log(
@@ -67,7 +68,13 @@ await Promise.all(
 const username = 'lnjfs';
 const password = 'c4,y4dDE(T=XP(4y(GM~PnZT>Dwk?sa)';
 console.log(username, password);
-const user = api.User.create(username, username, password, UserRoles.Owner);
+const user = api.User.create(
+	username,
+	username,
+	password,
+	UserRoles.Owner,
+	false,
+);
 
 await api.Recipe.create(
 	'recipe 1',

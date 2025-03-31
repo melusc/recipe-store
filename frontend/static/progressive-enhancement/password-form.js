@@ -28,6 +28,8 @@
 	/** @type {HTMLInputElement} */
 	const newPasswordRepeatInput = form.querySelector('#new-password-repeat');
 
+	const allPasswordsRequired = passwordInputs.every(input => input.required);
+
 	/**
 	 * @param {string} password
 	 */
@@ -57,14 +59,19 @@
 
 	for (const input of passwordInputs) {
 		input.addEventListener('change', () => {
-			let hasFilledInput = passwordInputs.some(input => !!input.value);
+			// If they are optional, mark all as required
+			// as soon as one has a value
+			// But don't accidentally make them optional
+			// if they were required to begin with
+			if (!allPasswordsRequired) {
+				let hasFilledInput = passwordInputs.some(input => !!input.value);
 
-			for (const input of passwordInputs) {
-				input.required = hasFilledInput;
+				for (const input of passwordInputs) {
+					input.required = hasFilledInput;
+				}
 			}
 
 			// Don't check if current password matches requirements.
-			// Otherwise, if they get more strict, it won't allow submitting it
 			if (input !== newPasswordInput || input !== newPasswordRepeatInput) {
 				return;
 			}
