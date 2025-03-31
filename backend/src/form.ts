@@ -75,6 +75,7 @@ export const readForm = {
 
 		if (typeof noJsSections === 'string') {
 			return noJsSections
+				.replaceAll(/\r\n?/g, '\n')
 				.split(/\n{2,}/)
 				.map(section => section.trim())
 				.filter(Boolean);
