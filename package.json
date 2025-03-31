@@ -19,9 +19,5 @@
 		"frontend/",
 		"bootstrap/"
 	],
-	"license": "GPL-3.0-only",
-	"resolutions": {
-		"@types/express": "^5.0.1",
-		"@types/express-serve-static-core": "^5.0.6"
-	}
+	"license": "GPL-3.0-only"
 }
