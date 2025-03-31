@@ -60,9 +60,7 @@ export async function validateImageType(image: Buffer): Promise<string> {
 		return fileType.ext;
 	}
 
-	throw new ApiError(
-		'Unknown image type. Allowed image types are JPG, PNG, and WEBP.',
-	);
+	throw new ApiError('Invalid image. Allowed images are JPG, PNG, and WEBP.');
 }
 
 export function randomImageName(extension: string) {

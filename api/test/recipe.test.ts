@@ -275,14 +275,14 @@ apiTest(
 		const gifImage = await readFile(sampleImagePaths.gif);
 		await expect(recipe.updateImage(gifImage)).rejects.to.throw(
 			ApiError,
-			/unknown/i,
+			/invalid/i,
 		);
 
 		await expect(listImages()).resolves.toHaveLength(0);
 
 		await expect(
 			recipe.updateImage(Buffer.from('<!doctype html><html></html>')),
-		).rejects.to.throw(ApiError, /unknown/i);
+		).rejects.to.throw(ApiError, /invalid/i);
 
 		await expect(listImages()).resolves.toHaveLength(0);
 	},
