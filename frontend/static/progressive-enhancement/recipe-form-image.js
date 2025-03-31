@@ -112,7 +112,9 @@
 				body,
 				signal,
 			});
-			csrfTokenInput.value = response.headers.get('X-CSRF-Token');
+
+			csrfTokenInput.value =
+				response.headers.get('X-CSRF-Token') || csrfTokenInput.value;
 
 			const json = await response.json();
 			if ('error' in json) {
@@ -141,7 +143,8 @@
 					body,
 					method: 'POST',
 				});
-				csrfTokenInput.value = response.headers.get('X-CSRF-Token');
+				csrfTokenInput.value =
+					response.headers.get('X-CSRF-Token') || csrfTokenInput.value;
 				await response.text();
 			} catch {
 				// Doesn't matter if it couldn't be deleted
