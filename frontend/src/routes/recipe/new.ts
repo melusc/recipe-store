@@ -33,7 +33,7 @@ export const renderNewRecipe = createRoute(
 	) =>
 		centeredMain($`
 		<section>
-			<h1>Create new recipe</h1>
+			<h1>Create a new recipe</h1>
 
 			${recipeForm('/recipe/new', csrfToken, prefill, errors)}
 		</section>
