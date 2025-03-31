@@ -27,7 +27,7 @@ import express, {Router} from 'express';
 
 import {imageUploadDirectory} from '../data.ts';
 import {readForm, type FormImage} from '../form.ts';
-import {csrf, CsrfFormType, session} from '../middleware/token.ts';
+import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
 export const apiRouter = Router();
@@ -37,10 +37,7 @@ apiRouter.use(session.guard(UserRoles.User));
 const deletionKeys = new Map<string, URL>();
 
 apiRouter.use((_request, response, next) => {
-	response.setHeader(
-		'X-CSRF-Token',
-		csrf.generate(response.locals.user, CsrfFormType.recipe),
-	);
+	response.setHeader('X-CSRF-Token', csrf.generate(response.locals.user));
 	next();
 });
 
@@ -50,7 +47,7 @@ apiRouter.post(
 	async (request, response) => {
 		const file = request.file;
 
-		if (!csrf.validate(CsrfFormType.recipe, request, response)) {
+		if (!csrf.validate(request, response)) {
 			response.status(401).json({
 				error: 'Could not validate CSRF Token. Please try again.',
 			});
@@ -104,10 +101,7 @@ apiRouter.post(
 	'/temp-image/delete',
 	formdataMiddleware.none(),
 	async (request, response) => {
-		response.setHeader(
-			'X-CSRF-Token',
-			csrf.generate(response.locals.user, CsrfFormType.recipe),
-		);
+		response.setHeader('X-CSRF-Token', csrf.generate(response.locals.user));
 
 		const body = (request.body ?? {}) as Record<string, unknown>;
 		const key = body['deletion-key'];

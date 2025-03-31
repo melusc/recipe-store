@@ -26,7 +26,7 @@ import {render} from 'frontend';
 
 import {imageUploadDirectory} from '../data.ts';
 import {readForm, type FormImage} from '../form.ts';
-import {csrf, CsrfFormType, session} from '../middleware/token.ts';
+import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
 export const newRecipeRouter = Router();
@@ -39,7 +39,7 @@ newRecipeRouter.post(
 	async (request, response) => {
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
-		if (!csrf.validate(CsrfFormType.recipe, request, response)) {
+		if (!csrf.validate(request, response)) {
 			// Don't save image for csrf violation
 			response
 				.status(403)
@@ -47,7 +47,7 @@ newRecipeRouter.post(
 					render.newRecipe(
 						response.locals.user,
 						'/recipe/new',
-						csrf.generate(response.locals.user, CsrfFormType.recipe),
+						csrf.generate(response.locals.user),
 						body,
 						['Could not validate CSRF Token. Please try again.'],
 					),
@@ -93,7 +93,7 @@ newRecipeRouter.post(
 				render.newRecipe(
 					response.locals.user,
 					'/recipe/new',
-					csrf.generate(response.locals.user, CsrfFormType.recipe),
+					csrf.generate(response.locals.user),
 					{
 						...body,
 						tags,
@@ -125,7 +125,7 @@ newRecipeRouter.get('/', (_request, response) => {
 		render.newRecipe(
 			response.locals.user,
 			'/recipe/new',
-			csrf.generate(response.locals.user, CsrfFormType.recipe),
+			csrf.generate(response.locals.user),
 			{},
 		),
 	);
