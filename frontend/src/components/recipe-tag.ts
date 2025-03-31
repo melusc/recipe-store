@@ -34,7 +34,9 @@ export function recipeTag(tagName: string) {
 }
 
 export function recipeTagList(tags: readonly string[]) {
-	return $`<p class="d-flex flex-wrap gap-2">
+	return tags.length === 0
+		? undefined
+		: $`<p class="d-flex flex-wrap gap-2">
 		${tags.map(tag => recipeTag(tag))}
 	</p>`;
 }
