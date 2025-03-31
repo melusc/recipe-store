@@ -26,7 +26,7 @@ import {createRoute} from './_utilities.js';
 
 export const renderAccount = createRoute(
 	'Account',
-	(user, csrfToken: string, errors?: string[]) =>
+	(user, csrfToken: string, showSuccess: boolean, errors?: string[]) =>
 		centeredMain($`
 			<section>
 				<h1>Account</H1>
@@ -41,7 +41,7 @@ export const renderAccount = createRoute(
 					${formError(errors)}
 
 					${
-						errors?.length === 0 &&
+						showSuccess &&
 						$`<div class="alert alert-success" role="alert">
 							Changes saved successfully.
 						</div>`

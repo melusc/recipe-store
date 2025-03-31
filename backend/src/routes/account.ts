@@ -35,6 +35,7 @@ accountRouter.get('/', (_request, response) => {
 			response.locals.user,
 			'/account',
 			csrf.generate(response.locals.user, CsrfFormType.account),
+			false,
 		),
 	);
 });
@@ -62,6 +63,7 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 					response.locals.user,
 					'/account',
 					csrf.generate(response.locals.user, CsrfFormType.account),
+					false,
 					['Unknown error. Please try again.'],
 				),
 			);
@@ -77,6 +79,7 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 					response.locals.user,
 					'/account',
 					csrf.generate(response.locals.user, CsrfFormType.account),
+					false,
 					['Could not validate CSRF Token. Please try again.'],
 				),
 			);
@@ -146,6 +149,7 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 			response.locals.user,
 			'/account',
 			csrf.generate(response.locals.user, CsrfFormType.account),
+			errors.length === 0,
 			errors,
 		),
 	);
