@@ -23,7 +23,7 @@ import type {User} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {csrf, CsrfFormType, session} from '../middleware/token.ts';
+import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
 export const loginRouter = Router();
@@ -36,12 +36,7 @@ loginRouter.get('/login', (request, response) => {
 		response
 			.status(200)
 			.send(
-				render.login(
-					undefined,
-					'/login',
-					csrf.generate(undefined, CsrfFormType.login),
-					undefined,
-				),
+				render.login(undefined, '/login', csrf.generate(undefined), undefined),
 			);
 	}
 });
@@ -59,21 +54,21 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 				render.login(
 					undefined,
 					'/login',
-					csrf.generate(undefined, CsrfFormType.login),
+					csrf.generate(undefined),
 					'Something went wrong! Please try again.',
 				),
 			);
 		return;
 	}
 
-	if (!csrf.validate(CsrfFormType.login, request, response)) {
+	if (!csrf.validate(request, response)) {
 		response
 			.status(400)
 			.send(
 				render.login(
 					undefined,
 					'/login',
-					csrf.generate(undefined, CsrfFormType.login),
+					csrf.generate(undefined),
 					'Could not validate CSRF Token. Please try again.',
 				),
 			);
@@ -91,7 +86,7 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 				render.login(
 					undefined,
 					'/login',
-					csrf.generate(undefined, CsrfFormType.login),
+					csrf.generate(undefined),
 					'Please fill all inputs.',
 				),
 			);
@@ -108,7 +103,7 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 				render.login(
 					undefined,
 					'/login',
-					csrf.generate(undefined, CsrfFormType.login),
+					csrf.generate(undefined),
 					'Incorrect credentials. Please try again.',
 				),
 			);

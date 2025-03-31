@@ -149,31 +149,21 @@ class Session extends Token<{user: number}> {
 
 export const session = new Session();
 
-export const enum CsrfFormType {
-	login,
-	account,
-	accountDelete,
-	recipe,
-}
-class Csrf extends Token<{form: CsrfFormType; user: number | undefined}> {
+class Csrf extends Token<{user: number | undefined}> {
 	constructor() {
 		super('recipe-store/csrf', '30 min');
 	}
 
-	generate(user: User | undefined, form: CsrfFormType) {
-		return this.sign({form, user: user?.userId});
+	generate(user: User | undefined) {
+		return this.sign({user: user?.userId});
 	}
 
-	validate(form: CsrfFormType, request: Request, response: Response): boolean {
+	validate(request: Request, response: Response): boolean {
 		const body = (request.body ?? {}) as Record<string, string>;
 		const token = body['csrf-token'];
 
 		const jwtPayload = this.verify(token);
-		return (
-			jwtPayload &&
-			jwtPayload.form === form &&
-			jwtPayload.user === response.locals.user?.userId
-		);
+		return jwtPayload && jwtPayload.user === response.locals.user?.userId;
 	}
 }
 

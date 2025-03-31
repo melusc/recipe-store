@@ -22,7 +22,7 @@ import {ApiError, UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {csrf, CsrfFormType, session} from '../middleware/token.ts';
+import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
 export const accountRouter = Router();
@@ -34,7 +34,7 @@ accountRouter.get('/', (_request, response) => {
 		render.account(
 			response.locals.user,
 			'/account',
-			csrf.generate(response.locals.user, CsrfFormType.account),
+			csrf.generate(response.locals.user),
 			false,
 		),
 	);
@@ -62,7 +62,7 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 				render.account(
 					response.locals.user,
 					'/account',
-					csrf.generate(response.locals.user, CsrfFormType.account),
+					csrf.generate(response.locals.user),
 					false,
 					['Unknown error. Please try again.'],
 				),
@@ -71,14 +71,14 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	}
 
 	const body = request.body as Record<string, unknown>;
-	if (!csrf.validate(CsrfFormType.account, request, response)) {
+	if (!csrf.validate(request, response)) {
 		response
 			.send(400)
 			.send(
 				render.account(
 					response.locals.user,
 					'/account',
-					csrf.generate(response.locals.user, CsrfFormType.account),
+					csrf.generate(response.locals.user),
 					false,
 					['Could not validate CSRF Token. Please try again.'],
 				),
@@ -148,7 +148,7 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 		render.account(
 			response.locals.user,
 			'/account',
-			csrf.generate(response.locals.user, CsrfFormType.account),
+			csrf.generate(response.locals.user),
 			errors.length === 0,
 			errors,
 		),
@@ -160,7 +160,7 @@ accountRouter.get('/delete', (_request, response) => {
 		render.accountDelete(
 			response.locals.user,
 			'/account/delete',
-			csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+			csrf.generate(response.locals.user),
 		),
 	);
 });
@@ -169,14 +169,14 @@ accountRouter.post(
 	'/delete',
 	formdataMiddleware.none(),
 	async (request, response) => {
-		if (!csrf.validate(CsrfFormType.accountDelete, request, response)) {
+		if (!csrf.validate(request, response)) {
 			response
 				.status(400)
 				.send(
 					render.accountDelete(
 						response.locals.user,
 						'/account/delete',
-						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						csrf.generate(response.locals.user),
 						'Could not validate CSRF Token. Please try again.',
 					),
 				);
@@ -194,7 +194,7 @@ accountRouter.post(
 					render.accountDelete(
 						response.locals.user,
 						'/account/delete',
-						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						csrf.generate(response.locals.user),
 						'Missing password.',
 					),
 				);
@@ -210,7 +210,7 @@ accountRouter.post(
 					render.accountDelete(
 						response.locals.user,
 						'/account/delete',
-						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						csrf.generate(response.locals.user),
 						'Incorrect password. Please try again.',
 					),
 				);
@@ -230,7 +230,7 @@ accountRouter.post(
 					render.accountDelete(
 						response.locals.user,
 						'/account/delete',
-						csrf.generate(response.locals.user, CsrfFormType.accountDelete),
+						csrf.generate(response.locals.user),
 						'Could not complete your request. Please try again or contact an admin.',
 					),
 				);
