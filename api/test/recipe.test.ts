@@ -356,9 +356,9 @@ apiTest(
 		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
 
 		recipe.updateDuration('60 minutes');
-		expect(recipe.duration).toStrictEqual('1 hour');
+		expect(recipe.duration).toStrictEqual('60 minutes');
 		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
-			'1 hour',
+			'60 minutes',
 		);
 	},
 );
@@ -377,9 +377,9 @@ apiTest(
 			[],
 		);
 
-		expect(recipe.duration).toStrictEqual('1 hour');
+		expect(recipe.duration).toStrictEqual('60 min');
 		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
-			'1 hour',
+			'60 min',
 		);
 
 		recipe.updateDuration(undefined);
@@ -387,25 +387,6 @@ apiTest(
 		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
 	},
 );
-
-apiTest('Recipe duration invalid durations', async ({api: {Recipe, User}}) => {
-	const user = User.create('ejmpy', 'epnte', 'xltmf', UserRoles.User);
-	const recipe = await Recipe.create(
-		'recipe 2',
-		user,
-		undefined,
-		'https://google.com/',
-		'60 min',
-		[],
-		[],
-	);
-
-	recipe.updateDuration('-3 minutes');
-	expect(recipe.duration).toBeUndefined();
-
-	recipe.updateDuration('NaN');
-	expect(recipe.duration).toBeUndefined();
-});
 
 apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
 	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User);

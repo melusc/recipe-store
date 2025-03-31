@@ -28,7 +28,6 @@ import {
 	type CooklangSection,
 } from 'cooklang';
 import {fileTypeFromBuffer} from 'file-type';
-import ms from 'ms';
 import {array, object, string} from 'zod';
 
 import {ApiError} from './error.js';
@@ -81,7 +80,7 @@ type SqlRecipeRow = {
 	image: string | null;
 	tags: string;
 	source: string | null;
-	duration: number | null;
+	duration: string | null;
 };
 
 const BASE_SQL_RECIPE_SELECT = `
@@ -98,19 +97,6 @@ SELECT recipe_id,
 FROM   recipes
        LEFT JOIN recipe_tags using (recipe_id)`;
 
-function parseDuration(duration_: string | undefined) {
-	if (duration_ === undefined) {
-		return;
-	}
-
-	const duration = ms(duration_ as ms.StringValue);
-	if (!duration || duration <= 0) {
-		return;
-	}
-
-	return duration;
-}
-
 const privateConstructorKey = Symbol();
 
 export class Recipe extends InjectableApi {
@@ -126,7 +112,7 @@ export class Recipe extends InjectableApi {
 	private _sections: readonly RecipeSection[];
 	private _author: User | undefined;
 	private _source: string | undefined;
-	private _duration: number | undefined;
+	private _duration: string | undefined;
 
 	constructor(
 		readonly recipeId: number,
@@ -136,7 +122,7 @@ export class Recipe extends InjectableApi {
 		updatedAt: ReadonlyDate,
 		image: string | undefined,
 		source: string | undefined,
-		duration: number | undefined,
+		duration: string | undefined,
 		tags: readonly string[],
 		sections: readonly RecipeSection[],
 		constructorKey: symbol,
@@ -183,9 +169,7 @@ export class Recipe extends InjectableApi {
 	}
 
 	get duration() {
-		return this._duration === undefined
-			? undefined
-			: ms(this._duration, {long: true});
+		return this._duration;
 	}
 
 	get tags() {
@@ -215,7 +199,7 @@ export class Recipe extends InjectableApi {
 		author: User,
 		image: Buffer | undefined,
 		source: string | undefined,
-		duration_: string | undefined,
+		duration: string | undefined,
 		tags: readonly string[],
 		sections: readonly string[],
 	) {
@@ -228,8 +212,6 @@ export class Recipe extends InjectableApi {
 					parsed: parseSection(source),
 				}) satisfies RecipeSection,
 		);
-
-		const duration = parseDuration(duration_);
 
 		const {recipe_id: recipeId} = this.database
 			.prepare(
@@ -658,8 +640,6 @@ export class Recipe extends InjectableApi {
 	}
 
 	updateDuration(newDuration: string | undefined) {
-		const duration = parseDuration(newDuration);
-
 		this.database
 			.prepare(
 				`UPDATE recipes
@@ -668,10 +648,10 @@ export class Recipe extends InjectableApi {
 			)
 			.run({
 				recipeId: this.recipeId,
-				duration: duration ?? null,
+				duration: newDuration ?? null,
 			});
 
-		this._duration = duration;
+		this._duration = newDuration;
 
 		this._triggerUpdated();
 	}
