@@ -18,18 +18,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {$} from '../$.js';
+import {$} from '../../$.js';
+import {iconPen} from '../icons/pen.js';
 
-import {iconPlus} from './icons/plus.js';
-
-export function createRecipeButton() {
+export function editRecipeButton(recipeId: number) {
 	return $`
 		<a
-			href="/recipe/new"
-			class="btn btn-primary align-self-end icon-link"
+			href="/recipe/${String(recipeId)}/edit"
+			class="btn btn-outline-dark icon-link align-self-end"
 		>
-			Create recipe
-			<span style="height: 1em; width: 1em">${iconPlus()}</span>
+			Edit recipe
+			<span style="height: 1em; width: 1em">${iconPen()}</span>
 		</a>
 	`;
 }

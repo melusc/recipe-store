@@ -18,29 +18,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {type PaginationResult, type Recipe} from 'api';
+import {$} from '../../$.js';
+import {iconPlus} from '../icons/plus.js';
 
-import {$} from '../$.js';
-import {createRecipeButton} from '../components/buttons/create-recipe.js';
-import {pagination} from '../components/pagination.js';
-import {recipeCard} from '../components/recipe-card.js';
-
-import {createRoute} from './_utilities.js';
-
-export const renderIndex = createRoute(
-	({user}, recipes: PaginationResult<Recipe>) => ({
-		title: 'Recipes',
-		body: $`
-			${user && createRecipeButton()}
-
-			${
-				recipes.items.length > 0 &&
-				$`<main class="row g-3">
-					${recipes.items.map(recipe => recipeCard(recipe))}
-				</main>`
-			}
-
-			${pagination('/', recipes)}
-		`,
-	}),
-);
+export function createRecipeButton() {
+	return $`
+		<a
+			href="/recipe/new"
+			class="btn btn-primary align-self-end icon-link"
+		>
+			Create recipe
+			<span style="height: 1em; width: 1em">${iconPlus()}</span>
+		</a>
+	`;
+}
