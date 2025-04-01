@@ -18,13 +18,12 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {User} from 'api';
-
 import {$} from '../$.js';
+import type {RouteMetadata} from '../routes/_utilities.js';
 
 import {searchForm} from './search-form.js';
 
-export function header(user: User | undefined, path: string | undefined) {
+export function header({user, url}: RouteMetadata) {
 	const routes = [
 		{
 			href: '/',
@@ -62,8 +61,8 @@ export function header(user: User | undefined, path: string | undefined) {
 			<nav class="navbar navbar-expand-lg p-3">
 			  <div class="container-fluid">
 					<a
-						class="navbar-brand ${path === '/' ? 'active' : ''}"
-						aria-current="${path === '/' ? 'page' : 'false'}"
+						class="navbar-brand ${url === '/' ? 'active' : ''}"
+						aria-current="${url === '/' ? 'page' : 'false'}"
 						href="/"
 					>Recipe Store</a>
 
@@ -78,8 +77,8 @@ export function header(user: User | undefined, path: string | undefined) {
 								({href, name}) => $`
 									<li class="nav-item">
 										<a
-											class="nav-link${path === href ? ' active' : ''}"
-											aria-current="${path === href ? 'page' : 'false'}"
+											class="nav-link${url === href ? ' active' : ''}"
+											aria-current="${url === href ? 'page' : 'false'}"
 											href="${href}"
 										>
 											${name}

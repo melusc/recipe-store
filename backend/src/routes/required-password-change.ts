@@ -45,8 +45,10 @@ requiredPasswordChangeRouter.use(
 requiredPasswordChangeRouter.get('/', (_request, response) => {
 	response.send(
 		render.requiredPasswordChange(
-			response.locals.user,
-			'/required-password-change',
+			{
+				user: response.locals.user,
+				url: '/required-password-change',
+			},
 			csrf.generate(response.locals.user),
 		),
 	);
@@ -60,16 +62,16 @@ requiredPasswordChangeRouter.post(
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		if (!csrf.validate(request, response)) {
-			response
-				.send(400)
-				.send(
-					render.requiredPasswordChange(
-						response.locals.user,
-						'/required-password-change',
-						csrf.generate(response.locals.user),
-						['Could not validate CSRF Token. Please try again.'],
-					),
-				);
+			response.send(400).send(
+				render.requiredPasswordChange(
+					{
+						user: response.locals.user,
+						url: '/required-password-change',
+					},
+					csrf.generate(response.locals.user),
+					['Could not validate CSRF Token. Please try again.'],
+				),
+			);
 			return;
 		}
 
@@ -81,16 +83,16 @@ requiredPasswordChangeRouter.post(
 			const errorMessage =
 				error instanceof Error ? error.message : 'Internal error.';
 
-			response
-				.status(400)
-				.send(
-					render.requiredPasswordChange(
-						response.locals.user,
-						'/required-password-change',
-						csrf.generate(response.locals.user),
-						[errorMessage],
-					),
-				);
+			response.status(400).send(
+				render.requiredPasswordChange(
+					{
+						user: response.locals.user,
+						url: '/required-password-change',
+					},
+					csrf.generate(response.locals.user),
+					[errorMessage],
+				),
+			);
 
 			return;
 		}

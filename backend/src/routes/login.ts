@@ -33,11 +33,16 @@ loginRouter.get('/login', (request, response) => {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(303, redirect.href);
 	} else {
-		response
-			.status(200)
-			.send(
-				render.login(undefined, '/login', csrf.generate(undefined), undefined),
-			);
+		response.status(200).send(
+			render.login(
+				{
+					user: undefined,
+					url: '/login',
+				},
+				csrf.generate(undefined),
+				undefined,
+			),
+		);
 	}
 });
 
@@ -47,49 +52,35 @@ loginRouter.get('/logout', (_request, response) => {
 });
 
 loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
-	if (typeof request.body !== 'object' || request.body === null) {
-		response
-			.status(400)
-			.send(
-				render.login(
-					undefined,
-					'/login',
-					csrf.generate(undefined),
-					'Something went wrong! Please try again.',
-				),
-			);
-		return;
-	}
-
 	if (!csrf.validate(request, response)) {
-		response
-			.status(400)
-			.send(
-				render.login(
-					undefined,
-					'/login',
-					csrf.generate(undefined),
-					'Could not validate CSRF Token. Please try again.',
-				),
-			);
+		response.status(400).send(
+			render.login(
+				{
+					user: undefined,
+					url: '/login',
+				},
+				csrf.generate(undefined),
+				'Could not validate CSRF Token. Please try again.',
+			),
+		);
 		return;
 	}
 
-	const body = request.body as {username?: string; password?: string};
+	const body = (request.body ?? {}) as {username?: string; password?: string};
 	const username = body.username;
 	const password = body.password;
 
 	if (typeof username !== 'string' || typeof password !== 'string') {
-		response
-			.status(400)
-			.send(
-				render.login(
-					undefined,
-					'/login',
-					csrf.generate(undefined),
-					'Please fill all inputs.',
-				),
-			);
+		response.status(400).send(
+			render.login(
+				{
+					user: undefined,
+					url: '/login',
+				},
+				csrf.generate(undefined),
+				'Please fill all inputs.',
+			),
+		);
 		return;
 	}
 
@@ -97,16 +88,16 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	try {
 		user = response.locals.api.User.login(username, password);
 	} catch {
-		response
-			.status(400)
-			.send(
-				render.login(
-					undefined,
-					'/login',
-					csrf.generate(undefined),
-					'Incorrect credentials. Please try again.',
-				),
-			);
+		response.status(400).send(
+			render.login(
+				{
+					user: undefined,
+					url: '/login',
+				},
+				csrf.generate(undefined),
+				'Incorrect credentials. Please try again.',
+			),
+		);
 		return;
 	}
 

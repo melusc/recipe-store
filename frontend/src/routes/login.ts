@@ -23,9 +23,9 @@ import {centeredMain} from '../components/centered-main.js';
 import {createRoute} from './_utilities.js';
 
 export const renderLogin = createRoute(
-	'Login',
-	(_user, csrfToken: string, error: string | undefined) =>
-		centeredMain($`
+	(_, csrfToken: string, error: string | undefined) => ({
+		title: 'Login',
+		body: centeredMain($`
 			<section>
 				<h2>Login</h2>
 				<form
@@ -65,4 +65,5 @@ export const renderLogin = createRoute(
 				</form>
 			</section>
 		`),
+	}),
 );

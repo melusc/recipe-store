@@ -26,9 +26,9 @@ import {passwordRequirements} from '../components/password-requirements.js';
 import {createRoute} from './_utilities.js';
 
 export const renderAccount = createRoute(
-	'Account',
-	(user, csrfToken: string, showSuccess: boolean, errors?: string[]) =>
-		centeredMain($`
+	({user}, csrfToken: string, showSuccess: boolean, errors?: string[]) => ({
+		title: 'Account',
+		body: centeredMain($`
 			<section>
 				<h1>Account</H1>
 
@@ -123,4 +123,5 @@ export const renderAccount = createRoute(
 				</a>
 			</section>
 		`),
+	}),
 );

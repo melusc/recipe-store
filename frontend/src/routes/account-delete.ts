@@ -24,9 +24,9 @@ import {centeredMain} from '../components/centered-main.js';
 import {createRoute} from './_utilities.js';
 
 export const renderAccountDelete = createRoute(
-	'Delete Account',
-	(_user, csrfToken: string, error?: string) =>
-		centeredMain($`
+	(_, csrfToken: string, error?: string) => ({
+		title: 'Delete Account',
+		body: centeredMain($`
 			<section>
 				<h1>Delete Account</H1>
 
@@ -74,4 +74,5 @@ export const renderAccountDelete = createRoute(
 				</form>
 			</section>
 		`),
+	}),
 );

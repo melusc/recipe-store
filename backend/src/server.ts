@@ -97,8 +97,10 @@ export function setupServer(api: Api) {
 
 		response.send(
 			render.index(
-				response.locals.user,
-				'/',
+				{
+					user: response.locals.user,
+					url: '/',
+				},
 				api.Recipe.paginate({limit, page}),
 			),
 		);
@@ -109,7 +111,14 @@ export function setupServer(api: Api) {
 
 		if (!query) {
 			response.send(
-				render.search(response.locals.user, '/search', undefined, undefined),
+				render.search(
+					{
+						user: response.locals.user,
+						url: '/search',
+					},
+					undefined,
+					undefined,
+				),
 			);
 			return;
 		}
@@ -118,8 +127,10 @@ export function setupServer(api: Api) {
 
 		response.send(
 			render.search(
-				response.locals.user,
-				'/search',
+				{
+					user: response.locals.user,
+					url: '/search',
+				},
 				query,
 				api.Recipe.search({
 					limit,
@@ -140,7 +151,12 @@ export function setupServer(api: Api) {
 			response.status(401);
 
 			if (request.accepts('html')) {
-				response.send(render.error[401](response.locals.user, undefined));
+				response.send(
+					render.error[401]({
+						user: response.locals.user,
+						url: undefined,
+					}),
+				);
 			} else {
 				response.send({
 					error: 'Unauthorised',
@@ -150,7 +166,12 @@ export function setupServer(api: Api) {
 			response.status(500);
 
 			if (request.accepts('html')) {
-				response.send(render.error[500](response.locals.user, undefined));
+				response.send(
+					render.error[500]({
+						user: response.locals.user,
+						url: undefined,
+					}),
+				);
 			} else {
 				response.send({
 					error: 'Internal error',
@@ -160,9 +181,12 @@ export function setupServer(api: Api) {
 	}) satisfies ErrorRequestHandler);
 
 	app.use((_request, response, _next) => {
-		response
-			.status(404)
-			.send(render.error[404](response.locals.user, undefined));
+		response.status(404).send(
+			render.error[404]({
+				user: response.locals.user,
+				url: undefined,
+			}),
+		);
 	});
 
 	return app;

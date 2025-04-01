@@ -41,17 +41,17 @@ newRecipeRouter.post(
 
 		if (!csrf.validate(request, response)) {
 			// Don't save image for csrf violation
-			response
-				.status(403)
-				.send(
-					render.newRecipe(
-						response.locals.user,
-						'/recipe/new',
-						csrf.generate(response.locals.user),
-						body,
-						['Could not validate CSRF Token. Please try again.'],
-					),
-				);
+			response.status(403).send(
+				render.newRecipe(
+					{
+						user: response.locals.user,
+						url: '/recipe/new',
+					},
+					csrf.generate(response.locals.user),
+					body,
+					['Could not validate CSRF Token. Please try again.'],
+				),
+			);
 			return;
 		}
 
@@ -91,8 +91,10 @@ newRecipeRouter.post(
 
 			response.status(400).send(
 				render.newRecipe(
-					response.locals.user,
-					'/recipe/new',
+					{
+						user: response.locals.user,
+						url: '/recipe/new',
+					},
 					csrf.generate(response.locals.user),
 					{
 						...body,
@@ -123,8 +125,10 @@ newRecipeRouter.post(
 newRecipeRouter.get('/', (_request, response) => {
 	response.send(
 		render.newRecipe(
-			response.locals.user,
-			'/recipe/new',
+			{
+				user: response.locals.user,
+				url: '/recipe/new',
+			},
 			csrf.generate(response.locals.user),
 			{},
 		),

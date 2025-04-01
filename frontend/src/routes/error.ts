@@ -23,16 +23,16 @@ import {$} from '../$.js';
 import {createRoute} from './_utilities.js';
 
 const createErrorRoute = (title: string, body: string) =>
-	createRoute(
+	createRoute(() => ({
 		title,
-		() => $`
-		<div
-			class="position-absolute top-50 start-50 translate-middle"
-		>
-			<h1>${body}</h1>
-		</div>
-	`,
-	);
+		body: $`
+			<div
+				class="position-absolute top-50 start-50 translate-middle"
+			>
+				<h1>${body}</h1>
+			</div>
+		`,
+	}));
 
 export const renderError = {
 	404: createErrorRoute('404 - Not Found', '404 - Not Found :('),

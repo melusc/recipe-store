@@ -28,9 +28,9 @@ import {recipeCard} from '../components/recipe-card.js';
 import {createRoute} from './_utilities.js';
 
 export const renderIndex = createRoute(
-	'Recipes',
-	(user, recipes: PaginationResult<Recipe>) => {
-		return $`
+	({user}, recipes: PaginationResult<Recipe>) => ({
+		title: 'Recipes',
+		body: $`
 			${user && createRecipeButton()}
 
 			${
@@ -41,6 +41,6 @@ export const renderIndex = createRoute(
 			}
 
 			${pagination('/', recipes)}
-		`;
-	},
+		`,
+	}),
 );

@@ -33,8 +33,10 @@ accountRouter.use(session.guard(UserRoles.User));
 accountRouter.get('/', (_request, response) => {
 	response.send(
 		render.account(
-			response.locals.user,
-			'/account',
+			{
+				user: response.locals.user,
+				url: '/account',
+			},
 			csrf.generate(response.locals.user),
 			false,
 		),
@@ -47,17 +49,17 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	const errors = [];
 
 	if (!csrf.validate(request, response)) {
-		response
-			.send(400)
-			.send(
-				render.account(
-					response.locals.user,
-					'/account',
-					csrf.generate(response.locals.user),
-					false,
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
+		response.send(400).send(
+			render.account(
+				{
+					user: response.locals.user,
+					url: '/account',
+				},
+				csrf.generate(response.locals.user),
+				false,
+				['Could not validate CSRF Token. Please try again.'],
+			),
+		);
 		return;
 	}
 
@@ -104,8 +106,10 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 
 	response.send(
 		render.account(
-			response.locals.user,
-			'/account',
+			{
+				user: response.locals.user,
+				url: '/account',
+			},
 			csrf.generate(response.locals.user),
 			errors.length === 0,
 			errors,
@@ -116,8 +120,10 @@ accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
 accountRouter.get('/delete', (_request, response) => {
 	response.send(
 		render.accountDelete(
-			response.locals.user,
-			'/account/delete',
+			{
+				user: response.locals.user,
+				url: '/account/delete',
+			},
 			csrf.generate(response.locals.user),
 		),
 	);
@@ -128,16 +134,16 @@ accountRouter.post(
 	formdataMiddleware.none(),
 	async (request, response) => {
 		if (!csrf.validate(request, response)) {
-			response
-				.status(400)
-				.send(
-					render.accountDelete(
-						response.locals.user,
-						'/account/delete',
-						csrf.generate(response.locals.user),
-						'Could not validate CSRF Token. Please try again.',
-					),
-				);
+			response.status(400).send(
+				render.accountDelete(
+					{
+						user: response.locals.user,
+						url: '/account/delete',
+					},
+					csrf.generate(response.locals.user),
+					'Could not validate CSRF Token. Please try again.',
+				),
+			);
 			return;
 		}
 
@@ -146,32 +152,32 @@ accountRouter.post(
 		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
 
 		if (typeof password !== 'string' || !password) {
-			response
-				.status(400)
-				.send(
-					render.accountDelete(
-						response.locals.user,
-						'/account/delete',
-						csrf.generate(response.locals.user),
-						'Missing password.',
-					),
-				);
+			response.status(400).send(
+				render.accountDelete(
+					{
+						user: response.locals.user,
+						url: '/account/delete',
+					},
+					csrf.generate(response.locals.user),
+					'Missing password.',
+				),
+			);
 			return;
 		}
 
 		try {
 			response.locals.user!.confirmPassword(password);
 		} catch {
-			response
-				.status(400)
-				.send(
-					render.accountDelete(
-						response.locals.user,
-						'/account/delete',
-						csrf.generate(response.locals.user),
-						'Incorrect password. Please try again.',
-					),
-				);
+			response.status(400).send(
+				render.accountDelete(
+					{
+						user: response.locals.user,
+						url: '/account/delete',
+					},
+					csrf.generate(response.locals.user),
+					'Incorrect password. Please try again.',
+				),
+			);
 			return;
 		}
 
@@ -182,16 +188,16 @@ accountRouter.post(
 					: UserDeletion.KeepRecipes,
 			);
 		} catch {
-			response
-				.status(400)
-				.send(
-					render.accountDelete(
-						response.locals.user,
-						'/account/delete',
-						csrf.generate(response.locals.user),
-						'Could not complete your request. Please try again or contact an admin.',
-					),
-				);
+			response.status(400).send(
+				render.accountDelete(
+					{
+						user: response.locals.user,
+						url: '/account/delete',
+					},
+					csrf.generate(response.locals.user),
+					'Could not complete your request. Please try again or contact an admin.',
+				),
+			);
 			return;
 		}
 

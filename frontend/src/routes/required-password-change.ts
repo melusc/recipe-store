@@ -26,9 +26,9 @@ import {passwordRequirements} from '../components/password-requirements.js';
 import {createRoute} from './_utilities.js';
 
 export const renderRequiredPasswordChange = createRoute(
-	'Account',
-	(_user, csrfToken: string, errors?: string[]) =>
-		centeredMain($`
+	(_, csrfToken: string, errors?: string[]) => ({
+		title: 'Change Password',
+		body: centeredMain($`
 			<section>
 				<h1>Please change your password</H1>
 
@@ -72,4 +72,5 @@ export const renderRequiredPasswordChange = createRoute(
 				<script src="/static/progressive-enhancement/password-form.js"></script>
 			</section>
 		`),
+	}),
 );
