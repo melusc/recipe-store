@@ -24,10 +24,10 @@ import {ApiError, randomImageName, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {imageUploadDirectory} from '../data.ts';
-import {readForm, type FormImage} from '../form-validation/recipe.ts';
-import {csrf, session} from '../middleware/token.ts';
-import {formdataMiddleware} from '../upload.ts';
+import {imageUploadDirectory} from '../../data.ts';
+import {readForm, type FormImage} from '../../form-validation/recipe.ts';
+import {csrf, session} from '../../middleware/token.ts';
+import {formdataMiddleware} from '../../upload.ts';
 
 export const newRecipeRouter = Router();
 

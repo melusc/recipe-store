@@ -34,7 +34,7 @@ import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account.ts';
 import {apiRouter} from './routes/api.ts';
 import {loginRouter} from './routes/login.ts';
-import {newRecipeRouter} from './routes/new-recipe.ts';
+import {newRecipeRouter} from './routes/recipe/new.ts';
 import {requiredPasswordChangeRouter} from './routes/required-password-change.ts';
 import {staticRouter} from './routes/static.ts';
 
