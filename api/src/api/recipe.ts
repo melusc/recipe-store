@@ -68,18 +68,25 @@ export function randomImageName(extension: string) {
 	return `${name}.${extension}`;
 }
 
-type SqlRecipeRow = {
-	recipe_id: number;
-	title: string;
-	author: number;
-	created_at: number;
-	updated_at: number;
-	sections: string;
-	image: string | null;
-	tags: string;
-	source: string | null;
-	duration: string | null;
+type SqlNullRecipeRow = {
+	recipe_id: null;
+	// ...
 };
+
+type SqlRecipeRow =
+	| {
+			recipe_id: number;
+			title: string;
+			author: number;
+			created_at: number;
+			updated_at: number;
+			sections: string;
+			image: string | null;
+			tags: string;
+			source: string | null;
+			duration: string | null;
+	  }
+	| SqlNullRecipeRow;
 
 const BASE_SQL_RECIPE_SELECT = `
 SELECT recipe_id,
@@ -89,7 +96,7 @@ SELECT recipe_id,
        updated_at,
        sections,
        source,
-			 duration,
+       duration,
        image,
        json_group_array(recipe_tags.tag_name) AS tags
 FROM   recipes
@@ -427,7 +434,9 @@ export class Recipe extends InjectableApi {
 	private static _fromRow(row: SqlRecipeRow): Recipe;
 	private static _fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
 	private static _fromRow(row: SqlRecipeRow | undefined) {
-		if (!row) {
+		// LEFT JOIN with aggr func means
+		// it returns a row but all columns are null
+		if (!row || row.recipe_id === null) {
 			return;
 		}
 

@@ -56,6 +56,31 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	expect(Recipe.fromRecipeId(recipe.recipeId)).toStrictEqual(recipe);
 });
 
+apiTest('fromRecipeId non-existant', ({api: {Recipe}}) => {
+	expect(Recipe.fromRecipeId(-3)).toBeUndefined();
+});
+
+apiTest(
+	'fromRecipeId without tags and sections',
+	async ({api: {Recipe, User}}) => {
+		const user = User.create('vcesn', 'acwtv', 'pxsmo', UserRoles.User, false);
+		const recipe = await Recipe.create(
+			'recipe 1',
+			user,
+			undefined,
+			undefined,
+			undefined,
+			[],
+			[],
+		);
+
+		const recipeFetched = Recipe.fromRecipeId(recipe.recipeId);
+		expect(recipeFetched).toBeDefined();
+		expect(recipeFetched!.tags).toHaveLength(0);
+		expect(recipeFetched!.sections).toHaveLength(0);
+	},
+);
+
 apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 	const user = User.create('ioxow', 'fphkp', 'xsxrg', UserRoles.User, false);
 	const recipe = await Recipe.create(
