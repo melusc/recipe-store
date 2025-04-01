@@ -1,0 +1,49 @@
+/*!
+	Copyright 2025 Luca Schnellmann <oss@lusc.ch>
+
+	This file is part of recipe-store.
+
+	This program is free software: you can redistribute it
+	and/or modify it under the terms of the GNU General Public
+	License as published by the Free Software Foundation,
+	either version 3 of the License, or (at your option)
+	any later version.
+
+	This program is distributed in the hope that it will be
+	useful, but WITHOUT ANY WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE. See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public
+	License along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+import {Router} from 'express';
+import {render} from 'frontend';
+
+export const viewRecipeRouter = Router();
+
+viewRecipeRouter.get('/:id', (request, response, next) => {
+	const requestId = Number.parseInt(request.params.id, 10);
+	const recipe = response.locals.api.Recipe.fromRecipeId(requestId);
+
+	if (!recipe) {
+		next();
+		return;
+	}
+
+	const requesterUser = response.locals.user;
+	const hasEditPermissions =
+		!!requesterUser && recipe.permissionToModifyRecipe(requesterUser);
+
+	response.send(
+		render.viewRecipe(
+			{
+				user: response.locals.user,
+				url: request.originalUrl,
+			},
+			recipe,
+			hasEditPermissions,
+		),
+	);
+});
