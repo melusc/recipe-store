@@ -24,6 +24,7 @@ import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
 import {renderNewRecipe} from './routes/recipe/new.js';
+import {renderViewRecipe} from './routes/recipe/view.js';
 import {renderRequiredPasswordChange} from './routes/required-password-change.js';
 import {renderSearch} from './routes/search.js';
 
@@ -36,4 +37,5 @@ export const render = {
 	accountDelete: renderAccountDelete,
 	requiredPasswordChange: renderRequiredPasswordChange,
 	newRecipe: renderNewRecipe,
+	viewRecipe: renderViewRecipe,
 } as const;
