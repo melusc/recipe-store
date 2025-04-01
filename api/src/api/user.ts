@@ -428,6 +428,10 @@ export class User extends InjectableApi {
 	}
 
 	changeUsername(newUsername: string) {
+		if (newUsername === this.username) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE users
@@ -445,6 +449,10 @@ export class User extends InjectableApi {
 	}
 
 	changeDisplayName(newDisplayName: string) {
+		if (newDisplayName === this.displayName) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE users
@@ -461,6 +469,10 @@ export class User extends InjectableApi {
 	}
 
 	changeRole(newRole: UserRoles) {
+		if (newRole === this.role) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE users
