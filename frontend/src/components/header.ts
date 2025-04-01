@@ -18,12 +18,19 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {RelativeUrl} from '@lusc/util/relative-url';
+
 import {$} from '../$.js';
 import type {RouteMetadata} from '../routes/_utilities.js';
 
 import {searchForm} from './search-form.js';
 
 export function header({user, url}: RouteMetadata) {
+	const loginUrl = new RelativeUrl('/login');
+	if (url) {
+		loginUrl.searchParams.set('continue', url);
+	}
+
 	const routes = [
 		{
 			href: '/',
@@ -50,7 +57,7 @@ export function header({user, url}: RouteMetadata) {
 				]
 			: [
 					{
-						href: '/login',
+						href: loginUrl.href,
 						name: 'Login',
 					},
 				]),
