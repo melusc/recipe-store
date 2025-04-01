@@ -588,6 +588,15 @@ export class Recipe extends InjectableApi {
 	}
 
 	updateSections(sections: readonly string[]) {
+		if (
+			sections.length === this.sections.length &&
+			sections.every(
+				(section, index) => this.sections[index]!.source === section,
+			)
+		) {
+			return;
+		}
+
 		const sectionsParsed = sections.map(
 			source =>
 				({
@@ -613,6 +622,10 @@ export class Recipe extends InjectableApi {
 	}
 
 	updateTitle(newTitle: string) {
+		if (newTitle === this.title) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE recipes
@@ -630,6 +643,10 @@ export class Recipe extends InjectableApi {
 	}
 
 	updateSource(newSource: string | undefined) {
+		if (newSource === this.source) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE recipes
@@ -647,6 +664,10 @@ export class Recipe extends InjectableApi {
 	}
 
 	updateDuration(newDuration: string | undefined) {
+		if (newDuration === this.duration) {
+			return;
+		}
+
 		this.database
 			.prepare(
 				`UPDATE recipes
