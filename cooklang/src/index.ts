@@ -99,3 +99,6 @@ export function sectionToText(section: CooklangSection) {
 	cache.set(section, joined);
 	return joined;
 }
+
+export {ingredientToText} from './schema/cooking-items.js';
+export {stringifyQuantity} from './schema/quantity.js';
