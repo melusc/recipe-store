@@ -22,7 +22,7 @@ import {fileURLToPath} from 'node:url';
 
 import express, {Router} from 'express';
 
-import {imageDirectory} from '../data.ts';
+import {imageDirectory, imageUploadDirectory} from '../data.ts';
 
 export const staticRouter = Router();
 
@@ -39,3 +39,9 @@ staticRouter.use('/', express.static(bootstrapDirectory, options));
 
 const userContentImages = fileURLToPath(imageDirectory);
 staticRouter.use('/user-content', express.static(userContentImages, options));
+
+const temporaryUserContentImages = fileURLToPath(imageUploadDirectory);
+staticRouter.use(
+	'/user-content',
+	express.static(temporaryUserContentImages, options),
+);

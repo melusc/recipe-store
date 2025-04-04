@@ -77,7 +77,7 @@ const user = api.User.create(
 );
 
 await api.Recipe.create(
-	'recipe 1',
+	'Recipe 1',
 	user,
 	undefined,
 	undefined,
@@ -87,19 +87,19 @@ await api.Recipe.create(
 );
 
 await api.Recipe.create(
-	'recipe 2',
+	'Recipe 2',
 	user,
 	undefined,
-	undefined,
-	undefined,
+	'Grandmother',
+	'2h',
 	['pineapple', 'example'],
-	['Add @pineapple'],
+	['Add @pineapple{1 g} and @apple{3}', 'Add @pineapple{1 g} and @apple{3}'],
 );
 
 await Promise.all(
 	Array.from({length: 30}, (_v, index) =>
 		api.Recipe.create(
-			`recipe ${index + 3}`,
+			`Recipe ${index + 3}`,
 			user,
 			undefined,
 			undefined,

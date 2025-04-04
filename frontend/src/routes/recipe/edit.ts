@@ -18,14 +18,28 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {$, type Substitution} from '../$.js';
+import type {Recipe} from 'api';
 
-export function centeredMain(children: Substitution) {
-	return $`<main class="
-		col-10 col-md-6
-		align-self-center
-		d-flex flex-column gap-3
-	">
-		${children}
-	</main>`;
-}
+import {$} from '../../$.js';
+import {centeredMain} from '../../components/centered-main.js';
+import {recipeForm, type RecipePrefill} from '../../components/recipe-form.js';
+import {createRoute} from '../_utilities.js';
+
+export const renderEditRecipe = createRoute(
+	(
+		_,
+		csrfToken: string,
+		recipe: Recipe,
+		prefill: RecipePrefill,
+		errors?: readonly string[],
+	) => ({
+		title: `Edit ${recipe.title}`,
+		body: centeredMain($`
+			<section>
+				<h1>Edit ${recipe.title}</h1>
+
+				${recipeForm(csrfToken, prefill, 'Save', errors)}
+			</section>
+		`),
+	}),
+);

@@ -23,7 +23,7 @@ import {$} from '../$.js';
 import {iconCross} from './icons/cross.js';
 
 export function recipeImageInput(prefillImage: string | undefined) {
-	// prefillImage ??= 'https://picsum.photos/536/354';
+	const imageUrl = prefillImage && `/static/user-content/${prefillImage}`;
 
 	return $`
 		<div id="image-preview-parent" class="${!prefillImage && 'd-none'}">
@@ -36,7 +36,7 @@ export function recipeImageInput(prefillImage: string | undefined) {
 			<img
 				id="image-preview-image"
 				class="image-fluid rounded w-100 ${!prefillImage && 'd-none'}"
-				src="${prefillImage}"
+				src="${imageUrl}"
 			>
 		</div>
 

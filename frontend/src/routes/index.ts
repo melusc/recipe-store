@@ -21,7 +21,7 @@
 import {type PaginationResult, type Recipe} from 'api';
 
 import {$} from '../$.js';
-import {createRecipeButton} from '../components/create-recipe-button.js';
+import {createRecipeButton} from '../components/buttons/create-recipe.js';
 import {pagination} from '../components/pagination.js';
 import {recipeCard} from '../components/recipe-card.js';
 

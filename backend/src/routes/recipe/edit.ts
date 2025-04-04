@@ -22,31 +22,47 @@ import {writeFile} from 'node:fs/promises';
 
 import {ApiError, randomImageName, UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
+import {render, type RecipePrefill} from 'frontend';
 
 import {imageUploadDirectory} from '../../data.ts';
+import {UnauthorisedError} from '../../errors.ts';
 import {readForm, type FormImage} from '../../form-validation/recipe.ts';
 import {csrf, session} from '../../middleware/token.ts';
 import {formdataMiddleware} from '../../upload.ts';
 
-export const newRecipeRouter = Router();
+export const editRecipeRouter = Router();
 
-newRecipeRouter.post(
-	'/',
+editRecipeRouter.post(
+	'/:id/edit',
 	session.guard(UserRoles.User),
 	formdataMiddleware.single('file-image'),
-	async (request, response) => {
+	async (request, response, next) => {
 		const body = (request.body ?? {}) as Record<string, unknown>;
+
+		const id = Number.parseInt(request.params['id']!, 10);
+		const recipe = response.locals.api.Recipe.fromRecipeId(id);
+		const requestUser = response.locals.user;
+
+		if (!recipe) {
+			next();
+			return;
+		}
+
+		if (!recipe.permissionToModifyRecipe(requestUser!)) {
+			next(new UnauthorisedError());
+			return;
+		}
 
 		if (!csrf.validate(request, response)) {
 			// Don't save image for csrf violation
 			response.status(403).send(
-				render.newRecipe(
+				render.editRecipe(
 					{
 						user: response.locals.user,
-						url: '/recipe/new',
+						url: `/recipe/${id}/edit`,
 					},
 					csrf.generate(response.locals.user),
+					recipe,
 					body,
 					['Could not validate CSRF Token. Please try again.'],
 				),
@@ -56,13 +72,16 @@ newRecipeRouter.post(
 
 		const errors: string[] = [];
 		let image: FormImage | undefined;
-		try {
-			image = await readForm.image(body, request.file);
-		} catch (error: unknown) {
-			if (error instanceof ApiError) {
-				errors.push(error.message);
-			} else {
-				throw error;
+		const imageHasChanged = readForm.checkImageHasChanged(body, recipe);
+		if (imageHasChanged) {
+			try {
+				image = await readForm.image(body, request.file);
+			} catch (error: unknown) {
+				if (error instanceof ApiError) {
+					errors.push(error.message);
+				} else {
+					throw error;
+				}
 			}
 		}
 		const sections = readForm.sections(body);
@@ -89,12 +108,13 @@ newRecipeRouter.post(
 			}
 
 			response.status(400).send(
-				render.newRecipe(
+				render.editRecipe(
 					{
 						user: response.locals.user,
-						url: '/recipe/new',
+						url: `/recipe/${id}/edit`,
 					},
 					csrf.generate(response.locals.user),
+					recipe,
 					{
 						...body,
 						tags,
@@ -107,32 +127,62 @@ newRecipeRouter.post(
 			return;
 		}
 
-		const recipe = await response.locals.api.Recipe.create(
-			title,
-			response.locals.user!,
-			image?.buffer,
-			source,
-			duration,
-			tags,
-			sections,
-		);
+		// All the methods check if it has actually changed
+		// so no need to check here
+
+		recipe.updateDuration(duration);
+		recipe.updateTitle(title);
+
+		if (imageHasChanged) {
+			await recipe.updateImage(image?.buffer);
+		}
+		recipe.updateSections(sections);
+		recipe.updateSource(source);
+
+		for (const tag of tags) {
+			recipe.addTag(tag);
+		}
 
 		response.redirect(303, `/recipe/${recipe.recipeId}`);
 	},
 );
 
-newRecipeRouter.get(
-	'/',
+editRecipeRouter.get(
+	'/:id/edit',
 	session.guard(UserRoles.User),
-	(_request, response) => {
+	(request, response, next) => {
+		const id = Number.parseInt(request.params['id']!, 10);
+		const recipe = response.locals.api.Recipe.fromRecipeId(id);
+		const requestUser = response.locals.user;
+
+		if (!recipe) {
+			next();
+			return;
+		}
+
+		if (!recipe.permissionToModifyRecipe(requestUser!)) {
+			next(new UnauthorisedError());
+			return;
+		}
+
+		const prefill: RecipePrefill = {
+			duration: recipe.duration,
+			sections: recipe.sections.map(section => section.source),
+			image: recipe.image,
+			source: recipe.source,
+			tags: recipe.tags,
+			title: recipe.title,
+		};
+
 		response.send(
-			render.newRecipe(
+			render.editRecipe(
 				{
 					user: response.locals.user,
-					url: '/recipe/new',
+					url: `/recipe/${id}/edit`,
 				},
 				csrf.generate(response.locals.user),
-				{},
+				recipe,
+				prefill,
 			),
 		);
 	},

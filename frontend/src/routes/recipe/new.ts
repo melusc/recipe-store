@@ -35,7 +35,7 @@ export const renderNewRecipe = createRoute(
 			<section>
 				<h1>Create a new recipe</h1>
 
-				${recipeForm('/recipe/new', csrfToken, prefill, errors)}
+				${recipeForm(csrfToken, prefill, 'Submit', errors)}
 			</section>
 		`),
 	}),

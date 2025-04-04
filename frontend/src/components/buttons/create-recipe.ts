@@ -18,14 +18,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {$, type Substitution} from '../$.js';
+import {$} from '../../$.js';
+import {iconPlus} from '../icons/plus.js';
 
-export function centeredMain(children: Substitution) {
-	return $`<main class="
-		col-10 col-md-6
-		align-self-center
-		d-flex flex-column gap-3
-	">
-		${children}
-	</main>`;
+export function createRecipeButton() {
+	return $`
+		<a
+			href="/recipe/new"
+			class="btn btn-primary align-self-end icon-link"
+		>
+			Create recipe
+			<span style="height: 1em; width: 1em">${iconPlus()}</span>
+		</a>
+	`;
 }

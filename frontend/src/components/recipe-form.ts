@@ -35,16 +35,15 @@ export type RecipePrefill = {
 };
 
 export function recipeForm(
-	postUrl: string,
 	csrfToken: string,
 	prefill: RecipePrefill,
+	action: string,
 	errors?: readonly string[],
 ) {
 	return $`
 		<form
 			method="POST"
 			enctype="multipart/form-data"
-			action="${postUrl}"
 			class="d-flex flex-column gap-3"
 		>
 			${formError(errors)}
@@ -91,7 +90,7 @@ export function recipeForm(
 			${recipeSectionsInput(prefill.sections)}
 
 			<button type="submit" class="btn btn-primary">
-				Submit
+				${action}
 			</button>
 		</form>
 	`;
