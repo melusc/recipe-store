@@ -20,10 +20,9 @@
 
 import {randomBytes} from 'node:crypto';
 import {rm, writeFile} from 'node:fs/promises';
-import {fileURLToPath} from 'node:url';
 
 import {ApiError, randomImageName, UserRoles} from 'api';
-import express, {Router} from 'express';
+import {Router} from 'express';
 
 import {imageUploadDirectory} from '../data.ts';
 import {readForm, type FormImage} from '../form-validation/recipe.ts';
@@ -77,7 +76,7 @@ apiRouter.post(
 
 			response.json({
 				name,
-				url: `/api/temp-image/${name}`,
+				url: `/static/user-content/${name}`,
 				deletionKey,
 			});
 		} else {
@@ -86,14 +85,6 @@ apiRouter.post(
 			});
 		}
 	},
-);
-
-apiRouter.use(
-	'/temp-image/',
-	express.static(fileURLToPath(imageUploadDirectory), {
-		index: false,
-		dotfiles: 'ignore',
-	}),
 );
 
 apiRouter.post(

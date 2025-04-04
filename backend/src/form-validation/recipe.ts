@@ -22,7 +22,7 @@ import {Buffer} from 'node:buffer';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 
-import {validateImageType} from 'api';
+import {validateImageType, type Recipe} from 'api';
 
 import {imageUploadDirectory} from '../data.ts';
 
@@ -92,6 +92,10 @@ export const readForm = {
 		}
 
 		return [];
+	},
+	checkImageUnchanged(body: Record<string, unknown>, recipe: Recipe): boolean {
+		const uploadedImage = body['uploaded-image'];
+		return uploadedImage === recipe.image;
 	},
 	async image(
 		body: Record<string, unknown>,

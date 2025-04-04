@@ -18,24 +18,27 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type {Recipe} from 'api';
+
 import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
 import {recipeForm, type RecipePrefill} from '../../components/recipe-form.js';
 import {createRoute} from '../_utilities.js';
 
-export const renderNewRecipe = createRoute(
+export const renderEditRecipe = createRoute(
 	(
 		_,
 		csrfToken: string,
+		recipe: Recipe,
 		prefill: RecipePrefill,
 		errors?: readonly string[],
 	) => ({
-		title: 'New Recipe',
+		title: `Edit ${recipe.title}`,
 		body: centeredMain($`
 			<section>
-				<h1>Create a new recipe</h1>
+				<h1>Edit ${recipe.title}</h1>
 
-				${recipeForm(csrfToken, prefill, 'Submit', errors)}
+				${recipeForm(csrfToken, prefill, 'Save', errors)}
 			</section>
 		`),
 	}),

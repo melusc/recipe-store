@@ -23,6 +23,7 @@ import {renderAccount} from './routes/account.js';
 import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
+import {renderEditRecipe} from './routes/recipe/edit.js';
 import {renderNewRecipe} from './routes/recipe/new.js';
 import {renderViewRecipe} from './routes/recipe/view.js';
 import {renderRequiredPasswordChange} from './routes/required-password-change.js';
@@ -38,4 +39,7 @@ export const render = {
 	requiredPasswordChange: renderRequiredPasswordChange,
 	newRecipe: renderNewRecipe,
 	viewRecipe: renderViewRecipe,
+	editRecipe: renderEditRecipe,
 } as const;
+
+export type {RecipePrefill} from './components/recipe-form.js';

@@ -49,9 +49,7 @@ export const renderViewRecipe = createRoute(
 			metadataTable.push(['Source', $`<span>${recipe.source}</span>`]);
 		}
 
-		const imageUrl =
-			(recipe.image && `/static/user-content/${recipe.image}`) ||
-			`https://picsum.photos/${String(Math.floor(Math.random() * 200 + 400))}/${String(Math.floor(Math.random() * 200 + 400))}`;
+		const imageUrl = recipe.image && `/static/user-content/${recipe.image}`;
 
 		return {
 			title: recipe.title,
