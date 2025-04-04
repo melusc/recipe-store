@@ -93,9 +93,9 @@ export const readForm = {
 
 		return [];
 	},
-	checkImageUnchanged(body: Record<string, unknown>, recipe: Recipe): boolean {
+	checkImageHasChanged(body: Record<string, unknown>, recipe: Recipe): boolean {
 		const uploadedImage = body['uploaded-image'];
-		return uploadedImage === recipe.image;
+		return uploadedImage !== recipe.image;
 	},
 	async image(
 		body: Record<string, unknown>,

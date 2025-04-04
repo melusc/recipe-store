@@ -72,8 +72,8 @@ editRecipeRouter.post(
 
 		const errors: string[] = [];
 		let image: FormImage | undefined;
-		const imageUnchanged = readForm.checkImageUnchanged(body, recipe);
-		if (!imageUnchanged) {
+		const imageHasChanged = readForm.checkImageHasChanged(body, recipe);
+		if (imageHasChanged) {
 			try {
 				image = await readForm.image(body, request.file);
 			} catch (error: unknown) {
@@ -133,7 +133,7 @@ editRecipeRouter.post(
 		recipe.updateDuration(duration);
 		recipe.updateTitle(title);
 
-		if (!imageUnchanged) {
+		if (imageHasChanged) {
 			await recipe.updateImage(image?.buffer);
 		}
 		recipe.updateSections(sections);
