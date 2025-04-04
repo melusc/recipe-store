@@ -49,18 +49,6 @@ export function setupServer(api: Api) {
 	app.use(cookieParser());
 	app.use(
 		helmet({
-			contentSecurityPolicy: {
-				directives: {
-					'script-src': ["'self'", "'unsafe-inline'"],
-					'img-src': [
-						"'self'",
-						'data:',
-						'picsum.photos',
-						'fastly.picsum.photos',
-					],
-				},
-			},
-
 			// Nginx already sets the following
 			xContentTypeOptions: false,
 			strictTransportSecurity: false,
