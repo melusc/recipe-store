@@ -39,28 +39,34 @@ editRecipeRouter.post(
 	async (request, response, next) => {
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
-		if (!csrf.validate(request, response)) {
-			// Don't save image for csrf violation
-			response.status(403).send(
-				render.newRecipe(
-					{
-						user: response.locals.user,
-						url: '/recipe/new',
-					},
-					csrf.generate(response.locals.user),
-					body,
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
-			return;
-		}
-
 		const id = Number.parseInt(request.params['id']!, 10);
 		const recipe = response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 
-		if (!recipe?.permissionToModifyRecipe(requestUser!)) {
+		if (!recipe) {
+			next();
+			return;
+		}
+
+		if (!recipe.permissionToModifyRecipe(requestUser!)) {
 			next(new UnauthorisedError());
+			return;
+		}
+
+		if (!csrf.validate(request, response)) {
+			// Don't save image for csrf violation
+			response.status(403).send(
+				render.editRecipe(
+					{
+						user: response.locals.user,
+						url: `/recipe/${id}/edit`,
+					},
+					csrf.generate(response.locals.user),
+					recipe,
+					body,
+					['Could not validate CSRF Token. Please try again.'],
+				),
+			);
 			return;
 		}
 
@@ -105,7 +111,7 @@ editRecipeRouter.post(
 				render.editRecipe(
 					{
 						user: response.locals.user,
-						url: '/recipe/new',
+						url: `/recipe/${id}/edit`,
 					},
 					csrf.generate(response.locals.user),
 					recipe,
@@ -149,7 +155,12 @@ editRecipeRouter.get(
 		const recipe = response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 
-		if (!recipe?.permissionToModifyRecipe(requestUser!)) {
+		if (!recipe) {
+			next();
+			return;
+		}
+
+		if (!recipe.permissionToModifyRecipe(requestUser!)) {
 			next(new UnauthorisedError());
 			return;
 		}
@@ -167,7 +178,7 @@ editRecipeRouter.get(
 			render.editRecipe(
 				{
 					user: response.locals.user,
-					url: '/recipe/new',
+					url: `/recipe/${id}/edit`,
 				},
 				csrf.generate(response.locals.user),
 				recipe,
