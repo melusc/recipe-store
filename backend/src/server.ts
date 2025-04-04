@@ -58,6 +58,7 @@ export function setupServer(api: Api) {
 	);
 	app.use(cors());
 	app.use(morgan('dev'));
+
 	app.use((request, response, next) => {
 		Object.defineProperty(request, 'search', {
 			value: new RelativeUrl(request.url).searchParams,
@@ -68,13 +69,10 @@ export function setupServer(api: Api) {
 			enumerable: true,
 		});
 
+		response.setHeader('permissions-policy', 'interest-cohort=()');
+
 		next();
 	});
-	app.use(
-		setHeaders({
-			'permissions-policy': 'interest-cohort=()',
-		}),
-	);
 
 	app.use(session.middleware(api));
 
