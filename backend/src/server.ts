@@ -28,7 +28,6 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import {UnauthorisedError} from './errors.ts';
-import {setHeaders} from './middleware/set-headers.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account.ts';
@@ -58,6 +57,7 @@ export function setupServer(api: Api) {
 	);
 	app.use(cors());
 	app.use(morgan('dev'));
+
 	app.use((request, response, next) => {
 		Object.defineProperty(request, 'search', {
 			value: new RelativeUrl(request.url).searchParams,
@@ -68,13 +68,10 @@ export function setupServer(api: Api) {
 			enumerable: true,
 		});
 
+		response.setHeader('permissions-policy', 'interest-cohort=()');
+
 		next();
 	});
-	app.use(
-		setHeaders({
-			'permissions-policy': 'interest-cohort=()',
-		}),
-	);
 
 	app.use(session.middleware(api));
 
