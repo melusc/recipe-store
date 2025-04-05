@@ -70,8 +70,33 @@ export class InjectableApi {
 	}
 
 	/** @internal */
+	get Image() {
+		return this.apiOptions.Image;
+	}
+
+	/** @internal */
+	static get Image() {
+		return this.apiOptions.Image;
+	}
+
+	/** @internal */
 	get imageDirectory() {
 		return this.apiOptions.imageDirectory;
+	}
+
+	/** @internal */
+	static get imageDirectory() {
+		return this.apiOptions.imageDirectory;
+	}
+
+	/** @internal */
+	get temporaryImageDirectory() {
+		return this.apiOptions.temporaryImageDirectory;
+	}
+
+	/** @internal */
+	static get temporaryImageDirectory() {
+		return this.apiOptions.temporaryImageDirectory;
 	}
 
 	/** @internal */

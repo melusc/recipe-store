@@ -37,7 +37,9 @@ await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 type UtilityApi = Readonly<
 	Api & {
 		listImages(): Promise<readonly string[]>;
+		listTemporaryImages(): Promise<readonly string[]>;
 		imageDirectory: URL;
+		temporaryImageDirectory: URL;
 	}
 >;
 
@@ -79,31 +81,39 @@ export async function hashFile(path: URL) {
 export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
 	async api({}, use: Use<UtilityApi>) {
-		const temporaryDirectory = new URL(
+		const permanentImageDirectory = new URL(
 			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
 		);
+		const temporaryImageDirectory = new URL('temp/', permanentImageDirectory);
+
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		await mkdir(temporaryDirectory);
+		await mkdir(temporaryImageDirectory, {recursive: true});
 
 		const database = new DatabaseSync(':memory:');
 		const api = createApi({
-			imageDirectory: temporaryDirectory,
+			imageDirectory: permanentImageDirectory,
+			temporaryImageDirectory,
 			database,
 		});
 
 		const utilityApi = {
 			...api,
-			imageDirectory: temporaryDirectory,
+			imageDirectory: permanentImageDirectory,
+			temporaryImageDirectory,
 			async listImages() {
 				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				return readdir(temporaryDirectory);
+				return readdir(permanentImageDirectory);
 			},
-		};
+			async listTemporaryImages() {
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
+				return readdir(temporaryImageDirectory);
+			},
+		} satisfies UtilityApi;
 
 		await use(utilityApi);
 
 		database.close();
-		await rm(temporaryDirectory, {recursive: true});
+		await rm(permanentImageDirectory, {recursive: true});
 	},
 });

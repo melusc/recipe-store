@@ -22,23 +22,23 @@ import {DatabaseSync, type SupportedValueType} from 'node:sqlite';
 
 import {makeSlug} from '@lusc/util/slug';
 
+import {Image} from './image.js';
 import {Recipe} from './recipe.js';
 import {User} from './user.js';
 
 export type ApiOptions = {
 	readonly database: DatabaseSync;
 	readonly imageDirectory: URL;
+	readonly temporaryImageDirectory: URL;
 };
-
-export type InternalApiOptions = {
-	readonly Recipe: typeof Recipe;
-	readonly User: typeof User;
-} & ApiOptions;
 
 export type Api = {
 	readonly Recipe: typeof Recipe;
 	readonly User: typeof User;
+	readonly Image: typeof Image;
 };
+
+export type InternalApiOptions = Api & ApiOptions;
 
 function initDatabase(database: DatabaseSync) {
 	database.exec('PRAGMA journal_mode=WAL;');
@@ -94,23 +94,28 @@ function initDatabase(database: DatabaseSync) {
 	`);
 }
 
+function normaliseDirectoryUrl(directory: URL) {
+	if (!directory.href.endsWith('/')) {
+		return new URL(directory.href + '/');
+	}
+
+	return directory;
+}
+
 export function createApi(options: ApiOptions): Api {
 	initDatabase(options.database);
 
-	const {database} = options;
-	let {imageDirectory} = options;
-	if (!imageDirectory.href.endsWith('/')) {
-		imageDirectory = new URL(imageDirectory);
-		imageDirectory.href += '/';
-	}
+	const {database, imageDirectory, temporaryImageDirectory} = options;
 
 	const internalApiOptions: InternalApiOptions = {
 		database,
-		imageDirectory,
+		imageDirectory: normaliseDirectoryUrl(imageDirectory),
+		temporaryImageDirectory: normaliseDirectoryUrl(temporaryImageDirectory),
 		// Cyclical dependency
 		// They don't need to access each other during creation
 		Recipe: undefined!,
 		User: undefined!,
+		Image: undefined!,
 	};
 
 	class RecipeInjected extends Recipe {
@@ -133,13 +138,26 @@ export function createApi(options: ApiOptions): Api {
 		}
 	}
 
+	class ImageInjected extends Image {
+		override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+
+		static override get apiOptions(): InternalApiOptions {
+			return internalApiOptions;
+		}
+	}
+
 	// @ts-expect-error They depend on each other cyclically
 	internalApiOptions.Recipe = RecipeInjected;
 	// @ts-expect-error They are readonly, but that is only important afterwards
 	internalApiOptions.User = UserInjected;
+	// @ts-expect-error See above ^
+	internalApiOptions.Image = ImageInjected;
 
 	return {
 		Recipe: RecipeInjected,
 		User: UserInjected,
+		Image: ImageInjected,
 	} as const;
 }
