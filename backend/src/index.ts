@@ -25,7 +25,7 @@ import {createApi, UserRoles} from 'api';
 
 import {UserDeletion} from '../../api/dist/src/api/user';
 
-import {database, imageDirectory} from './data.ts';
+import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
 import {setupServer} from './server.js';
 
 const {
@@ -41,6 +41,7 @@ const {
 const api = createApi({
 	database,
 	imageDirectory,
+	temporaryImageDirectory: temporaryImageDirectory,
 });
 
 if (createOwnerUsername) {

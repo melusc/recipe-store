@@ -26,7 +26,7 @@ import {smallAuthor} from './author.js';
 import {recipeTagList} from './recipe-tag.js';
 
 export function recipeCard(recipe: Recipe) {
-	const imageUrl = recipe.image && `/static/user-content/${recipe.image}`;
+	const imageUrl = recipe.image && `/static/user-content/${recipe.image.name}`;
 
 	return $`
 		<div class="col-md-6 col-lg-3">

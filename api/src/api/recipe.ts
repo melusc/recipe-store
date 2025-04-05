@@ -532,6 +532,10 @@ export class Recipe extends InjectableApi {
 	}
 
 	async updateImage(image: Image | undefined) {
+		if (image?.name === this.image?.name) {
+			return;
+		}
+
 		if (image?.isTemporary()) {
 			image = await image.makePermament();
 		}

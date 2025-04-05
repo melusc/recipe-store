@@ -23,9 +23,9 @@ import {render} from 'frontend';
 
 export const viewRecipeRouter = Router();
 
-viewRecipeRouter.get('/:id', (request, response, next) => {
+viewRecipeRouter.get('/:id', async (request, response, next) => {
 	const requestId = Number.parseInt(request.params.id, 10);
-	const recipe = response.locals.api.Recipe.fromRecipeId(requestId);
+	const recipe = await response.locals.api.Recipe.fromRecipeId(requestId);
 
 	if (!recipe) {
 		next();
