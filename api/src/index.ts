@@ -20,8 +20,9 @@
 
 export {ApiError} from './api/error.js';
 export {createApi, type Api} from './api/index.js';
-export {validateImageType, randomImageName, type Recipe} from './api/recipe.js';
+export type {Recipe} from './api/recipe.js';
 export {UserDeletion, UserRoles, type User} from './api/user.js';
+export {ImageSaveType, type Image} from './api/image.js';
 export {
 	type DynamicPaginationResult,
 	type PaginationResult,

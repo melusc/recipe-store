@@ -18,18 +18,13 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {Buffer} from 'node:buffer';
-import {randomBytes} from 'node:crypto';
-
 import {
 	cooklangSectionSchema,
 	parseSection,
 	type CooklangSection,
 } from 'cooklang';
-import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
-import {ApiError} from './error.js';
 import type {Image} from './image.js';
 import {InjectableApi} from './injectable.js';
 import {QueryParser, recipeMatchesFilter} from './search.js';
@@ -44,29 +39,6 @@ export type RecipeSection = {
 	source: string;
 	parsed: CooklangSection;
 };
-
-const allowedImageMimes: ReadonlySet<string> = new Set([
-	'image/jpeg',
-	'image/png',
-	'image/webp',
-]);
-export async function validateImageType(image: Buffer): Promise<string> {
-	if (image.byteLength > 10e6) {
-		throw new ApiError('Image is too large. Maximum of 10 MB is allowed.');
-	}
-
-	const fileType = await fileTypeFromBuffer(image);
-	if (fileType && allowedImageMimes.has(fileType.mime)) {
-		return fileType.ext;
-	}
-
-	throw new ApiError('Invalid image. Allowed images are JPG, PNG, and WEBP.');
-}
-
-export function randomImageName(extension: string) {
-	const name = randomBytes(30).toString('base64url');
-	return `${name}.${extension}`;
-}
 
 type SqlNullRecipeRow = {
 	recipe_id: null;

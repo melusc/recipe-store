@@ -143,7 +143,10 @@ export class Image extends InjectableApi {
 			await this.read(),
 			ImageSaveType.PermanentImage,
 		);
-		await this.rm();
+		if (this.isTemporary()) {
+			await this.rm();
+		}
+
 		return newImage;
 	}
 }
