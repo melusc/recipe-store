@@ -18,12 +18,12 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {Buffer} from 'node:buffer';
 import {readFile} from 'node:fs/promises';
 
 import {expect} from 'vitest';
 
-import {ApiError, UserRoles} from '../src/index.js';
+import {ImageSaveType} from '../src/api/image.js';
+import {UserRoles} from '../src/index.js';
 
 import {
 	apiTest,
@@ -53,11 +53,13 @@ apiTest('Creating recipe', async ({api: {User, Recipe}}) => {
 	expect(recipe.tags).toStrictEqual(['vegetarian']);
 	expect(recipe.title).toStrictEqual('recipe 1');
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)).toStrictEqual(recipe);
+	await expect(Recipe.fromRecipeId(recipe.recipeId)).resolves.toStrictEqual(
+		recipe,
+	);
 });
 
-apiTest('fromRecipeId non-existant', ({api: {Recipe}}) => {
-	expect(Recipe.fromRecipeId(-3)).toBeUndefined();
+apiTest('fromRecipeId non-existant', async ({api: {Recipe}}) => {
+	await expect(Recipe.fromRecipeId(-3)).resolves.toBeUndefined();
 });
 
 apiTest(
@@ -74,7 +76,7 @@ apiTest(
 			[],
 		);
 
-		const recipeFetched = Recipe.fromRecipeId(recipe.recipeId);
+		const recipeFetched = await Recipe.fromRecipeId(recipe.recipeId);
 		expect(recipeFetched).toBeDefined();
 		expect(recipeFetched!.tags).toHaveLength(0);
 		expect(recipeFetched!.sections).toHaveLength(0);
@@ -94,7 +96,9 @@ apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 	);
 
 	expect(recipe.tags).toStrictEqual(['vegetarian']);
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual(recipe.tags);
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.tags).toStrictEqual(
+		recipe.tags,
+	);
 
 	const oldUpdatedAt = recipe.updatedAt;
 
@@ -102,13 +106,17 @@ apiTest('Adding tags', async ({api: {User, Recipe}}) => {
 	recipe.addTag('VEGETARIAN');
 
 	expect(recipe.tags).toStrictEqual(['vegetarian']);
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual(recipe.tags);
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.tags).toStrictEqual(
+		recipe.tags,
+	);
 	expect(recipe.updatedAt.getTime()).toStrictEqual(oldUpdatedAt.getTime());
 
 	recipe.addTag('sweet');
 
 	expect(recipe.tags).toStrictEqual(['sweet', 'vegetarian']);
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual(recipe.tags);
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.tags).toStrictEqual(
+		recipe.tags,
+	);
 	expect(recipe.updatedAt.getTime()).toBeGreaterThanOrEqual(
 		oldUpdatedAt.getTime(),
 	);
@@ -135,130 +143,134 @@ apiTest('Removing tags', async ({api: {User, Recipe}}) => {
 	recipe.removeTag('tag2');
 
 	expect(recipe.tags).toStrictEqual(['tag1', 'tag3']);
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual(recipe.tags);
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.tags).toStrictEqual(
+		recipe.tags,
+	);
 
 	recipe.clearTags();
 	expect(recipe.tags).toStrictEqual([]);
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.tags).toStrictEqual([]);
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.tags).toStrictEqual([]);
+});
+
+apiTest('Adding image', async ({api: {User, Recipe, listImages, Image}}) => {
+	const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User, false);
+	const recipe = await Recipe.create(
+		'recipe 1',
+		user,
+		undefined,
+		undefined,
+		undefined,
+		[],
+		['add @cinnamon'],
+	);
+
+	expect(recipe.image).toBeUndefined();
+	await expect(listImages()).resolves.toStrictEqual([]);
+
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toBeUndefined();
+
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const newImageBuffer = await readFile(sampleImagePaths.jpg);
+	const newImage = await Image.create(
+		newImageBuffer,
+		ImageSaveType.PermanentImage,
+	);
+	await recipe.updateImage(newImage);
+
+	await expect(listImages()).resolves.toStrictEqual([recipe.image!.name]);
+	await expect(hashFile(await recipe.image!.read())).resolves.toStrictEqual(
+		sampleImageHashes.jpg,
+	);
+
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toStrictEqual(
+		recipe.image,
+	);
+});
+
+apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
+	const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User, false);
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const firstImageBuffer = await readFile(sampleImagePaths.webp);
+	const firstImage = await Image.create(
+		firstImageBuffer,
+		ImageSaveType.PermanentImage,
+	);
+
+	const recipe = await Recipe.create(
+		'recipe',
+		user,
+		firstImage,
+		undefined,
+		undefined,
+		[],
+		['add @rice'],
+	);
+
+	expect(
+		(await Recipe.fromRecipeId(recipe.recipeId))!.image!.name,
+	).toStrictEqual(recipe.image!.name);
+
+	await expect(hashFile(await recipe.image!.read())).resolves.toStrictEqual(
+		sampleImageHashes.webp,
+	);
+	await expect(listImages()).resolves.toStrictEqual([recipe.image!.name]);
+
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const secondImageBuffer = await readFile(sampleImagePaths.png);
+	const secondImage = await Image.create(
+		secondImageBuffer,
+		ImageSaveType.PermanentImage,
+	);
+	await recipe.updateImage(secondImage);
+
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toStrictEqual(
+		recipe.image,
+	);
+
+	await expect(hashFile(await recipe.image!.read())).resolves.toStrictEqual(
+		sampleImageHashes.png,
+	);
+	await expect(listImages()).resolves.toStrictEqual([recipe.image!.name]);
+});
+
+apiTest('Deleting image', async ({api: {User, Recipe, listImages, Image}}) => {
+	const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User, false);
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const imageBuffer = await readFile(sampleImagePaths.png);
+	const image = await Image.create(imageBuffer, ImageSaveType.PermanentImage);
+
+	const recipe = await Recipe.create(
+		'recipe',
+		user,
+		image,
+		undefined,
+		undefined,
+		[],
+		['add @pasta'],
+	);
+
+	await expect(hashFile(await recipe.image!.read())).resolves.toStrictEqual(
+		sampleImageHashes.png,
+	);
+	await expect(listImages()).resolves.toStrictEqual([recipe.image!.name]);
+
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toStrictEqual(
+		recipe.image,
+	);
+
+	await recipe.updateImage(undefined);
+
+	expect(recipe.image).toBeUndefined();
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toStrictEqual(
+		recipe.image,
+	);
+
+	await expect(listImages()).resolves.toStrictEqual([]);
 });
 
 apiTest(
-	'Adding image',
-	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('xnntr', 'slnhb', 'mrmbp', UserRoles.User, false);
-		const recipe = await Recipe.create(
-			'recipe 1',
-			user,
-			undefined,
-			undefined,
-			undefined,
-			[],
-			['add @cinnamon'],
-		);
-
-		expect(recipe.image).toBeUndefined();
-		await expect(listImages()).resolves.toStrictEqual([]);
-
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		const newImage = await readFile(sampleImagePaths.jpg);
-		await recipe.updateImage(newImage);
-
-		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-		await expect(
-			hashFile(new URL(recipe.image!, imageDirectory)),
-		).resolves.toStrictEqual(sampleImageHashes.jpg);
-
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-	},
-);
-
-apiTest(
-	'Replacing image',
-	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User, false);
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		const firstImage = await readFile(sampleImagePaths.webp);
-
-		const recipe = await Recipe.create(
-			'recipe',
-			user,
-			firstImage,
-			undefined,
-			undefined,
-			[],
-			['add @rice'],
-		);
-
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-
-		await expect(
-			hashFile(new URL(recipe.image!, imageDirectory)),
-		).resolves.toStrictEqual(sampleImageHashes.webp);
-		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		const secondImage = await readFile(sampleImagePaths.png);
-		await recipe.updateImage(secondImage);
-
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-
-		await expect(
-			hashFile(new URL(recipe.image!, imageDirectory)),
-		).resolves.toStrictEqual(sampleImageHashes.png);
-		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-	},
-);
-
-apiTest(
-	'Deleting image',
-	async ({api: {User, Recipe, listImages, imageDirectory}}) => {
-		const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User, false);
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		const image = await readFile(sampleImagePaths.png);
-
-		const recipe = await Recipe.create(
-			'recipe',
-			user,
-			image,
-			undefined,
-			undefined,
-			[],
-			['add @pasta'],
-		);
-
-		await expect(
-			hashFile(new URL(recipe.image!, imageDirectory)),
-		).resolves.toStrictEqual(sampleImageHashes.png);
-		await expect(listImages()).resolves.toStrictEqual([recipe.image]);
-
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-
-		await recipe.updateImage(undefined);
-
-		expect(recipe.image).toBeUndefined();
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.image).toStrictEqual(
-			recipe.image,
-		);
-
-		await expect(listImages()).resolves.toStrictEqual([]);
-	},
-);
-
-apiTest(
 	'Accepts image/jpeg, image/png, image/webp',
-	async ({api: {Recipe, User}}) => {
+	async ({api: {Recipe, User, Image}}) => {
 		const user = User.create('pvcif', 'omkdm', 'kjpzh', UserRoles.User, false);
 		const recipe = await Recipe.create(
 			'recipe',
@@ -276,40 +288,13 @@ apiTest(
 			sampleImagePaths.webp,
 		]) {
 			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			const image = await readFile(path);
+			const imageBuffer = await readFile(path);
+			const image = await Image.create(
+				imageBuffer,
+				ImageSaveType.PermanentImage,
+			);
 			await recipe.updateImage(image);
 		}
-	},
-);
-
-apiTest(
-	'Rejects non-images or unsupported image types',
-	async ({api: {Recipe, User, listImages}}) => {
-		const user = User.create('gxdwb', 'fjiug', 'aznpe', UserRoles.User, false);
-		const recipe = await Recipe.create(
-			'recipe',
-			user,
-			undefined,
-			undefined,
-			undefined,
-			[],
-			['add @apples'],
-		);
-
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		const gifImage = await readFile(sampleImagePaths.gif);
-		await expect(recipe.updateImage(gifImage)).rejects.to.throw(
-			ApiError,
-			/invalid/i,
-		);
-
-		await expect(listImages()).resolves.toHaveLength(0);
-
-		await expect(
-			recipe.updateImage(Buffer.from('<!doctype html><html></html>')),
-		).rejects.to.throw(ApiError, /invalid/i);
-
-		await expect(listImages()).resolves.toHaveLength(0);
 	},
 );
 
@@ -328,11 +313,13 @@ apiTest(
 		);
 
 		expect(recipe.source).toBeUndefined();
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
+		expect(
+			(await Recipe.fromRecipeId(recipe.recipeId))!.source,
+		).toBeUndefined();
 
 		recipe.updateSource('https://bing.com/');
 		expect(recipe.source).toStrictEqual('https://bing.com/');
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual(
+		expect((await Recipe.fromRecipeId(recipe.recipeId))!.source).toStrictEqual(
 			'https://bing.com/',
 		);
 	},
@@ -351,13 +338,13 @@ apiTest('Recipe source with starting source', async ({api: {Recipe, User}}) => {
 	);
 
 	expect(recipe.source).toStrictEqual('https://google.com/');
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toStrictEqual(
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.source).toStrictEqual(
 		'https://google.com/',
 	);
 
 	recipe.updateSource(undefined);
 	expect(recipe.source).toBeUndefined();
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.source).toBeUndefined();
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.source).toBeUndefined();
 });
 
 apiTest(
@@ -375,13 +362,15 @@ apiTest(
 		);
 
 		expect(recipe.duration).toBeUndefined();
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
+		expect(
+			(await Recipe.fromRecipeId(recipe.recipeId))!.duration,
+		).toBeUndefined();
 
 		recipe.updateDuration('60 minutes');
 		expect(recipe.duration).toStrictEqual('60 minutes');
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
-			'60 minutes',
-		);
+		expect(
+			(await Recipe.fromRecipeId(recipe.recipeId))!.duration,
+		).toStrictEqual('60 minutes');
 	},
 );
 
@@ -400,39 +389,17 @@ apiTest(
 		);
 
 		expect(recipe.duration).toStrictEqual('60 min');
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toStrictEqual(
-			'60 min',
-		);
+		expect(
+			(await Recipe.fromRecipeId(recipe.recipeId))!.duration,
+		).toStrictEqual('60 min');
 
 		recipe.updateDuration(undefined);
 		expect(recipe.duration).toBeUndefined();
-		expect(Recipe.fromRecipeId(recipe.recipeId)!.duration).toBeUndefined();
+		expect(
+			(await Recipe.fromRecipeId(recipe.recipeId))!.duration,
+		).toBeUndefined();
 	},
 );
-
-apiTest('Rejects too large images', async ({api: {Recipe, User}}) => {
-	const user = User.create('aqosq', 'dicvr', 'leoiu', UserRoles.User, false);
-	const recipe = await Recipe.create(
-		'recipe',
-		user,
-		undefined,
-		undefined,
-		undefined,
-		[],
-		['add @tofu'],
-	);
-
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	let buffer = await readFile(sampleImagePaths.png);
-
-	// Duplicating should still leave it a valid png
-	// asking `file-type` because the headers aren't changed
-	while (buffer.byteLength < 11e6) {
-		buffer = Buffer.concat([buffer, buffer]);
-	}
-
-	await expect(recipe.updateImage(buffer)).rejects.to.throw(ApiError, /large/i);
-});
 
 apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	const user = User.create('ctiah', 'sdfaa', 'sevbq', UserRoles.User, false);
@@ -451,9 +418,9 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 		),
 	);
 
-	expect(Recipe.all()).toHaveLength(25);
+	await expect(Recipe.all()).resolves.toHaveLength(25);
 
-	const firstTen = Recipe.paginate({page: 1, limit: 10});
+	const firstTen = await Recipe.paginate({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);
 	expect(firstTen.page).toStrictEqual(1);
 	expect(firstTen.lastPage).toStrictEqual(3);
@@ -461,7 +428,7 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	expect(firstTen.getPreviousPage()).toStrictEqual(false);
 	expect(firstTen.getNextPage()).toStrictEqual(2);
 
-	const nextTen = Recipe.paginate({page: 2, limit: 10});
+	const nextTen = await Recipe.paginate({page: 2, limit: 10});
 	expect(nextTen.items).toHaveLength(10);
 	expect(nextTen.page).toStrictEqual(2);
 	expect(nextTen.lastPage).toStrictEqual(3);
@@ -469,7 +436,7 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 	expect(nextTen.getPreviousPage()).toStrictEqual(1);
 	expect(nextTen.getNextPage()).toStrictEqual(3);
 
-	const lastFive = Recipe.paginate({page: 3, limit: 10});
+	const lastFive = await Recipe.paginate({page: 3, limit: 10});
 	expect(lastFive.items).toHaveLength(5);
 	expect(lastFive.page).toStrictEqual(3);
 	expect(lastFive.lastPage).toStrictEqual(3);
@@ -482,7 +449,8 @@ apiTest('Paginate', async ({api: {User, Recipe}}) => {
 			recipe => recipe.recipeId,
 		),
 	);
-	const expectedIds = new Set(Recipe.all().map(recipe => recipe.recipeId));
+	const allRecipes = await Recipe.all();
+	const expectedIds = new Set(allRecipes.map(recipe => recipe.recipeId));
 	expect(paginatedIds).toStrictEqual(expectedIds);
 });
 
@@ -524,7 +492,7 @@ apiTest('Updating title', async ({api: {User, Recipe}}) => {
 	recipe.updateTitle('Cool Recipe');
 	expect(recipe.title).toStrictEqual('Cool Recipe');
 
-	expect(Recipe.fromRecipeId(recipe.recipeId)!.title).toStrictEqual(
+	expect((await Recipe.fromRecipeId(recipe.recipeId))!.title).toStrictEqual(
 		'Cool Recipe',
 	);
 });
@@ -597,7 +565,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	);
 
 	// First page
-	const page1_5per = Recipe.search({
+	const page1_5per = await Recipe.search({
 		limit: 5,
 		page: 1,
 		query: 'banana',
@@ -610,7 +578,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page1_5per.perPageLimit).toStrictEqual(5);
 
 	// Last page, page can be filled with limit
-	const page10_5per = Recipe.search({
+	const page10_5per = await Recipe.search({
 		limit: 5,
 		page: 10,
 		query: 'banana',
@@ -624,7 +592,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 
 	// Recipes running on next page means it won't know how many pages
 	// 43..=49 means next page will have 1
-	const page7_7per = Recipe.search({
+	const page7_7per = await Recipe.search({
 		limit: 7,
 		page: 7,
 		query: 'banana',
@@ -636,7 +604,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	expect(page7_7per.perPageLimit).toStrictEqual(7);
 
 	// Recipes run out before limit is reached
-	const page8_7per = Recipe.search({
+	const page8_7per = await Recipe.search({
 		limit: 7,
 		page: 8,
 		query: 'banana',
@@ -649,7 +617,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 
 	// Short-circuit. Even though query matches all recipes
 	// there aren't enough recipes for there to be a page 20
-	const page20_5per = Recipe.search({
+	const page20_5per = await Recipe.search({
 		limit: 5,
 		page: 20,
 		query: 'banana',

@@ -217,15 +217,15 @@ apiTest('Delete user, keep recipes', async ({api: {User, Recipe}}) => {
 
 	expect(User.all()).toHaveLength(1);
 
-	const recipes = Recipe.all();
+	const recipes = await Recipe.all();
 	expect(recipes).toHaveLength(2);
 
 	// `recipe1` will not "know" that `user1` has been deleted
 	// Only on requery will it "know"
-	expect(Recipe.fromRecipeId(recipe1.recipeId)!.author).toBeUndefined();
-	expect(Recipe.fromRecipeId(recipe2.recipeId)!.author!.username).toStrictEqual(
-		'tdjdj',
-	);
+	expect((await Recipe.fromRecipeId(recipe1.recipeId))!.author).toBeUndefined();
+	expect(
+		(await Recipe.fromRecipeId(recipe2.recipeId))!.author!.username,
+	).toStrictEqual('tdjdj');
 });
 
 apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
@@ -254,7 +254,7 @@ apiTest('Delete user, delete recipes', async ({api: {User, Recipe}}) => {
 
 	await user1.deleteUser(UserDeletion.DeleteRecipes);
 
-	expect(Recipe.all()).toStrictEqual([recipe2]);
+	await expect(Recipe.all()).resolves.toStrictEqual([recipe2]);
 	expect(User.all()).toStrictEqual([user2]);
 });
 
@@ -274,8 +274,8 @@ apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
 		);
 	}
 
-	const user1Recipes = user1.listRecipes();
-	const user2Recipes = user2.listRecipes();
+	const user1Recipes = await user1.listRecipes();
+	const user2Recipes = await user2.listRecipes();
 
 	expect(user1Recipes).toHaveLength(10);
 	expect(user2Recipes).toHaveLength(10);
@@ -307,7 +307,7 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 		);
 	}
 
-	const firstTen = user1.paginateRecipes({page: 1, limit: 10});
+	const firstTen = await user1.paginateRecipes({page: 1, limit: 10});
 	expect(firstTen.items).toHaveLength(10);
 	expect(firstTen.page).toStrictEqual(1);
 	expect(firstTen.lastPage).toStrictEqual(3);
@@ -315,7 +315,7 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 	expect(firstTen.getPreviousPage()).toStrictEqual(false);
 	expect(firstTen.getNextPage()).toStrictEqual(2);
 
-	const nextTen = user1.paginateRecipes({page: 2, limit: 10});
+	const nextTen = await user1.paginateRecipes({page: 2, limit: 10});
 	expect(nextTen.items).toHaveLength(10);
 	expect(nextTen.page).toStrictEqual(2);
 	expect(nextTen.lastPage).toStrictEqual(3);
@@ -323,7 +323,7 @@ apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 	expect(nextTen.getPreviousPage()).toStrictEqual(1);
 	expect(nextTen.getNextPage()).toStrictEqual(3);
 
-	const finalFive = user1.paginateRecipes({page: 3, limit: 10});
+	const finalFive = await user1.paginateRecipes({page: 3, limit: 10});
 	expect(finalFive.items).toHaveLength(5);
 	expect(finalFive.page).toStrictEqual(3);
 	expect(finalFive.lastPage).toStrictEqual(3);

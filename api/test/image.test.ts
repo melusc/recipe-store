@@ -18,11 +18,13 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {Buffer} from 'node:buffer';
 import {readFile} from 'node:fs/promises';
 
 import {describe, expect} from 'vitest';
 
 import {ImageSaveType} from '../src/api/image.js';
+import {ApiError} from '../src/index.js';
 
 import {apiTest, sampleImagePaths} from './utilities.js';
 
@@ -82,4 +84,19 @@ describe('Image', () => {
 			await expect(image.read()).rejects.toThrow();
 		},
 	);
+
+	apiTest('Rejects too large images', async ({api: {Image}}) => {
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		let buffer = await readFile(sampleImagePaths.png);
+
+		// Duplicating should still leave it a valid png
+		// asking `file-type` because the headers aren't changed
+		while (buffer.byteLength < 11e6) {
+			buffer = Buffer.concat([buffer, buffer]);
+		}
+
+		await expect(
+			Image.create(buffer, ImageSaveType.PermanentImage),
+		).rejects.throw(ApiError, /large/);
+	});
 });
