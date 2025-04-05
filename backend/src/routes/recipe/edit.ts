@@ -119,7 +119,7 @@ editRecipeRouter.post(
 						...body,
 						tags,
 						sections,
-						image: savedLocationName,
+						image: imageHasChanged ? savedLocationName : recipe.image,
 					},
 					errors,
 				),
