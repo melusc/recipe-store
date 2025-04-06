@@ -19,13 +19,11 @@
 */
 
 import {randomBytes} from 'node:crypto';
-import {rm, writeFile} from 'node:fs/promises';
 
-import {ApiError, randomImageName, UserRoles} from 'api';
+import {ApiError, UserRoles, type Image} from 'api';
 import {Router} from 'express';
 
-import {imageUploadDirectory} from '../data.ts';
-import {readForm, type FormImage} from '../form-validation/recipe.ts';
+import {readForm} from '../form-validation/recipe.ts';
 import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
 
@@ -33,7 +31,7 @@ export const apiRouter = Router();
 
 apiRouter.use(session.guard(UserRoles.User));
 
-const deletionKeys = new Map<string, URL>();
+const deletionKeys = new Map<string, Image>();
 
 apiRouter.use((_request, response, next) => {
 	response.setHeader('X-CSRF-Token', csrf.generate(response.locals.user));
@@ -52,9 +50,9 @@ apiRouter.post(
 		}
 
 		const file = request.file;
-		let image: FormImage | undefined;
+		let image: Image | undefined;
 		try {
-			image = await readForm.image({}, file);
+			image = await readForm.image({}, file, response.locals.api);
 		} catch (error: unknown) {
 			if (error instanceof ApiError) {
 				response.status(400).json({
@@ -67,16 +65,12 @@ apiRouter.post(
 		}
 
 		if (image) {
-			const name = randomImageName(image.extension);
-			const savePath = new URL(name, imageUploadDirectory);
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			await writeFile(savePath, image.buffer);
 			const deletionKey = randomBytes(256).toString('base64url');
-			deletionKeys.set(deletionKey, savePath);
+			deletionKeys.set(deletionKey, image);
 
 			response.json({
-				name,
-				url: `/static/user-content/${name}`,
+				name: image.name,
+				url: `/static/user-content/${image.name}`,
 				deletionKey,
 			});
 		} else {
@@ -102,14 +96,15 @@ apiRouter.post(
 		const key = body['deletion-key'];
 
 		if (typeof key === 'string') {
-			const imagePath = deletionKeys.get(key);
+			const image = deletionKeys.get(key);
 			deletionKeys.delete(key);
-			if (imagePath) {
-				await rm(imagePath);
-
-				response.json('OK');
-				return;
+			if (image?.isTemporary()) {
+				try {
+					await image.rm();
+				} catch {}
 			}
+
+			response.json('OK');
 		}
 
 		response.status(401).json({

@@ -413,7 +413,7 @@ export class User extends InjectableApi {
 		this._triggerUpdated();
 	}
 
-	listRecipes(): ReadonlyArray<Recipe> {
+	listRecipes(): Promise<readonly Recipe[]> {
 		return this.Recipe.all(this.userId);
 	}
 
@@ -423,7 +423,7 @@ export class User extends InjectableApi {
 	}: {
 		readonly limit: number;
 		readonly page: number;
-	}): PaginationResult<Recipe> {
+	}): Promise<PaginationResult<Recipe>> {
 		return this.Recipe.paginate({limit, page, _userId: this.userId});
 	}
 
@@ -507,12 +507,13 @@ export class User extends InjectableApi {
 	}
 
 	async deleteUser(deleteRecipes: UserDeletion) {
+		const recipes = await this.listRecipes();
 		if (deleteRecipes === UserDeletion.DeleteRecipes) {
-			for (const recipe of this.listRecipes()) {
+			for (const recipe of recipes) {
 				await recipe.delete();
 			}
 		} else {
-			for (const recipe of this.listRecipes()) {
+			for (const recipe of recipes) {
 				recipe.dissociateOwner();
 			}
 		}

@@ -18,14 +18,11 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {writeFile} from 'node:fs/promises';
-
-import {ApiError, randomImageName, UserRoles} from 'api';
+import {ApiError, UserRoles, type Image} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {imageUploadDirectory} from '../../data.ts';
-import {readForm, type FormImage} from '../../form-validation/recipe.ts';
+import {readForm} from '../../form-validation/recipe.ts';
 import {csrf, session} from '../../middleware/token.ts';
 import {formdataMiddleware} from '../../upload.ts';
 
@@ -55,9 +52,9 @@ newRecipeRouter.post(
 		}
 
 		const errors: string[] = [];
-		let image: FormImage | undefined;
+		let image: Image | undefined;
 		try {
-			image = await readForm.image(body, request.file);
+			image = await readForm.image(body, request.file, response.locals.api);
 		} catch (error: unknown) {
 			if (error instanceof ApiError) {
 				errors.push(error.message);
@@ -77,17 +74,6 @@ newRecipeRouter.post(
 		const source = readForm.source(body);
 
 		if (errors.length > 0) {
-			let savedLocationName = image?.savedName;
-
-			if (image && !savedLocationName) {
-				savedLocationName = randomImageName(image.extension);
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				await writeFile(
-					new URL(savedLocationName, imageUploadDirectory),
-					image.buffer,
-				);
-			}
-
 			response.status(400).send(
 				render.newRecipe(
 					{
@@ -99,7 +85,7 @@ newRecipeRouter.post(
 						...body,
 						tags,
 						sections,
-						image: savedLocationName,
+						image: image?.name,
 					},
 					errors,
 				),
@@ -110,7 +96,7 @@ newRecipeRouter.post(
 		const recipe = await response.locals.api.Recipe.create(
 			title,
 			response.locals.user!,
-			image?.buffer,
+			image,
 			source,
 			duration,
 			tags,

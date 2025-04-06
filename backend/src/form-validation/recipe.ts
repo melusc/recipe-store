@@ -18,19 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {Buffer} from 'node:buffer';
-import {readFile} from 'node:fs/promises';
-import path from 'node:path';
-
-import {validateImageType, type Recipe} from 'api';
-
-import {imageUploadDirectory} from '../data.ts';
-
-export type FormImage = {
-	savedName: string | undefined;
-	buffer: Buffer;
-	extension: string;
-};
+import {ImageSaveType, type Api, type Image} from 'api';
 
 function getOptionalField(name: string) {
 	return (body: Record<string, unknown>) => {
@@ -93,27 +81,17 @@ export const readForm = {
 
 		return [];
 	},
-	checkImageHasChanged(body: Record<string, unknown>, recipe: Recipe): boolean {
-		const uploadedImage = body['uploaded-image'];
-		return uploadedImage !== recipe.image;
-	},
 	async image(
 		body: Record<string, unknown>,
 		file: Express.Multer.File | undefined,
-	): Promise<FormImage | undefined> {
+		api: Api,
+	): Promise<Image | undefined> {
 		if (body['remove-image'] === 'on') {
 			return;
 		}
 
 		if (file && file.size > 0) {
-			const extension = await validateImageType(file.buffer);
-			if (extension) {
-				return {
-					savedName: undefined,
-					buffer: file.buffer,
-					extension,
-				};
-			}
+			return api.Image.create(file.buffer, ImageSaveType.TemporaryImage);
 		}
 
 		const uploadedImage = body['uploaded-image'];
@@ -122,24 +100,7 @@ export const readForm = {
 			return;
 		}
 
-		const uploadedImageName = path.basename(uploadedImage);
-		const uploadedImagePath = new URL(uploadedImageName, imageUploadDirectory);
-
-		try {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			const image = await readFile(uploadedImagePath);
-			const extension = await validateImageType(image);
-
-			if (extension) {
-				return {
-					savedName: uploadedImageName,
-					buffer: image,
-					extension,
-				};
-			}
-		} catch {}
-
-		return;
+		return api.Image.fromName(uploadedImage);
 	},
 	title(body: Record<string, unknown>) {
 		const title = body['title'];

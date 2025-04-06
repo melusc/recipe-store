@@ -18,19 +18,14 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {Buffer} from 'node:buffer';
-import {randomBytes} from 'node:crypto';
-import {unlink, writeFile} from 'node:fs/promises';
-
 import {
 	cooklangSectionSchema,
 	parseSection,
 	type CooklangSection,
 } from 'cooklang';
-import {fileTypeFromBuffer} from 'file-type';
 import {array, object, string} from 'zod';
 
-import {ApiError} from './error.js';
+import type {Image} from './image.js';
 import {InjectableApi} from './injectable.js';
 import {QueryParser, recipeMatchesFilter} from './search.js';
 import {UserRoles, type User} from './user.js';
@@ -44,29 +39,6 @@ export type RecipeSection = {
 	source: string;
 	parsed: CooklangSection;
 };
-
-const allowedImageMimes: ReadonlySet<string> = new Set([
-	'image/jpeg',
-	'image/png',
-	'image/webp',
-]);
-export async function validateImageType(image: Buffer): Promise<string> {
-	if (image.byteLength > 10e6) {
-		throw new ApiError('Image is too large. Maximum of 10 MB is allowed.');
-	}
-
-	const fileType = await fileTypeFromBuffer(image);
-	if (fileType && allowedImageMimes.has(fileType.mime)) {
-		return fileType.ext;
-	}
-
-	throw new ApiError('Invalid image. Allowed images are JPG, PNG, and WEBP.');
-}
-
-export function randomImageName(extension: string) {
-	const name = randomBytes(30).toString('base64url');
-	return `${name}.${extension}`;
-}
 
 type SqlNullRecipeRow = {
 	recipe_id: null;
@@ -112,7 +84,7 @@ export class Recipe extends InjectableApi {
 	private _title: string;
 	private readonly _createdAt: ReadonlyDate;
 	private _updatedAt: ReadonlyDate;
-	private _image: string | undefined;
+	private _image: Image | undefined;
 	private _tags: readonly string[];
 	private _sections: readonly RecipeSection[];
 	private _author: User | undefined;
@@ -125,7 +97,7 @@ export class Recipe extends InjectableApi {
 		author: User | undefined,
 		createdAt: ReadonlyDate,
 		updatedAt: ReadonlyDate,
-		image: string | undefined,
+		image: Image | undefined,
 		source: string | undefined,
 		duration: string | undefined,
 		tags: readonly string[],
@@ -202,7 +174,7 @@ export class Recipe extends InjectableApi {
 	static async create(
 		title: string,
 		author: User,
-		image: Buffer | undefined,
+		image: Image | undefined,
 		source: string | undefined,
 		duration: string | undefined,
 		tags: readonly string[],
@@ -267,7 +239,7 @@ export class Recipe extends InjectableApi {
 
 	// UserId is internal use only
 	// Avoid duplication in User#listRecipes
-	static all(_userId?: number): ReadonlyArray<Recipe> {
+	static all(_userId?: number): Promise<readonly Recipe[]> {
 		const query = [BASE_SQL_RECIPE_SELECT];
 		const parameters: Record<string, number> = {};
 
@@ -282,7 +254,7 @@ export class Recipe extends InjectableApi {
 			.prepare(query.join(' '))
 			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
-		return recipes.map(row => this._fromRow(row));
+		return Promise.all(recipes.map(row => this._fromRow(row)));
 	}
 
 	// Internal parameters `userId` is for use via `User#paginateRecipes`
@@ -306,7 +278,7 @@ export class Recipe extends InjectableApi {
 		return recipeCount.count;
 	}
 
-	static search({
+	static async search({
 		limit,
 		page,
 		query,
@@ -314,7 +286,7 @@ export class Recipe extends InjectableApi {
 		limit: number;
 		page: number;
 		query: string;
-	}): DynamicPaginationResult<Recipe> {
+	}): Promise<DynamicPaginationResult<Recipe>> {
 		let hasSkipped = 0;
 		const shouldSkip = (page - 1) * limit;
 
@@ -340,7 +312,7 @@ export class Recipe extends InjectableApi {
 		const rowIterator = statement.iterate() as NodeJS.Iterator<SqlRecipeRow>;
 
 		for (const row of rowIterator) {
-			const recipe = this._fromRow(row);
+			const recipe = await this._fromRow(row);
 			if (recipeMatchesFilter(recipe, queryFilters)) {
 				if (hasSkipped === shouldSkip) {
 					items.push(recipe);
@@ -379,7 +351,7 @@ export class Recipe extends InjectableApi {
 		});
 	}
 
-	static paginate({
+	static async paginate({
 		limit,
 		page,
 		_userId: userId,
@@ -387,7 +359,7 @@ export class Recipe extends InjectableApi {
 		readonly limit: number;
 		readonly page: number;
 		readonly _userId?: number;
-	}): PaginationResult<Recipe> {
+	}): Promise<PaginationResult<Recipe>> {
 		const recipeCount = this._count(userId);
 
 		const lastPage = Math.ceil(recipeCount / limit);
@@ -423,17 +395,21 @@ export class Recipe extends InjectableApi {
 			.prepare(query.join(' '))
 			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
 
+		const items = recipes.map(row => this.Recipe._fromRow(row));
+
 		return new PaginationResult({
 			lastPage,
 			perPageLimit: limit,
 			page,
-			items: recipes.map(row => this.Recipe._fromRow(row)),
+			items: await Promise.all(items),
 		});
 	}
 
-	private static _fromRow(row: SqlRecipeRow): Recipe;
-	private static _fromRow(row: SqlRecipeRow | undefined): Recipe | undefined;
-	private static _fromRow(row: SqlRecipeRow | undefined) {
+	private static async _fromRow(row: SqlRecipeRow): Promise<Recipe>;
+	private static async _fromRow(
+		row: SqlRecipeRow | undefined,
+	): Promise<Recipe | undefined>;
+	private static async _fromRow(row: SqlRecipeRow | undefined) {
 		// LEFT JOIN with aggr func means
 		// it returns a row but all columns are null
 		if (!row || row.recipe_id === null) {
@@ -455,13 +431,15 @@ export class Recipe extends InjectableApi {
 			tag => tag !== null,
 		);
 
+		const image = row.image ? await this.Image.fromName(row.image) : undefined;
+
 		return new this.Recipe(
 			row.recipe_id,
 			row.title,
 			row.author === -1 ? undefined : this.User.fromUserid(row.author),
 			new Date(row.created_at),
 			new Date(row.updated_at),
-			row.image ?? undefined,
+			image,
 			row.source ?? undefined,
 			row.duration ?? undefined,
 			tags,
@@ -553,14 +531,13 @@ export class Recipe extends InjectableApi {
 		this._tags = tags.map(({tag_name: tagName}) => tagName);
 	}
 
-	async updateImage(image: Buffer | undefined) {
-		let imagePath: string | undefined;
+	async updateImage(image: Image | undefined) {
+		if (image?.name === this.image?.name) {
+			return;
+		}
 
-		if (image) {
-			const imageExtension = await validateImageType(image);
-			imagePath = randomImageName(imageExtension);
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			await writeFile(new URL(imagePath, this.imageDirectory), image);
+		if (image?.isTemporary()) {
+			image = await image.makePermament();
 		}
 
 		// Update database first to prevent
@@ -574,15 +551,11 @@ export class Recipe extends InjectableApi {
 			)
 			.run({
 				recipeId: this.recipeId,
-				image: imagePath ?? null,
+				image: image?.name ?? null,
 			});
 
-		if (this._image) {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			await unlink(new URL(this._image, this.imageDirectory));
-		}
-
-		this._image = imagePath;
+		await this._image?.rm();
+		this._image = image;
 
 		this._triggerUpdated();
 	}
@@ -685,12 +658,8 @@ export class Recipe extends InjectableApi {
 	}
 
 	async delete() {
-		if (this._image) {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
-			await unlink(new URL(this._image, this.imageDirectory));
-			// If `.delete` is called twice
-			this._image = undefined;
-		}
+		await this._image?.rm();
+		this._image = undefined;
 
 		this.database
 			.prepare(

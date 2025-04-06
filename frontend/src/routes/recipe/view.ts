@@ -49,7 +49,8 @@ export const renderViewRecipe = createRoute(
 			metadataTable.push(['Source', $`<span>${recipe.source}</span>`]);
 		}
 
-		const imageUrl = recipe.image && `/static/user-content/${recipe.image}`;
+		const imageUrl =
+			recipe.image && `/static/user-content/${recipe.image.name}`;
 
 		return {
 			title: recipe.title,

@@ -18,6 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {Buffer} from 'node:buffer';
 import {createHash, randomBytes, type BinaryLike} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {readdir, mkdir, rm, writeFile} from 'node:fs/promises';
@@ -37,7 +38,9 @@ await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 type UtilityApi = Readonly<
 	Api & {
 		listImages(): Promise<readonly string[]>;
+		listTemporaryImages(): Promise<readonly string[]>;
 		imageDirectory: URL;
+		temporaryImageDirectory: URL;
 	}
 >;
 
@@ -63,47 +66,62 @@ export const sampleImageHashes = Object.fromEntries(
 	gif: string;
 };
 
-export async function hashFile(path: URL) {
+export async function hashFile(pathOrImage: URL | Buffer) {
 	const hash = createHash('sha1');
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
-	const stream = createReadStream(path);
+	if (Buffer.isBuffer(pathOrImage)) {
+		hash.update(pathOrImage);
+	} else {
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const stream = createReadStream(pathOrImage);
 
-	for await (const chunk of stream) {
-		hash.update(chunk as BinaryLike);
+		for await (const chunk of stream) {
+			hash.update(chunk as BinaryLike);
+		}
 	}
-
 	return hash.digest('hex');
 }
 
 export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
 	async api({}, use: Use<UtilityApi>) {
-		const temporaryDirectory = new URL(
+		const permanentImageDirectory = new URL(
 			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
 		);
+		const temporaryImageDirectory = new URL('temp/', permanentImageDirectory);
+
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
-		await mkdir(temporaryDirectory);
+		await mkdir(temporaryImageDirectory, {recursive: true});
 
 		const database = new DatabaseSync(':memory:');
 		const api = createApi({
-			imageDirectory: temporaryDirectory,
+			imageDirectory: permanentImageDirectory,
+			temporaryImageDirectory,
 			database,
 		});
 
+		function makeListFunction(directory: URL) {
+			return async () => {
+				// eslint-disable-next-line security/detect-non-literal-fs-filename
+				const items = await readdir(directory, {
+					withFileTypes: true,
+				});
+				return items.filter(file => file.isFile()).map(file => file.name);
+			};
+		}
+
 		const utilityApi = {
 			...api,
-			imageDirectory: temporaryDirectory,
-			async listImages() {
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				return readdir(temporaryDirectory);
-			},
-		};
+			imageDirectory: permanentImageDirectory,
+			temporaryImageDirectory,
+			listImages: makeListFunction(permanentImageDirectory),
+			listTemporaryImages: makeListFunction(temporaryImageDirectory),
+		} satisfies UtilityApi;
 
 		await use(utilityApi);
 
 		database.close();
-		await rm(temporaryDirectory, {recursive: true});
+		await rm(permanentImageDirectory, {recursive: true});
 	},
 });

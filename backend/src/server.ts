@@ -79,7 +79,7 @@ export function setupServer(api: Api) {
 
 	app.use('/', loginRouter);
 
-	app.get('/', (request, response) => {
+	app.get('/', async (request, response) => {
 		const {page, limit} = resolvePaginationParameters(request);
 
 		response.send(
@@ -88,12 +88,12 @@ export function setupServer(api: Api) {
 					user: response.locals.user,
 					url: '/',
 				},
-				api.Recipe.paginate({limit, page}),
+				await api.Recipe.paginate({limit, page}),
 			),
 		);
 	});
 
-	app.get('/search', (request, response) => {
+	app.get('/search', async (request, response) => {
 		const query = request.search.get('q');
 
 		if (!query) {
@@ -119,7 +119,7 @@ export function setupServer(api: Api) {
 					url: '/search',
 				},
 				query,
-				api.Recipe.search({
+				await api.Recipe.search({
 					limit,
 					page,
 					query,

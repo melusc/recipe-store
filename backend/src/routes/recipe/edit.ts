@@ -18,15 +18,12 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {writeFile} from 'node:fs/promises';
-
-import {ApiError, randomImageName, UserRoles} from 'api';
+import {ApiError, UserRoles, type Image} from 'api';
 import {Router} from 'express';
 import {render, type RecipePrefill} from 'frontend';
 
-import {imageUploadDirectory} from '../../data.ts';
 import {UnauthorisedError} from '../../errors.ts';
-import {readForm, type FormImage} from '../../form-validation/recipe.ts';
+import {readForm} from '../../form-validation/recipe.ts';
 import {csrf, session} from '../../middleware/token.ts';
 import {formdataMiddleware} from '../../upload.ts';
 
@@ -40,7 +37,7 @@ editRecipeRouter.post(
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		const id = Number.parseInt(request.params['id']!, 10);
-		const recipe = response.locals.api.Recipe.fromRecipeId(id);
+		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 
 		if (!recipe) {
@@ -71,17 +68,14 @@ editRecipeRouter.post(
 		}
 
 		const errors: string[] = [];
-		let image: FormImage | undefined;
-		const imageHasChanged = readForm.checkImageHasChanged(body, recipe);
-		if (imageHasChanged) {
-			try {
-				image = await readForm.image(body, request.file);
-			} catch (error: unknown) {
-				if (error instanceof ApiError) {
-					errors.push(error.message);
-				} else {
-					throw error;
-				}
+		let image: Image | undefined;
+		try {
+			image = await readForm.image(body, request.file, response.locals.api);
+		} catch (error: unknown) {
+			if (error instanceof ApiError) {
+				errors.push(error.message);
+			} else {
+				throw error;
 			}
 		}
 		const sections = readForm.sections(body);
@@ -96,17 +90,6 @@ editRecipeRouter.post(
 		const source = readForm.source(body);
 
 		if (errors.length > 0) {
-			let savedLocationName = image?.savedName;
-
-			if (image && !savedLocationName) {
-				savedLocationName = randomImageName(image.extension);
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
-				await writeFile(
-					new URL(savedLocationName, imageUploadDirectory),
-					image.buffer,
-				);
-			}
-
 			response.status(400).send(
 				render.editRecipe(
 					{
@@ -119,7 +102,7 @@ editRecipeRouter.post(
 						...body,
 						tags,
 						sections,
-						image: imageHasChanged ? savedLocationName : recipe.image,
+						image: image?.name,
 					},
 					errors,
 				),
@@ -133,9 +116,7 @@ editRecipeRouter.post(
 		recipe.updateDuration(duration);
 		recipe.updateTitle(title);
 
-		if (imageHasChanged) {
-			await recipe.updateImage(image?.buffer);
-		}
+		await recipe.updateImage(image);
 		recipe.updateSections(sections);
 		recipe.updateSource(source);
 
@@ -150,9 +131,9 @@ editRecipeRouter.post(
 editRecipeRouter.get(
 	'/:id/edit',
 	session.guard(UserRoles.User),
-	(request, response, next) => {
+	async (request, response, next) => {
 		const id = Number.parseInt(request.params['id']!, 10);
-		const recipe = response.locals.api.Recipe.fromRecipeId(id);
+		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 
 		if (!recipe) {
@@ -168,7 +149,7 @@ editRecipeRouter.get(
 		const prefill: RecipePrefill = {
 			duration: recipe.duration,
 			sections: recipe.sections.map(section => section.source),
-			image: recipe.image,
+			image: recipe.image?.name,
 			source: recipe.source,
 			tags: recipe.tags,
 			title: recipe.title,
