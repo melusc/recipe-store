@@ -18,7 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {DatabaseSync, type SupportedValueType} from 'node:sqlite';
+import {DatabaseSync, type SQLInputValue} from 'node:sqlite';
 
 import {makeSlug} from '@lusc/util/slug';
 
@@ -48,7 +48,7 @@ function initDatabase(database: DatabaseSync) {
 		{
 			deterministic: true,
 		},
-		(s: SupportedValueType) => {
+		(s: SQLInputValue) => {
 			if (typeof s !== 'string') {
 				throw new TypeError(
 					`Unexpected value "${String(s)}" passed to sluggify(). Only strings are supported.`,
