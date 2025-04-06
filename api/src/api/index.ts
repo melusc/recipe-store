@@ -51,7 +51,7 @@ function initDatabase(database: DatabaseSync) {
 		(s: SQLInputValue) => {
 			if (typeof s !== 'string') {
 				throw new TypeError(
-					`Unexpected value "${String(s)}" passed to sluggify(). Only strings are supported.`,
+					`Unexpected ${typeof s} passed to sluggify(). Only strings are supported.`,
 				);
 			}
 
