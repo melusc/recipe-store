@@ -252,7 +252,7 @@ export class Recipe extends InjectableApi {
 
 		const recipes = this.database
 			.prepare(query.join(' '))
-			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
+			.all(parameters) as Array<SqlRecipeRow>;
 
 		return Promise.all(recipes.map(row => this._fromRow(row)));
 	}
@@ -393,7 +393,7 @@ export class Recipe extends InjectableApi {
 
 		const recipes = this.database
 			.prepare(query.join(' '))
-			.all(parameters) as ReadonlyArray<SqlRecipeRow>;
+			.all(parameters) as Array<SqlRecipeRow>;
 
 		const items = recipes.map(row => this.Recipe._fromRow(row));
 
@@ -524,7 +524,7 @@ export class Recipe extends InjectableApi {
 				WHERE recipe_id = :recipeId
 				ORDER BY tag_slug ASC`,
 			)
-			.all({recipeId: this.recipeId}) as ReadonlyArray<{
+			.all({recipeId: this.recipeId}) as Array<{
 			tag_name: string;
 		}>;
 
