@@ -91,7 +91,7 @@ export const readForm = {
 		}
 
 		if (file && file.size > 0) {
-			return await api.Image.create(file.buffer, ImageSaveType.TemporaryImage);
+			return api.Image.create(file.buffer, ImageSaveType.TemporaryImage);
 		}
 
 		const uploadedImage = body['uploaded-image'];
