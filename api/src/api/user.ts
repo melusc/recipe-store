@@ -272,7 +272,7 @@ export class User extends InjectableApi {
 				FROM users
 				ORDER BY user_id ASC`,
 			)
-			.all() as ReadonlyArray<{
+			.all() as Array<{
 			username: string;
 			displayname: string;
 			role: UserRoles;
