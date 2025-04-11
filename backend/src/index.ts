@@ -23,8 +23,6 @@ import {parseArgs} from 'node:util';
 import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
-import {UserDeletion} from '../../api/dist/src/api/user';
-
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
 import {setupServer} from './server.js';
 
@@ -61,55 +59,6 @@ if (createOwnerUsername) {
 		password,
 	);
 }
-
-await Promise.all(
-	api.User.all().map(user => user.deleteUser(UserDeletion.DeleteRecipes)),
-);
-
-const username = 'lnjfs';
-const password = 'c4,y4dDE(T=XP(4y(GM~PnZT>Dwk?sa)';
-console.log(username, password);
-const user = api.User.create(
-	username,
-	username,
-	password,
-	UserRoles.Owner,
-	false,
-);
-
-await api.Recipe.create(
-	'Recipe 1',
-	user,
-	undefined,
-	undefined,
-	undefined,
-	['milk', 'example'],
-	['Add @milk'],
-);
-
-await api.Recipe.create(
-	'Recipe 2',
-	user,
-	undefined,
-	'Grandmother',
-	'2h',
-	['pineapple', 'example'],
-	['Add @pineapple{1 g} and @apple{3}', 'Add @pineapple{1 g} and @apple{3}'],
-);
-
-await Promise.all(
-	Array.from({length: 30}, (_v, index) =>
-		api.Recipe.create(
-			`Recipe ${index + 3}`,
-			user,
-			undefined,
-			undefined,
-			undefined,
-			['pineapple', 'example'],
-			[`Add @pineapple${index + 3}`],
-		),
-	),
-);
 
 const app = setupServer(api);
 const port = 3108;
