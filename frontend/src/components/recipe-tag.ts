@@ -18,15 +18,18 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {RelativeUrl} from '@lusc/util/relative-url';
 import {makeSlug} from '@lusc/util/slug';
 
 import {$} from '../$.js';
 
 export function recipeTag(tagName: string) {
 	const slug = makeSlug(tagName, {appendRandomHex: false});
+	const searchUrl = new RelativeUrl('/search');
+	searchUrl.searchParams.set('q', `tagged:${slug}`);
 
 	return $`<a
-		href="/tag/${slug}"
+		href="${searchUrl.href}"
 		class="badge shadow-sm bg-primary text-dark"
 	>
 		${tagName}
