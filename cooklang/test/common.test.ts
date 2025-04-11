@@ -81,6 +81,12 @@ Mash the potatoes with a #potato masher{}.`,
 		`Place the potatoes into a pot.
 Mash the potatoes with a potato masher.`,
 	],
+	[
+		`Place the potatoes into a #pot.
+Mash the potatoes with a #potato masher|abbc{}.`,
+		`Place the potatoes into a pot.
+Mash the potatoes with a potato masher.`,
+	],
 ] as const)('stringify(%j)', ([input, output]) => {
 	const parsedSection = parseSection(input);
 	expect(sectionToText(parsedSection)).toStrictEqual(output);

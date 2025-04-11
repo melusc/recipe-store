@@ -54,28 +54,31 @@ export const timerSchema = object({
 
 export type Timer = z.infer<typeof timerSchema>;
 
-function ingredientOrCookwareToText(item: Ingredient | Cookware) {
+function ingredientOrCookwareToText(
+	item: Ingredient | Cookware,
+	inline: boolean,
+) {
 	const result: string[] = [];
 
-	if (item.alias) {
+	if (item.alias && !inline) {
 		result.push(item.alias);
 	} else if (item.name) {
 		result.push(item.name);
 	}
 
-	if (item.note) {
+	if (item.note && inline) {
 		result.push(' (', item.note, ')');
 	}
 
 	return result.join('');
 }
 
-export function ingredientToText(item: Ingredient) {
-	return ingredientOrCookwareToText(item);
+export function ingredientToText(item: Ingredient, inline: boolean) {
+	return ingredientOrCookwareToText(item, inline);
 }
 
-export function cookwareToText(item: Cookware) {
-	return ingredientOrCookwareToText(item);
+export function cookwareToText(item: Cookware, inline: boolean) {
+	return ingredientOrCookwareToText(item, inline);
 }
 
 export function timerToText(item: Timer) {

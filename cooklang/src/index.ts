@@ -81,7 +81,7 @@ export function sectionToText(section: CooklangSection) {
 				break;
 			}
 			case 'cookware': {
-				result.push(cookwareToText(cookware[item.index]!));
+				result.push(cookwareToText(cookware[item.index]!, true));
 				break;
 			}
 			case 'timer': {
@@ -89,7 +89,7 @@ export function sectionToText(section: CooklangSection) {
 				break;
 			}
 			case 'ingredient': {
-				result.push(ingredientToText(ingredients[item.index]!));
+				result.push(ingredientToText(ingredients[item.index]!, true));
 				break;
 			}
 		}

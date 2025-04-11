@@ -39,7 +39,7 @@ function recipeRow(section: CooklangSection) {
 					ingredient =>
 						$`<div class="grid gap-0">
 							<div class="g-col-4">${ingredient.quantity && stringifyQuantity(ingredient.quantity)}</div>
-							<div class="g-col-8">${ingredientToText(ingredient)}</div>
+							<div class="g-col-8">${ingredientToText(ingredient, false)}</div>
 						</div>`,
 				)}
 			</div>
