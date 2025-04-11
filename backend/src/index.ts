@@ -63,6 +63,10 @@ if (createOwnerUsername) {
 const app = setupServer(api);
 const port = 3108;
 
-app.listen(port, () => {
+app.listen(port, error => {
+	if (error) {
+		throw error;
+	}
+
 	console.log('Server listening on http://localhost:%s', port);
 });
