@@ -35,7 +35,6 @@ export const renderAccount = createRoute(
 				<form
 					enctype="multipart/form-data"
 					method="POST"
-					action="/account"
 					class="d-flex flex-column gap-3"
 					id="account-form"
 				>

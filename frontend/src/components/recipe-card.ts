@@ -25,11 +25,11 @@ import {$} from '../$.js';
 import {smallAuthor} from './author.js';
 import {recipeTagList} from './recipe-tag.js';
 
-export function recipeCard(recipe: Recipe) {
+export function recipeCard(recipe: Recipe, small: boolean = false) {
 	const imageUrl = recipe.image && `/static/user-content/${recipe.image.name}`;
 
 	return $`
-		<div class="col-md-6 col-lg-3">
+		<div class="${small ? 'col-md-12 col-lg-6' : 'col-md-6 col-lg-3'}">
 			<div class="card shadow-sm">
 				${
 					imageUrl &&

@@ -28,6 +28,7 @@ import {renderNewRecipe} from './routes/recipe/new.js';
 import {renderViewRecipe} from './routes/recipe/view.js';
 import {renderRequiredPasswordChange} from './routes/required-password-change.js';
 import {renderSearch} from './routes/search.js';
+import {renderUser} from './routes/user.js';
 
 export const render = {
 	index: renderIndex,
@@ -35,6 +36,7 @@ export const render = {
 	login: renderLogin,
 	search: renderSearch,
 	account: renderAccount,
+	user: renderUser,
 	accountDelete: renderAccountDelete,
 	requiredPasswordChange: renderRequiredPasswordChange,
 	newRecipe: renderNewRecipe,

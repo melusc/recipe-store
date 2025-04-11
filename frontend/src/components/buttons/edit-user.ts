@@ -18,23 +18,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {User} from 'api';
+import {$} from '../../$.js';
+import {iconPen} from '../icons/pen.js';
 
-import {$} from '../$.js';
-
-export function smallAuthor(author: User | undefined) {
+export function editUserButton(url: string) {
 	return $`
-		<span>
-			${
-				author
-					? $`<a
-						href="/user/${String(author.userId)}"
-						class="text-dark"
-					>
-						${author.displayName}
-					</a>`
-					: 'Deleted User'
-			}
-		</span>
+		<a
+			href="${url}"
+			class="btn btn-outline-dark icon-link align-self-end"
+		>
+			Modify user
+			<span style="height: 1em; width: 1em">${iconPen()}</span>
+		</a>
 	`;
 }

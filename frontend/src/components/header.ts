@@ -43,7 +43,7 @@ export function header({user, url}: RouteMetadata) {
 						name: 'Create New Recipe',
 					},
 					{
-						href: `/profile/${user.userId}`,
+						href: `/user/${user.userId}`,
 						name: 'Profile',
 					},
 					{

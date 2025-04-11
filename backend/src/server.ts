@@ -38,6 +38,7 @@ import {newRecipeRouter} from './routes/recipe/new.ts';
 import {viewRecipeRouter} from './routes/recipe/view.ts';
 import {requiredPasswordChangeRouter} from './routes/required-password-change.ts';
 import {staticRouter} from './routes/static.ts';
+import {userRouter} from './routes/user.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
@@ -129,6 +130,7 @@ export function setupServer(api: Api) {
 	});
 
 	app.use('/account', accountRouter);
+	app.use('/user', userRouter);
 	app.use('/required-password-change', requiredPasswordChangeRouter);
 	app.use('/recipe/new', newRecipeRouter);
 	app.use('/recipe', viewRecipeRouter);
@@ -152,6 +154,7 @@ export function setupServer(api: Api) {
 				});
 			}
 		} else {
+			console.error(error);
 			response.status(500);
 
 			if (request.accepts('html')) {
