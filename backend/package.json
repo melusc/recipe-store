@@ -24,7 +24,7 @@
 		"fmt": "eslint --fix",
 		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=external src/index.ts",
 		"build": "tsc && yarn esbuild",
-		"start": "node dist/index.js",
+		"start": "node --env-file-if-exists ../.env dist/index.js",
 		"dev": "yarn esbuild && yarn start"
 	},
 	"license": "GPL-3.0-only",

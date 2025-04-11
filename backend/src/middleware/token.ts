@@ -19,6 +19,7 @@
 */
 
 import {randomBytes} from 'node:crypto';
+import {env} from 'node:process';
 
 import {RelativeUrl} from '@lusc/util/relative-url';
 import type {Api, User, UserRoles} from 'api';
@@ -29,11 +30,7 @@ import type {StringValue} from 'ms';
 import {UnauthorisedError} from '../errors.ts';
 
 class Token<T extends Record<string, unknown>> {
-	// Separate secret per type
-	// Implicitly prevents csrf tokens
-	// being passed as session token
-	// (in addition to audience)
-	#secret = randomBytes(128);
+	#secret = env['RS_SESSION_SECRET'] ?? randomBytes(128);
 
 	constructor(
 		private readonly audience: string,
