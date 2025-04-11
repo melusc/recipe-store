@@ -162,7 +162,7 @@ export const session = new Session();
 
 class Csrf extends Token<{user: number | undefined}> {
 	constructor() {
-		super('recipe-store/csrf', '30 min');
+		super('recipe-store/csrf', '3 h');
 	}
 
 	generate(user: User | undefined) {
