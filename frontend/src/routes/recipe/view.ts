@@ -46,7 +46,23 @@ export const renderViewRecipe = createRoute(
 		}
 
 		if (recipe.source) {
-			metadataTable.push(['Source', $`<span>${recipe.source}</span>`]);
+			const {source} = recipe;
+			const url = URL.canParse(source) && new URL(source);
+			if (url && (url.protocol === 'http:' || url.protocol === 'https:')) {
+				metadataTable.push([
+					'Source',
+					$`
+					<a
+						href="${source}"
+						rel="nofollow noreferrer noopener"
+					>
+						${source}
+					</a>
+				`,
+				]);
+			} else {
+				metadataTable.push(['Source', $`<span>${recipe.source}</span>`]);
+			}
 		}
 
 		const imageUrl =
