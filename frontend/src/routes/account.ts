@@ -63,7 +63,7 @@ export const renderAccount = createRoute(
 					</div>
 
 					<div>
-						<label for="displayname" class="form-label">New display-name:</label>
+						<label for="displayname" class="form-label">New display name:</label>
 						<input
 							type="text"
 							class="form-control"
