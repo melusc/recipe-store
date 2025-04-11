@@ -42,6 +42,7 @@ const qualifiers: Record<string, Qualifier> = {
 	contains: 'contains',
 	intext: 'contains',
 	source: 'source',
+	any: 'any',
 };
 
 /*
@@ -100,13 +101,13 @@ export class QueryParser {
 		return result;
 	}
 
-	resolveQualifier(inputQualifier: string): Qualifier {
+	resolveQualifier(inputQualifier: string): Qualifier | undefined {
 		inputQualifier = inputQualifier.toLowerCase();
 		if (Object.hasOwn(qualifiers, inputQualifier)) {
 			return qualifiers[inputQualifier]!;
 		}
 
-		return 'any';
+		return;
 	}
 
 	readQualifierFilter() {
@@ -130,6 +131,14 @@ export class QueryParser {
 		if (filter.includes(':')) {
 			const [left, ...search] = filter.split(':');
 			const qualifier = this.resolveQualifier(left!);
+			if (qualifier === undefined) {
+				return {
+					qualifier: 'any',
+					filterValue: filter,
+					invert,
+				};
+			}
+
 			return {
 				qualifier,
 				filterValue: search.join(':'),
@@ -170,9 +179,20 @@ export class QueryParser {
 
 			if (this.peek() === ':') {
 				this.next();
-				const filter = this.readQualifierFilter();
-
 				const qualifier = this.resolveQualifier(part);
+
+				if (qualifier === undefined) {
+					const next = this.readUntil(/["'\s]/);
+					filters.push({
+						qualifier: 'any',
+						filterValue: [part, next].join(':'),
+						invert,
+					});
+
+					continue;
+				}
+
+				const filter = this.readQualifierFilter();
 				filters.push({
 					qualifier,
 					filterValue: filter,

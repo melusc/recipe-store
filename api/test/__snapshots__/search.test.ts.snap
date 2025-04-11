@@ -44,6 +44,16 @@ exports[`QueryParser > parse("'by:abc\\"'") 1`] = `
 ]
 `;
 
+exports[`QueryParser > parse("'unknown: abc'") 1`] = `
+[
+  {
+    "filterValue": "unknown: abc",
+    "invert": false,
+    "qualifier": "any",
+  },
+]
+`;
+
 exports[`QueryParser > parse("\\"-abc\\"") 1`] = `
 [
   {
@@ -335,6 +345,31 @@ exports[`QueryParser > parse("title:coolyo") 1`] = `
     "filterValue": "coolyo",
     "invert": false,
     "qualifier": "title",
+  },
+]
+`;
+
+exports[`QueryParser > parse("unknown: abc") 1`] = `
+[
+  {
+    "filterValue": "unknown:",
+    "invert": false,
+    "qualifier": "any",
+  },
+  {
+    "filterValue": "abc",
+    "invert": false,
+    "qualifier": "any",
+  },
+]
+`;
+
+exports[`QueryParser > parse("unknown:abc") 1`] = `
+[
+  {
+    "filterValue": "unknown:abc",
+    "invert": false,
+    "qualifier": "any",
   },
 ]
 `;

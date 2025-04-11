@@ -59,6 +59,9 @@ describe('QueryParser', () => {
 		'-abc -def',
 		'abc -def',
 		'abc -"def"',
+		'unknown: abc',
+		'unknown:abc',
+		"'unknown: abc'",
 	])('parse(%j)', query => {
 		const queryParser = new QueryParser(query);
 		const parsed = queryParser.parse();
