@@ -22,27 +22,36 @@ import type {Recipe} from 'api';
 
 import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
-import {recipeForm, type RecipePrefill} from '../../components/recipe-form.js';
 import {createRoute} from '../_utilities.js';
 
-export const renderEditRecipe = createRoute(
-	(
-		_,
-		csrfToken: string,
-		recipe: Recipe,
-		prefill: RecipePrefill,
-		errors?: readonly string[],
-	) => ({
-		title: `Edit ${recipe.title}`,
+export const renderRecipeDelete = createRoute(
+	(_, csrfToken: string, recipe: Recipe, error?: string) => ({
+		title: `Delete ${recipe.title}`,
 		body: centeredMain($`
 			<section>
-				<h1>Edit ${recipe.title}</h1>
+				<h1>Delete ${recipe.title}</H1>
 
-				${recipeForm(csrfToken, prefill, 'Save', errors)}
-				<a
-					href="/recipe/${String(recipe.recipeId)}/delete"
-					class="btn btn-danger w-100 mt-2"
-				>Delete ${recipe.title}</a>
+				<form
+					enctype="multipart/form-data"
+					method="POST"
+					class="d-flex flex-column gap-3"
+					id="account-delete-form"
+				>
+					<input type="hidden" name="csrf-token" value="${csrfToken}">
+
+					${
+						error &&
+						$`<div class="alert alert-danger" role="alert">
+							${error}
+						</div>`
+					}
+
+					<div class="alert alert-danger" role="alert">
+						This cannot be undone!
+					</div>
+
+					<button type="submit" class="btn btn-danger">Permanently delete ${recipe.title}</button>
+				</form>
 			</section>
 		`),
 	}),

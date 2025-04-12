@@ -39,6 +39,7 @@ import {viewRecipeRouter} from './routes/recipe/view.ts';
 import {requiredPasswordChangeRouter} from './routes/required-password-change.ts';
 import {staticRouter} from './routes/static.ts';
 import {userRouter} from './routes/user.ts';
+import {deleteRecipeRouter} from './routes/recipe/delete.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
@@ -135,6 +136,7 @@ export function setupServer(api: Api) {
 	app.use('/recipe/new', newRecipeRouter);
 	app.use('/recipe', viewRecipeRouter);
 	app.use('/recipe', editRecipeRouter);
+	app.use('/recipe', deleteRecipeRouter);
 	app.use('/api', apiRouter);
 
 	app.use(((error, request, response, _next) => {

@@ -23,6 +23,7 @@ import {renderAccount} from './routes/account.js';
 import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
+import {renderRecipeDelete} from './routes/recipe/delete.js';
 import {renderEditRecipe} from './routes/recipe/edit.js';
 import {renderNewRecipe} from './routes/recipe/new.js';
 import {renderViewRecipe} from './routes/recipe/view.js';
@@ -42,6 +43,7 @@ export const render = {
 	newRecipe: renderNewRecipe,
 	viewRecipe: renderViewRecipe,
 	editRecipe: renderEditRecipe,
+	deleteRecipe: renderRecipeDelete,
 } as const;
 
 export type {RecipePrefill} from './components/recipe-form.js';
