@@ -30,9 +30,7 @@ export function smallAuthor(author: User | undefined) {
 					? $`<a
 						href="/user/${String(author.userId)}"
 						class="text-dark"
-					>
-						${author.displayName}
-					</a>`
+					>${author.displayName}</a>`
 					: 'Deleted User'
 			}
 		</span>
