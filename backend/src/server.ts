@@ -33,13 +33,10 @@ import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account.ts';
 import {apiRouter} from './routes/api.ts';
 import {loginRouter} from './routes/login.ts';
-import {editRecipeRouter} from './routes/recipe/edit.ts';
-import {newRecipeRouter} from './routes/recipe/new.ts';
-import {viewRecipeRouter} from './routes/recipe/view.ts';
+import {recipeRouter} from './routes/recipe/index.ts';
 import {requiredPasswordChangeRouter} from './routes/required-password-change.ts';
 import {staticRouter} from './routes/static.ts';
 import {userRouter} from './routes/user.ts';
-import {deleteRecipeRouter} from './routes/recipe/delete.ts';
 
 export function setupServer(api: Api) {
 	const app = express();
@@ -133,10 +130,7 @@ export function setupServer(api: Api) {
 	app.use('/account', accountRouter);
 	app.use('/user', userRouter);
 	app.use('/required-password-change', requiredPasswordChangeRouter);
-	app.use('/recipe/new', newRecipeRouter);
-	app.use('/recipe', viewRecipeRouter);
-	app.use('/recipe', editRecipeRouter);
-	app.use('/recipe', deleteRecipeRouter);
+	app.use('/recipe', recipeRouter);
 	app.use('/api', apiRouter);
 
 	app.use(((error, request, response, _next) => {
