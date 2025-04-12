@@ -18,8 +18,8 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {renderAccountDelete} from './routes/account-delete.js';
-import {renderAccount} from './routes/account.js';
+import {renderAccountDelete} from './routes/account/delete.js';
+import {renderAccountEdit} from './routes/account/edit.js';
 import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
@@ -36,7 +36,7 @@ export const render = {
 	error: renderError,
 	login: renderLogin,
 	search: renderSearch,
-	account: renderAccount,
+	account: renderAccountEdit,
 	user: renderUser,
 	accountDelete: renderAccountDelete,
 	requiredPasswordChange: renderRequiredPasswordChange,

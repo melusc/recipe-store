@@ -18,14 +18,13 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {$} from '../$.js';
-import {centeredMain} from '../components/centered-main.js';
-import {formError} from '../components/form-error.js';
-import {passwordRequirements} from '../components/password-requirements.js';
+import {$} from '../../$.js';
+import {centeredMain} from '../../components/centered-main.js';
+import {formError} from '../../components/form-error.js';
+import {passwordRequirements} from '../../components/password-requirements.js';
+import {createRoute} from '../_utilities.js';
 
-import {createRoute} from './_utilities.js';
-
-export const renderAccount = createRoute(
+export const renderAccountEdit = createRoute(
 	({user}, csrfToken: string, showSuccess: boolean, errors?: string[]) => ({
 		title: 'Account',
 		body: centeredMain($`

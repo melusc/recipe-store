@@ -22,115 +22,30 @@ import {UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {readAccountForm} from '../form-validation/account.ts';
-import {csrf, session} from '../middleware/token.ts';
-import {formdataMiddleware} from '../upload.ts';
+import {csrf, session} from '../../middleware/token.ts';
+import {formdataMiddleware} from '../../upload.ts';
 
-export const accountRouter = Router();
+export const accountDeleteRouter = Router();
 
-accountRouter.use(session.guard(UserRoles.User));
-
-accountRouter.get('/', (_request, response) => {
-	response.send(
-		render.account(
-			{
-				user: response.locals.user,
-				url: '/account',
-			},
-			csrf.generate(response.locals.user),
-			false,
-		),
-	);
-});
-
-accountRouter.post('/', formdataMiddleware.none(), (request, response) => {
-	const user = response.locals.user!;
-	const body = (request.body ?? {}) as Record<string, unknown>;
-	const errors = [];
-
-	if (!csrf.validate(request, response)) {
-		response.send(400).send(
-			render.account(
+accountDeleteRouter.get(
+	'/',
+	session.guard(UserRoles.User),
+	(_request, response) => {
+		response.send(
+			render.accountDelete(
 				{
 					user: response.locals.user,
-					url: '/account',
+					url: '/account/delete',
 				},
 				csrf.generate(response.locals.user),
-				false,
-				['Could not validate CSRF Token. Please try again.'],
 			),
 		);
-		return;
-	}
+	},
+);
 
-	const username = body['username'];
-	if (username && username !== user.username) {
-		if (typeof username !== 'string' || username.length < 4) {
-			errors.push('Username is too short.');
-		} else {
-			try {
-				user.changeUsername(username);
-			} catch {
-				errors.push('Username is already in use.');
-			}
-		}
-	}
-
-	const displayName = body['displayname'];
-	if (displayName && displayName !== user.displayName) {
-		if (typeof displayName !== 'string' || displayName.length < 4) {
-			errors.push('Display-Name is too short.');
-		} else {
-			user.changeDisplayName(displayName);
-		}
-	}
-
-	if (body['new-password']) {
-		try {
-			const newPassword = readAccountForm.newPasswords(body);
-			const currentPassword = readAccountForm.currentPassword(body);
-
-			user.changePassword(currentPassword, newPassword);
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal error.');
-			}
-		}
-	}
-
-	if (errors.length > 0) {
-		response.status(400);
-	}
-
-	response.send(
-		render.account(
-			{
-				user: response.locals.user,
-				url: '/account',
-			},
-			csrf.generate(response.locals.user),
-			errors.length === 0,
-			errors,
-		),
-	);
-});
-
-accountRouter.get('/delete', (_request, response) => {
-	response.send(
-		render.accountDelete(
-			{
-				user: response.locals.user,
-				url: '/account/delete',
-			},
-			csrf.generate(response.locals.user),
-		),
-	);
-});
-
-accountRouter.post(
-	'/delete',
+accountDeleteRouter.post(
+	'/',
+	session.guard(UserRoles.User),
 	formdataMiddleware.none(),
 	async (request, response) => {
 		if (!csrf.validate(request, response)) {

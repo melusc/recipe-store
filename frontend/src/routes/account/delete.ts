@@ -18,10 +18,9 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {$} from '../$.js';
-import {centeredMain} from '../components/centered-main.js';
-
-import {createRoute} from './_utilities.js';
+import {$} from '../../$.js';
+import {centeredMain} from '../../components/centered-main.js';
+import {createRoute} from '../_utilities.js';
 
 export const renderAccountDelete = createRoute(
 	(_, csrfToken: string, error?: string) => ({

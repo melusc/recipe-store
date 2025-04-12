@@ -30,7 +30,7 @@ import morgan from 'morgan';
 import {UnauthorisedError} from './errors.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
-import {accountRouter} from './routes/account.ts';
+import {accountRouter} from './routes/account/index.ts';
 import {apiRouter} from './routes/api.ts';
 import {loginRouter} from './routes/login.ts';
 import {recipeRouter} from './routes/recipe/index.ts';
