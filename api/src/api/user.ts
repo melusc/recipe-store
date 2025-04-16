@@ -40,6 +40,28 @@ export enum UserDeletion {
 	KeepRecipes = 1,
 }
 
+type SqlUserRow = {
+	username: string;
+	displayname: string;
+	role: UserRoles;
+	user_id: number;
+	require_pw_change: 0 | 1;
+	created_at: number;
+	updated_at: number;
+	password: string;
+};
+
+const BASE_SQL_USER_SELECT = `
+SELECT username,
+       displayname,
+       role,
+       user_id,
+       require_pw_change,
+       created_at,
+       updated_at,
+			 password
+FROM   users`;
+
 const HASH_ROUNDS = 10;
 
 const privateConstructorKey = Symbol();
@@ -151,23 +173,10 @@ export class User extends InjectableApi {
 	static login(username: string, password: string): User {
 		const result = this.database
 			.prepare(
-				`SELECT
-					user_id, role, displayname, password,
-					require_pw_change, created_at, updated_at
-				FROM users
+				`${BASE_SQL_USER_SELECT}
 				WHERE username = :username`,
 			)
-			.get({username}) as
-			| {
-					user_id: number;
-					role: UserRoles;
-					displayname: string;
-					password: string;
-					require_pw_change: 0 | 1;
-					created_at: number;
-					updated_at: number;
-			  }
-			| undefined;
+			.get({username}) as SqlUserRow | undefined;
 
 		const passwordMatch =
 			!!result && bcrypt.compareSync(password, result.password);
@@ -175,51 +184,18 @@ export class User extends InjectableApi {
 			throw new ApiError('Invalid credentials. Please try again.');
 		}
 
-		return new this.User(
-			result.user_id,
-			username,
-			result.displayname,
-			result.role,
-			result.require_pw_change,
-			new Date(result.created_at),
-			new Date(result.updated_at),
-			privateConstructorKey,
-		);
+		return this._fromRow(result);
 	}
 
 	static fromUsername(username: string): User | undefined {
 		const result = this.database
 			.prepare(
-				`SELECT
-					user_id, displayname, role,
-					require_pw_change, updated_at, created_at
-				FROM users WHERE username = :username`,
+				`${BASE_SQL_USER_SELECT}
+				WHERE username = :username`,
 			)
-			.get({username}) as
-			| {
-					user_id: number;
-					displayname: string;
-					role: UserRoles;
-					require_pw_change: 0 | 1;
-					updated_at: number;
-					created_at: number;
-			  }
-			| undefined;
+			.get({username}) as SqlUserRow | undefined;
 
-		if (!result) {
-			return;
-		}
-
-		return new this.User(
-			result.user_id,
-			username,
-			result.displayname,
-			result.role,
-			result.require_pw_change,
-			new Date(result.created_at),
-			new Date(result.updated_at),
-			privateConstructorKey,
-		);
+		return this._fromRow(result);
 	}
 
 	static fromUserid(userId: number): User | undefined {
@@ -230,35 +206,29 @@ export class User extends InjectableApi {
 
 		const result = this.database
 			.prepare(
-				`SELECT
-					username, displayname, role,
-					require_pw_change, updated_at, created_at
-				FROM users
+				`${BASE_SQL_USER_SELECT}
 				WHERE user_id = :userId`,
 			)
-			.get({userId}) as
-			| {
-					username: string;
-					displayname: string;
-					role: UserRoles;
-					require_pw_change: 0 | 1;
-					updated_at: number;
-					created_at: number;
-			  }
-			| undefined;
+			.get({userId}) as SqlUserRow | undefined;
 
-		if (!result) {
+		return this._fromRow(result);
+	}
+
+	private static _fromRow(row: SqlUserRow): User;
+	private static _fromRow(row: SqlUserRow | undefined): User | undefined;
+	private static _fromRow(row: SqlUserRow | undefined) {
+		if (!row) {
 			return;
 		}
 
 		return new this.User(
-			userId,
-			result.username,
-			result.displayname,
-			result.role,
-			result.require_pw_change,
-			new Date(result.created_at),
-			new Date(result.updated_at),
+			row.user_id,
+			row.username,
+			row.displayname,
+			row.role,
+			row.require_pw_change,
+			new Date(row.created_at),
+			new Date(row.updated_at),
 			privateConstructorKey,
 		);
 	}
@@ -266,43 +236,12 @@ export class User extends InjectableApi {
 	static all(): readonly User[] {
 		const result = this.database
 			.prepare(
-				`SELECT
-					username, displayname, role, user_id,
-					require_pw_change, created_at, updated_at
-				FROM users
+				`${BASE_SQL_USER_SELECT}
 				ORDER BY user_id ASC`,
 			)
-			.all() as Array<{
-			username: string;
-			displayname: string;
-			role: UserRoles;
-			user_id: number;
-			require_pw_change: 0 | 1;
-			created_at: number;
-			updated_at: number;
-		}>;
+			.all() as SqlUserRow[];
 
-		return result.map(
-			({
-				username,
-				displayname: displayName,
-				role,
-				user_id: userId,
-				require_pw_change: requirePasswordChange,
-				created_at: createdAt,
-				updated_at: updatedAt,
-			}) =>
-				new this.User(
-					userId,
-					username,
-					displayName,
-					role,
-					requirePasswordChange,
-					new Date(createdAt),
-					new Date(updatedAt),
-					privateConstructorKey,
-				),
-		);
+		return result.map(row => this._fromRow(row));
 	}
 
 	private static _count() {
@@ -341,39 +280,16 @@ export class User extends InjectableApi {
 
 		const recipes = this.database
 			.prepare(
-				`SELECT
-					username, displayname, role, user_id,
-					require_pw_change, created_at, updated_at
-				FROM users
+				`${BASE_SQL_USER_SELECT}
 				ORDER BY user_id ASC
 				LIMIT :limit OFFSET :skip`,
 			)
 			.all({
 				limit,
 				skip,
-			}) as Array<{
-			username: string;
-			displayname: string;
-			role: UserRoles;
-			user_id: number;
-			require_pw_change: 0 | 1;
-			created_at: number;
-			updated_at: number;
-		}>;
+			}) as SqlUserRow[];
 
-		const items = recipes.map(
-			row =>
-				new this.User(
-					row.user_id,
-					row.username,
-					row.displayname,
-					row.role,
-					row.require_pw_change,
-					new Date(row.created_at),
-					new Date(row.updated_at),
-					privateConstructorKey,
-				),
-		);
+		const items = recipes.map(row => this._fromRow(row));
 
 		return new PaginationResult({
 			lastPage,
