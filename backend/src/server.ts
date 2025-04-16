@@ -54,11 +54,6 @@ export function setupServer(api: Api) {
 			strictTransportSecurity: false,
 			xFrameOptions: false,
 			xXssProtection: false,
-			contentSecurityPolicy: {
-				directives: {
-					'img-src': ["'self'", 'data:'],
-				},
-			},
 		}),
 	);
 	app.use(cors());
