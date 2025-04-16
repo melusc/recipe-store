@@ -71,18 +71,18 @@ export const readAccountForm = {
 	},
 	username(body: Record<string, unknown>) {
 		const username = body['username'];
-		if (typeof username !== 'string' || username.length < 4) {
+		if (typeof username !== 'string' || username.trim().length < 4) {
 			throw new Error('Username is too short.');
-		} else {
-			return username;
 		}
+
+		return username.trim();
 	},
 	displayName(body: Record<string, unknown>) {
 		const displayName = body['displayname'];
-		if (typeof displayName !== 'string' || displayName.length < 4) {
+		if (typeof displayName !== 'string' || displayName.trim().length < 4) {
 			throw new Error('Display Name is too short.');
 		} else {
-			return displayName;
+			return displayName.trim();
 		}
 	},
 };
