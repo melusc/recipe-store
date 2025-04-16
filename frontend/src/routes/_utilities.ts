@@ -53,11 +53,13 @@ export function createRoute<Parameters extends readonly unknown[]>(
 
 			<title>${title} | Recipe Store</title>
 
-			${header(routeMetadata)}
+			<body>
+				${header(routeMetadata)}
 
-			<div id="App" class="m-3 d-flex flex-column gap-3">
-				${body}
-			</div>
+				<div id="App" class="m-3 d-flex flex-column gap-3">
+					${body}
+				</div>
+			</body>
 		`.render();
 	};
 }
