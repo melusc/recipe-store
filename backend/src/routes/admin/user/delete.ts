@@ -41,7 +41,7 @@ adminUserDeleteRouter.get(
 			render.accountDelete(
 				{
 					user: response.locals.user,
-					url: '/account/delete',
+					url: request.originalUrl,
 				},
 				csrf.generate(response.locals.user),
 				user,
@@ -67,7 +67,7 @@ adminUserDeleteRouter.post(
 				render.accountDelete(
 					{
 						user: response.locals.user,
-						url: '/account/delete',
+						url: request.originalUrl,
 					},
 					csrf.generate(response.locals.user),
 					user,
@@ -92,7 +92,7 @@ adminUserDeleteRouter.post(
 				render.accountDelete(
 					{
 						user: response.locals.user,
-						url: '/account/delete',
+						url: request.originalUrl,
 					},
 					csrf.generate(response.locals.user),
 					user,
