@@ -305,6 +305,84 @@ export class User extends InjectableApi {
 		);
 	}
 
+	private static _count() {
+		const userCount = this.database
+			.prepare(
+				`SELECT count(user_id) as count
+				FROM users`,
+			)
+			.get() as {
+			count: number;
+		};
+
+		return userCount.count;
+	}
+
+	static paginate({
+		limit,
+		page,
+	}: {
+		readonly limit: number;
+		readonly page: number;
+	}): PaginationResult<User> {
+		const userCount = this._count();
+
+		const lastPage = Math.ceil(userCount / limit);
+		const skip = (page - 1) * limit;
+
+		if (userCount < skip) {
+			return new PaginationResult({
+				lastPage,
+				perPageLimit: limit,
+				page,
+				items: [],
+			});
+		}
+
+		const recipes = this.database
+			.prepare(
+				`SELECT
+					username, displayname, role, user_id,
+					require_pw_change, created_at, updated_at
+				FROM users
+				ORDER BY user_id ASC
+				LIMIT :limit OFFSET :skip`,
+			)
+			.all({
+				limit,
+				skip,
+			}) as Array<{
+			username: string;
+			displayname: string;
+			role: UserRoles;
+			user_id: number;
+			require_pw_change: 0 | 1;
+			created_at: number;
+			updated_at: number;
+		}>;
+
+		const items = recipes.map(
+			row =>
+				new this.User(
+					row.user_id,
+					row.username,
+					row.displayname,
+					row.role,
+					row.require_pw_change,
+					new Date(row.created_at),
+					new Date(row.updated_at),
+					privateConstructorKey,
+				),
+		);
+
+		return new PaginationResult({
+			lastPage,
+			perPageLimit: limit,
+			page,
+			items,
+		});
+	}
+
 	permissionToCreateUser(): boolean {
 		// Basically invite-only, ask an admin for an account
 		return this.role >= UserRoles.Admin;

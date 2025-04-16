@@ -291,6 +291,47 @@ apiTest('List recipes created by user', async ({api: {User, Recipe}}) => {
 	}
 });
 
+apiTest('Paginate users', ({api: {User}}) => {
+	const emptyPaginated = User.paginate({limit: 50, page: 1});
+	expect(emptyPaginated.items).toHaveLength(0);
+	expect(emptyPaginated.getNextPage()).toStrictEqual(false);
+	expect(emptyPaginated.getPreviousPage()).toStrictEqual(false);
+	expect(emptyPaginated.page).toStrictEqual(1);
+	expect(emptyPaginated.lastPage).toStrictEqual(0);
+	expect(emptyPaginated.perPageLimit).toStrictEqual(50);
+
+	for (let index = 0; index < 12; ++index) {
+		User.create(
+			`dilxe${index}`,
+			`dilxe${index}`,
+			'pzzwf',
+			UserRoles.User,
+			false,
+		);
+	}
+
+	const page1 = User.paginate({limit: 10, page: 1});
+	const page2 = User.paginate({limit: 10, page: 2});
+
+	expect(page1.items).toHaveLength(10);
+	expect(page1.getNextPage()).toStrictEqual(2);
+	expect(page1.getPreviousPage()).toStrictEqual(false);
+	expect(page1.page).toStrictEqual(1);
+	expect(page1.lastPage).toStrictEqual(2);
+	expect(page1.perPageLimit).toStrictEqual(10);
+
+	expect(page2.items).toHaveLength(2);
+	expect(page2.getNextPage()).toStrictEqual(false);
+	expect(page2.getPreviousPage()).toStrictEqual(1);
+	expect(page2.page).toStrictEqual(2);
+	expect(page2.lastPage).toStrictEqual(2);
+	expect(page2.perPageLimit).toStrictEqual(10);
+
+	expect(
+		new Set([...page1.items, ...page2.items].map(user => user.userId)),
+	).toHaveLength(12);
+});
+
 apiTest('Paginate recipes created by user', async ({api: {User, Recipe}}) => {
 	const user1 = User.create('wacws', 'tejci', 'gmaiu', UserRoles.User, false);
 	const user2 = User.create('plvsh', 'yajsk', 'xumto', UserRoles.User, false);
