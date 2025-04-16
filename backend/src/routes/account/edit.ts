@@ -69,25 +69,25 @@ accountEditRouter.post(
 			return;
 		}
 
-		const username = body['username'];
-		if (username && username !== user.username) {
-			if (typeof username !== 'string' || username.length < 4) {
-				errors.push('Username is too short.');
+		try {
+			const username = readAccountForm.username(body);
+			user.changeUsername(username);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				errors.push(error.message);
 			} else {
-				try {
-					user.changeUsername(username);
-				} catch {
-					errors.push('Username is already in use.');
-				}
+				errors.push('Internal error.');
 			}
 		}
 
-		const displayName = body['displayname'];
-		if (displayName && displayName !== user.displayName) {
-			if (typeof displayName !== 'string' || displayName.length < 4) {
-				errors.push('Display-Name is too short.');
+		try {
+			const displayName = readAccountForm.displayName(body);
+			user.changeDisplayName(displayName);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				errors.push(error.message);
 			} else {
-				user.changeDisplayName(displayName);
+				errors.push('Internal error.');
 			}
 		}
 

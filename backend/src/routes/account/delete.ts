@@ -38,6 +38,7 @@ accountDeleteRouter.get(
 					url: '/account/delete',
 				},
 				csrf.generate(response.locals.user),
+				false,
 			),
 		);
 	},
@@ -56,6 +57,7 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
+					false,
 					'Could not validate CSRF Token. Please try again.',
 				),
 			);
@@ -74,6 +76,7 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
+					false,
 					'Missing password.',
 				),
 			);
@@ -90,6 +93,7 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
+					false,
 					'Incorrect password. Please try again.',
 				),
 			);
@@ -110,6 +114,7 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
+					false,
 					'Could not complete your request. Please try again or contact an admin.',
 				),
 			);

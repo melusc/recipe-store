@@ -23,7 +23,7 @@ import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderAccountDelete = createRoute(
-	(_, csrfToken: string, error?: string) => ({
+	(_, csrfToken: string, adminForm: boolean, error?: string) => ({
 		title: 'Delete Account',
 		body: centeredMain($`
 			<section>
@@ -32,8 +32,7 @@ export const renderAccountDelete = createRoute(
 				<form
 					enctype="multipart/form-data"
 					method="POST"
-					action="/account/delete"
-					class="d-flex flex-column gap-3"
+					class="d-flex flex-colsumn gap-3"
 					id="account-delete-form"
 				>
 					${
@@ -57,17 +56,21 @@ export const renderAccountDelete = createRoute(
 						</label>
 					</div>
 
-
-					<div>
-						<label for="password" class="form-label">Confirm password:</label>
-						<input
-							type="password"
-							class="form-control"
-							id="password"
-							name="password"
-							required
-						>
-					</div>
+					${
+						!adminForm &&
+						$`
+							<div>
+								<label for="password" class="form-label">Confirm password:</label>
+								<input
+									type="password"
+									class="form-control"
+									id="password"
+									name="password"
+									required
+								>
+							</div>
+						`
+					}
 
 					<button type="submit" class="btn btn-danger">Permanently delete account</button>
 				</form>

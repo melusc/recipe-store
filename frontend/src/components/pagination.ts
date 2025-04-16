@@ -19,13 +19,13 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import {type DynamicPaginationResult, type Recipe} from 'api';
+import {type DynamicPaginationResult} from 'api';
 
 import {$} from '../$.js';
 
 export function pagination(
 	baseUrl: string | RelativeUrl,
-	paginationResult: DynamicPaginationResult<Recipe>,
+	paginationResult: DynamicPaginationResult<unknown>,
 ) {
 	const {
 		page: currentPage,

@@ -35,6 +35,12 @@ export enum UserRoles {
 	Owner = 5,
 }
 
+export const UserRolesLabels: ReadonlySet<keyof typeof UserRoles> = new Set([
+	'User',
+	'Admin',
+	'Owner',
+]);
+
 export enum UserDeletion {
 	DeleteRecipes = 0,
 	KeepRecipes = 1,
@@ -205,7 +211,7 @@ export class User extends InjectableApi {
 		const result = this.database
 			.prepare(
 				`${BASE_SQL_USER_SELECT}
-				WHERE username = :username`,
+				WHERE lower(username) = lower(:username)`,
 			)
 			.get({username}) as SqlUserRow | undefined;
 
@@ -440,16 +446,20 @@ export class User extends InjectableApi {
 			return;
 		}
 
-		this.database
-			.prepare(
-				`UPDATE users
-					SET username = :newUsername
-					WHERE user_id = :userId`,
-			)
-			.run({
-				newUsername,
-				userId: this.userId,
-			});
+		try {
+			this.database
+				.prepare(
+					`UPDATE users
+						SET username = :newUsername
+						WHERE user_id = :userId`,
+				)
+				.run({
+					newUsername,
+					userId: this.userId,
+				});
+		} catch {
+			throw new ApiError('Username is already in use.');
+		}
 
 		this._triggerUpdated();
 

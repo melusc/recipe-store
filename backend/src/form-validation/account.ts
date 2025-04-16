@@ -18,6 +18,8 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {UserRoles, UserRolesLabels} from 'api';
+
 function checkPasswordRules(password: string) {
 	return (
 		password.length >= 10 &&
@@ -57,5 +59,30 @@ export const readAccountForm = {
 		}
 
 		return currentPassword;
+	},
+	role(body: Record<string, unknown>) {
+		const newRole = body['role'] as keyof typeof UserRoles;
+
+		if (!UserRolesLabels.has(newRole)) {
+			throw new Error(`Unknown role "${newRole}"`);
+		}
+
+		return UserRoles[newRole];
+	},
+	username(body: Record<string, unknown>) {
+		const username = body['username'];
+		if (typeof username !== 'string' || username.length < 4) {
+			throw new Error('Username is too short.');
+		} else {
+			return username;
+		}
+	},
+	displayName(body: Record<string, unknown>) {
+		const displayName = body['displayname'];
+		if (typeof displayName !== 'string' || displayName.length < 4) {
+			throw new Error('Display Name is too short.');
+		} else {
+			return displayName;
+		}
 	},
 };

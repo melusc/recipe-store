@@ -18,17 +18,23 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {ApiError} from './api/error.js';
-export {createApi, type Api} from './api/index.js';
-export type {Recipe} from './api/recipe.js';
-export {
-	UserDeletion,
-	UserRoles,
-	UserRolesLabels,
-	type User,
-} from './api/user.js';
-export {ImageSaveType, type Image} from './api/image.js';
-export {
-	type DynamicPaginationResult,
-	type PaginationResult,
-} from './api/utilities.js';
+import {$} from '../../$.js';
+
+export function iconCopy(size: string) {
+	return $`
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 256 256"
+			style="vertical-align: top; height: ${size}; width: ${size}"
+		>
+			<path
+				fill="none"
+				stroke="#000"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="23.203"
+				d="M173.287 203.914V236.4H19.6V82.713h32.485m30.627-63.112H236.4v153.686H82.713Z"
+			/>
+		</svg>
+`;
+}

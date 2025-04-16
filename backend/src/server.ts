@@ -31,6 +31,7 @@ import {UnauthorisedError} from './errors.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account/index.ts';
+import {adminRouter} from './routes/admin/index.ts';
 import {apiRouter} from './routes/api.ts';
 import {loginRouter} from './routes/login.ts';
 import {recipeRouter} from './routes/recipe/index.ts';
@@ -132,6 +133,7 @@ export function setupServer(api: Api) {
 	app.use('/required-password-change', requiredPasswordChangeRouter);
 	app.use('/recipe', recipeRouter);
 	app.use('/api', apiRouter);
+	app.use('/admin', adminRouter);
 
 	app.use(((error, request, response, _next) => {
 		if (error instanceof UnauthorisedError) {

@@ -19,6 +19,7 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
+import {UserRoles} from 'api';
 
 import {$} from '../$.js';
 import type {RouteMetadata} from '../routes/_utilities.js';
@@ -31,36 +32,49 @@ export function header({user, url}: RouteMetadata) {
 		loginUrl.searchParams.set('continue', url);
 	}
 
+	const adminRoute =
+		user && user.role >= UserRoles.Admin
+			? [
+					{
+						href: '/admin',
+						name: 'Admin',
+					},
+				]
+			: [];
+
+	const userRoute = user
+		? [
+				{
+					href: '/recipe/new',
+					name: 'Create New Recipe',
+				},
+				{
+					href: `/user/${user.userId}`,
+					name: 'Profile',
+				},
+				{
+					href: '/account',
+					name: 'Account',
+				},
+				...adminRoute,
+				{
+					href: '/logout',
+					name: 'Logout',
+				},
+			]
+		: [
+				{
+					href: loginUrl.href,
+					name: 'Login',
+				},
+			];
+
 	const routes = [
 		{
 			href: '/',
 			name: 'Home',
 		},
-		...(user
-			? [
-					{
-						href: '/recipe/new',
-						name: 'Create New Recipe',
-					},
-					{
-						href: `/user/${user.userId}`,
-						name: 'Profile',
-					},
-					{
-						href: '/account',
-						name: 'Account',
-					},
-					{
-						href: '/logout',
-						name: 'Logout',
-					},
-				]
-			: [
-					{
-						href: loginUrl.href,
-						name: 'Login',
-					},
-				]),
+		...userRoute,
 	];
 
 	return $`

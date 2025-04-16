@@ -20,6 +20,7 @@
 
 import {renderAccountDelete} from './routes/account/delete.js';
 import {renderAccountEdit} from './routes/account/edit.js';
+import {renderAdmin} from './routes/admin/index.js';
 import {renderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
@@ -44,6 +45,7 @@ export const render = {
 	viewRecipe: renderViewRecipe,
 	editRecipe: renderEditRecipe,
 	deleteRecipe: renderRecipeDelete,
+	admin: renderAdmin,
 } as const;
 
 export type {RecipePrefill} from './components/recipe-form.js';

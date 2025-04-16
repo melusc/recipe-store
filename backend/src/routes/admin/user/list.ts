@@ -18,17 +18,25 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {ApiError} from './api/error.js';
-export {createApi, type Api} from './api/index.js';
-export type {Recipe} from './api/recipe.js';
-export {
-	UserDeletion,
-	UserRoles,
-	UserRolesLabels,
-	type User,
-} from './api/user.js';
-export {ImageSaveType, type Image} from './api/image.js';
-export {
-	type DynamicPaginationResult,
-	type PaginationResult,
-} from './api/utilities.js';
+import {Router} from 'express';
+import {render} from 'frontend';
+
+import {resolvePaginationParameters} from '../../../pagination.ts';
+
+export const adminUserListRouter = Router();
+
+adminUserListRouter.get('/', (request, response) => {
+	const {page, limit} = resolvePaginationParameters(request);
+
+	const users = response.locals.api.User.paginate({limit, page});
+
+	response.send(
+		render.admin.userList(
+			{
+				user: response.locals.user,
+				url: request.originalUrl,
+			},
+			users,
+		),
+	);
+});

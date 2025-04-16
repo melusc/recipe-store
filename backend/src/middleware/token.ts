@@ -117,7 +117,7 @@ class Session extends Token<{user: number}> {
 	guard(minimumRole: UserRoles): RequestHandler {
 		return (request, response, next) => {
 			const user = response.locals.user;
-			if (user && user.role > minimumRole) {
+			if (user && user.role >= minimumRole) {
 				next();
 				return;
 			}
