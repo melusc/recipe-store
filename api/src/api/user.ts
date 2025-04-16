@@ -111,6 +111,20 @@ export class User extends InjectableApi {
 		return this._role;
 	}
 
+	get roleLabel() {
+		switch (this.role) {
+			case UserRoles.User: {
+				return 'User';
+			}
+			case UserRoles.Admin: {
+				return 'Admin';
+			}
+			case UserRoles.Owner: {
+				return 'Owner';
+			}
+		}
+	}
+
 	get requirePasswordChange() {
 		return this._requirePasswordChange;
 	}

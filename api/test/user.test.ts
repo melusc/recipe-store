@@ -39,6 +39,7 @@ apiTest('User creation', ({api: {User}}) => {
 	expect(user).not.toStrictEqual(other);
 
 	expect(user.role).toStrictEqual(UserRoles.Admin);
+	expect(user.roleLabel).toStrictEqual('Admin');
 	expect(user.username).toStrictEqual('dzvfo');
 
 	expect(user.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
@@ -158,9 +159,11 @@ apiTest('Change role of user', ({api: {User}}) => {
 	const oldUpdatedAt = user.updatedAt;
 
 	expect(user.role).toStrictEqual(UserRoles.User);
+	expect(user.roleLabel).toStrictEqual('User');
 
 	user.changeRole(UserRoles.Admin);
 	expect(user.role).toStrictEqual(UserRoles.Admin);
+	expect(user.roleLabel).toStrictEqual('Admin');
 
 	expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(
 		oldUpdatedAt.getTime(),
