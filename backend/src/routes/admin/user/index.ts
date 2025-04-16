@@ -18,12 +18,12 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Router } from 'express';
+import {Router} from 'express';
 
-import { adminUserDeleteRouter } from './delete.ts';
-import { adminUserEditRouter } from './edit.ts';
-import { adminUserListRouter } from './list.ts';
-import { adminNewUserRouter } from './new.ts';
+import {adminUserDeleteRouter} from './delete.ts';
+import {adminUserEditRouter} from './edit.ts';
+import {adminUserListRouter} from './list.ts';
+import {adminNewUserRouter} from './new.ts';
 
 export const adminUserRouter = Router();
 

@@ -22,34 +22,31 @@ import {UserDeletion} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import { csrf } from '../../../middleware/token.ts';
-import { formdataMiddleware } from '../../../upload.ts';
+import {csrf} from '../../../middleware/token.ts';
+import {formdataMiddleware} from '../../../upload.ts';
 
 export const adminUserDeleteRouter = Router();
 
-adminUserDeleteRouter.get(
-	'/:id/delete',
-	(request, response, next) => {
-		const id = Number.parseInt(request.params.id, 10);
-		const user = response.locals.api.User.fromUserid(id);
-		if (!user) {
-			next();
-			return;
-		}
+adminUserDeleteRouter.get('/:id/delete', (request, response, next) => {
+	const id = Number.parseInt(request.params.id, 10);
+	const user = response.locals.api.User.fromUserid(id);
+	if (!user) {
+		next();
+		return;
+	}
 
-		response.send(
-			render.accountDelete(
-				{
-					user: response.locals.user,
-					url: request.originalUrl,
-				},
-				csrf.generate(response.locals.user),
-				user,
-				true,
-			),
-		);
-	},
-);
+	response.send(
+		render.accountDelete(
+			{
+				user: response.locals.user,
+				url: request.originalUrl,
+			},
+			csrf.generate(response.locals.user),
+			user,
+			true,
+		),
+	);
+});
 
 adminUserDeleteRouter.post(
 	'/:id/delete',

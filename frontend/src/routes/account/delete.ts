@@ -18,7 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { User } from 'api';
+import type {User} from 'api';
 
 import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
