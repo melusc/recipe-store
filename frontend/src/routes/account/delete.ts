@@ -18,21 +18,22 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type {User} from 'api';
+
 import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderAccountDelete = createRoute(
-	(_, csrfToken: string, error?: string) => ({
+	(_, csrfToken: string, user: User, adminForm: boolean, error?: string) => ({
 		title: 'Delete Account',
 		body: centeredMain($`
 			<section>
-				<h1>Delete Account</H1>
+				<h1>Delete ${adminForm ? user.username : 'Account'}</h1>
 
 				<form
 					enctype="multipart/form-data"
 					method="POST"
-					action="/account/delete"
 					class="d-flex flex-column gap-3"
 					id="account-delete-form"
 				>
@@ -53,21 +54,25 @@ export const renderAccountDelete = createRoute(
 							name="delete-recipes"
 						>
 						<label class="form-check-label" for="delete-recipes">
-							Delete your recipes?
+							Delete ${adminForm ? $`${user.username}&apos;s` : 'your'} recipes?
 						</label>
 					</div>
 
-
-					<div>
-						<label for="password" class="form-label">Confirm password:</label>
-						<input
-							type="password"
-							class="form-control"
-							id="password"
-							name="password"
-							required
-						>
-					</div>
+					${
+						!adminForm &&
+						$`
+							<div>
+								<label for="password" class="form-label">Confirm password:</label>
+								<input
+									type="password"
+									class="form-control"
+									id="password"
+									name="password"
+									required
+								>
+							</div>
+						`
+					}
 
 					<button type="submit" class="btn btn-danger">Permanently delete account</button>
 				</form>

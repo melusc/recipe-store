@@ -18,17 +18,25 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {ApiError} from './api/error.js';
-export {createApi, type Api} from './api/index.js';
-export type {Recipe} from './api/recipe.js';
-export {
-	UserDeletion,
-	UserRoles,
-	UserRolesLabels,
-	type User,
-} from './api/user.js';
-export {ImageSaveType, type Image} from './api/image.js';
-export {
-	type DynamicPaginationResult,
-	type PaginationResult,
-} from './api/utilities.js';
+import {UserRoles} from 'api';
+import {Router} from 'express';
+import {render} from 'frontend';
+
+import {session} from '../../middleware/token.ts';
+
+import {adminUserRouter} from './user/index.ts';
+
+export const adminRouter = Router();
+
+adminRouter.use(session.guard(UserRoles.Admin));
+
+adminRouter.use('/', adminUserRouter);
+
+adminRouter.get('/', (request, response) => {
+	response.send(
+		render.admin.index({
+			user: response.locals.user,
+			url: request.originalUrl,
+		}),
+	);
+});

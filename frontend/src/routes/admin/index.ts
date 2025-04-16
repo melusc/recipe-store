@@ -19,28 +19,29 @@
 */
 
 import {$} from '../../$.js';
-import {accountEditForm} from '../../components/account-edit-form.js';
 import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
-export const renderAccountEdit = createRoute(
-	({user}, csrfToken: string, showSuccess: boolean, errors?: string[]) => ({
-		title: 'Account',
-		body: centeredMain($`
-			<section>
-				<h1>Account</H1>
+import {renderAdminEditUser} from './user/edit.js';
+import {renderAdminListUsers} from './user/list.js';
+import {renderAdminNewUser, renderAdminNewUserResult} from './user/new.js';
 
-				${accountEditForm(user!, user!, csrfToken, false, showSuccess, errors)}
+const renderAdminIndex = createRoute(() => ({
+	title: 'Admin Interface',
+	body: centeredMain($`
+		<h1>User Admin</h1>
 
-				<script src="/static/progressive-enhancement/password-form.js"></script>
+		<ul>
+			<li><a href="/admin/users">List users</a></li>
+			<li><a href="/admin/user/new">Create user</a></li>
+		</ul>
+	`),
+}));
 
-				<a
-					href="/account/delete"
-					class="btn btn-danger w-100 mt-3"
-				>
-					Delete Account
-				</a>
-			</section>
-		`),
-	}),
-);
+export const renderAdmin = {
+	userList: renderAdminListUsers,
+	userEdit: renderAdminEditUser,
+	index: renderAdminIndex,
+	newUser: renderAdminNewUser,
+	newUserResult: renderAdminNewUserResult,
+} as const;

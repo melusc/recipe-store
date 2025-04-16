@@ -18,17 +18,16 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export {ApiError} from './api/error.js';
-export {createApi, type Api} from './api/index.js';
-export type {Recipe} from './api/recipe.js';
-export {
-	UserDeletion,
-	UserRoles,
-	UserRolesLabels,
-	type User,
-} from './api/user.js';
-export {ImageSaveType, type Image} from './api/image.js';
-export {
-	type DynamicPaginationResult,
-	type PaginationResult,
-} from './api/utilities.js';
+import {Router} from 'express';
+
+import {adminUserDeleteRouter} from './delete.ts';
+import {adminUserEditRouter} from './edit.ts';
+import {adminUserListRouter} from './list.ts';
+import {adminNewUserRouter} from './new.ts';
+
+export const adminUserRouter = Router();
+
+adminUserRouter.use('/users', adminUserListRouter);
+adminUserRouter.use('/user/new', adminNewUserRouter);
+adminUserRouter.use('/user', adminUserEditRouter);
+adminUserRouter.use('/user', adminUserDeleteRouter);
