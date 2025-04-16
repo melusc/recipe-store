@@ -194,7 +194,7 @@ export class User extends InjectableApi {
 		const result = this.database
 			.prepare(
 				`${BASE_SQL_USER_SELECT}
-				WHERE username = :username`,
+				WHERE lower(username) = lower(:username)`,
 			)
 			.get({username}) as SqlUserRow | undefined;
 
