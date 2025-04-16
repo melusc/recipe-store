@@ -27,9 +27,9 @@ import {readAccountForm} from '../../../form-validation/account.ts';
 import {csrf} from '../../../middleware/token.ts';
 import {formdataMiddleware} from '../../../upload.ts';
 
-export const adminNewUserRoute = Router();
+export const adminNewUserRouter = Router();
 
-adminNewUserRoute.get('/', (request, response) => {
+adminNewUserRouter.get('/', (request, response) => {
 	response.send(
 		render.admin.newUser(
 			{
@@ -42,7 +42,7 @@ adminNewUserRoute.get('/', (request, response) => {
 	);
 });
 
-adminNewUserRoute.post('/', formdataMiddleware.none(), (request, response) => {
+adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	const requestUser = response.locals.user!;
 
 	if (!csrf.validate(request, response)) {

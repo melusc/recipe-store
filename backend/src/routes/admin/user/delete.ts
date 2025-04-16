@@ -18,19 +18,25 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {UserDeletion, UserRoles} from 'api';
+import {UserDeletion} from 'api';
 import {Router} from 'express';
 import {render} from 'frontend';
 
-import {csrf, session} from '../../middleware/token.ts';
-import {formdataMiddleware} from '../../upload.ts';
+import { csrf } from '../../../middleware/token.ts';
+import { formdataMiddleware } from '../../../upload.ts';
 
-export const accountDeleteRouter = Router();
+export const adminUserDeleteRouter = Router();
 
-accountDeleteRouter.get(
-	'/',
-	session.guard(UserRoles.User),
-	(_request, response) => {
+adminUserDeleteRouter.get(
+	'/:id/delete',
+	(request, response, next) => {
+		const id = Number.parseInt(request.params.id, 10);
+		const user = response.locals.api.User.fromUserid(id);
+		if (!user) {
+			next();
+			return;
+		}
+
 		response.send(
 			render.accountDelete(
 				{
@@ -38,18 +44,24 @@ accountDeleteRouter.get(
 					url: '/account/delete',
 				},
 				csrf.generate(response.locals.user),
-				response.locals.user!,
-				false,
+				user,
+				true,
 			),
 		);
 	},
 );
 
-accountDeleteRouter.post(
-	'/',
-	session.guard(UserRoles.User),
+adminUserDeleteRouter.post(
+	'/:id/delete',
 	formdataMiddleware.none(),
-	async (request, response) => {
+	async (request, response, next) => {
+		const id = Number.parseInt(request.params['id']!, 10);
+		const user = response.locals.api.User.fromUserid(id);
+		if (!user) {
+			next();
+			return;
+		}
+
 		if (!csrf.validate(request, response)) {
 			response.status(400).send(
 				render.accountDelete(
@@ -58,8 +70,8 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
-					response.locals.user!,
-					false,
+					user,
+					true,
 					'Could not validate CSRF Token. Please try again.',
 				),
 			);
@@ -67,45 +79,10 @@ accountDeleteRouter.post(
 		}
 
 		const body = (request.body ?? {}) as Record<string, unknown>;
-		const password = body['password'];
 		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
 
-		if (typeof password !== 'string' || !password) {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
-					response.locals.user!,
-					false,
-					'Missing password.',
-				),
-			);
-			return;
-		}
-
 		try {
-			response.locals.user!.confirmPassword(password);
-		} catch {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
-					response.locals.user!,
-					false,
-					'Incorrect password. Please try again.',
-				),
-			);
-			return;
-		}
-
-		try {
-			await response.locals.user?.deleteUser(
+			await user.deleteUser(
 				shouldDeleteRecipes
 					? UserDeletion.DeleteRecipes
 					: UserDeletion.KeepRecipes,
@@ -118,15 +95,14 @@ accountDeleteRouter.post(
 						url: '/account/delete',
 					},
 					csrf.generate(response.locals.user),
-					response.locals.user!,
-					false,
-					'Could not complete your request. Please try again or contact an admin.',
+					user,
+					true,
+					'Could not complete your request. Please try again.',
 				),
 			);
 			return;
 		}
 
-		session.clearCookie(response);
-		response.redirect(303, '/');
+		response.redirect(303, '/admin/users');
 	},
 );
