@@ -28,6 +28,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import {UnauthorisedError} from './errors.ts';
+import {rateLimit} from './middleware/rate-limit.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
 import {accountRouter} from './routes/account/index.ts';
@@ -72,6 +73,8 @@ export function setupServer(api: Api) {
 
 		next();
 	});
+
+	app.use(rateLimit());
 
 	app.use(session.middleware(api));
 
