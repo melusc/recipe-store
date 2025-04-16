@@ -82,7 +82,7 @@ jobs:
 
           # rsync all relevant files
           rsync -vhaR --checksum --delete -e "ssh -i ~/.ssh/ssh-key" {backend,frontend,api,bootstrap,cooklang}/{dist/,package.json} package.json "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}:/var/www/recipe-store/"
-          rsync -vhaR --checksum --delete -e "ssh -i ~/.ssh/ssh-key" frontend/static/ "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}:/var/www/recipe-store/"
+          rsync -vhaR --checksum --delete -e "ssh -i ~/.ssh/ssh-key" frontend/static/ frontend/src/base.html "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}:/var/www/recipe-store/"
 
           ssh -i ~/.ssh/ssh-key "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}" /bin/bash << 'EOF'
             export NVM_DIR="$HOME/.nvm"
