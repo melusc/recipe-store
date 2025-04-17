@@ -63,7 +63,7 @@ if (createOwnerUsername) {
 const app = setupServer(api);
 const port = 3108;
 
-app.listen(port, error => {
+app.listen(port, '127.0.0.1', error => {
 	if (error) {
 		throw error;
 	}
