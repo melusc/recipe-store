@@ -20,7 +20,6 @@
 
 import {generatePassword} from '@lusc/util/generate-password';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {readAccountForm} from '../../../form-validation/account.ts';
 import {csrf} from '../../../middleware/token.ts';
@@ -37,18 +36,7 @@ adminUserEditRouter.get('/:id', (request, response, next) => {
 		return;
 	}
 
-	response.send(
-		render.admin.userEdit(
-			{
-				user: response.locals.user,
-				url: request.originalUrl,
-			},
-			user,
-			csrf.generate(response.locals.user),
-			false,
-			undefined,
-		),
-	);
+	response.send$.admin.userEdit(user, false, undefined);
 });
 
 adminUserEditRouter.post(
@@ -64,18 +52,7 @@ adminUserEditRouter.post(
 		}
 
 		if (!csrf.validate(request, response)) {
-			response.status(403).send(
-				render.admin.userEdit(
-					{
-						user: response.locals.user,
-						url: request.originalUrl,
-					},
-					user,
-					csrf.generate(response.locals.user),
-					false,
-					undefined,
-				),
-			);
+			response.status(403).send$.admin.userEdit(user, false, undefined);
 			return;
 		}
 
@@ -131,18 +108,7 @@ adminUserEditRouter.post(
 		}
 
 		if (errors.length > 0) {
-			response.status(400).send(
-				render.admin.userEdit(
-					{
-						user: requestUser,
-						url: request.originalUrl,
-					},
-					user,
-					csrf.generate(requestUser),
-					false,
-					errors,
-				),
-			);
+			response.status(400).send$.admin.userEdit(user, false, errors);
 			return;
 		}
 
@@ -158,18 +124,6 @@ adminUserEditRouter.post(
 		}
 		user.changeDisplayName(displayName);
 
-		response.send(
-			render.admin.userEdit(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				user,
-				csrf.generate(requestUser),
-				true,
-				errors,
-				newPassword,
-			),
-		);
+		response.send$.admin.userEdit(user, true, errors, newPassword);
 	},
 );

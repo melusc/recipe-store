@@ -19,7 +19,6 @@
 */
 
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {resolvePaginationParameters} from '../../../pagination.ts';
 
@@ -30,13 +29,5 @@ adminUserListRouter.get('/', (request, response) => {
 
 	const users = response.locals.api.User.paginate({limit, page});
 
-	response.send(
-		render.admin.userList(
-			{
-				user: response.locals.user,
-				url: request.originalUrl,
-			},
-			users,
-		),
-	);
+	response.send$.admin.userList(users);
 });

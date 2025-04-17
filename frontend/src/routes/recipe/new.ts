@@ -24,12 +24,7 @@ import {recipeForm, type RecipePrefill} from '../../components/recipe-form.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderNewRecipe = createRoute(
-	(
-		_,
-		csrfToken: string,
-		prefill: RecipePrefill,
-		errors?: readonly string[],
-	) => ({
+	({csrfToken}, prefill: RecipePrefill, errors?: readonly string[]) => ({
 		title: 'New Recipe',
 		body: centeredMain($`
 			<section>

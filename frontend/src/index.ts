@@ -18,10 +18,11 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type {RouteCommon} from './routes/_utilities.js';
 import {renderAccountDelete} from './routes/account/delete.js';
 import {renderAccountEdit} from './routes/account/edit.js';
-import {renderAdmin} from './routes/admin/index.js';
-import {renderError} from './routes/error.js';
+import {createRenderAdmin} from './routes/admin/index.js';
+import {createRenderError} from './routes/error.js';
 import {renderIndex} from './routes/index.js';
 import {renderLogin} from './routes/login.js';
 import {renderRecipeDelete} from './routes/recipe/delete.js';
@@ -32,20 +33,24 @@ import {renderRequiredPasswordChange} from './routes/required-password-change.js
 import {renderSearch} from './routes/search.js';
 import {renderUser} from './routes/user.js';
 
-export const render = {
-	index: renderIndex,
-	error: renderError,
-	login: renderLogin,
-	search: renderSearch,
-	account: renderAccountEdit,
-	user: renderUser,
-	accountDelete: renderAccountDelete,
-	requiredPasswordChange: renderRequiredPasswordChange,
-	newRecipe: renderNewRecipe,
-	viewRecipe: renderViewRecipe,
-	editRecipe: renderEditRecipe,
-	deleteRecipe: renderRecipeDelete,
-	admin: renderAdmin,
-} as const;
+export function createRender(common: RouteCommon) {
+	return {
+		index: renderIndex(common),
+		error: createRenderError(common),
+		login: renderLogin(common),
+		search: renderSearch(common),
+		account: renderAccountEdit(common),
+		user: renderUser(common),
+		accountDelete: renderAccountDelete(common),
+		requiredPasswordChange: renderRequiredPasswordChange(common),
+		newRecipe: renderNewRecipe(common),
+		viewRecipe: renderViewRecipe(common),
+		editRecipe: renderEditRecipe(common),
+		deleteRecipe: renderRecipeDelete(common),
+		admin: createRenderAdmin(common),
+	} as const;
+}
+
+export type Routes = ReturnType<typeof createRender>;
 
 export type {RecipePrefill} from './components/recipe-form.js';

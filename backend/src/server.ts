@@ -23,7 +23,6 @@ import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, {type ErrorRequestHandler} from 'express';
-import {render} from 'frontend';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -31,6 +30,7 @@ import {UnauthorisedError} from './errors.ts';
 import {rateLimit} from './middleware/rate-limit.ts';
 import {session} from './middleware/token.ts';
 import {resolvePaginationParameters} from './pagination.ts';
+import {bindRender} from './render.ts';
 import {accountRouter} from './routes/account/index.ts';
 import {adminRouter} from './routes/admin/index.ts';
 import {apiRouter} from './routes/api.ts';
@@ -74,6 +74,8 @@ export function setupServer(api: Api) {
 		next();
 	});
 
+	app.use(bindRender());
+
 	app.use(rateLimit());
 
 	app.use(session.middleware(api));
@@ -85,49 +87,26 @@ export function setupServer(api: Api) {
 	app.get('/', async (request, response) => {
 		const {page, limit} = resolvePaginationParameters(request);
 
-		response.send(
-			render.index(
-				{
-					user: response.locals.user,
-					url: '/',
-				},
-				await api.Recipe.paginate({limit, page}),
-			),
-		);
+		response.send$.index(await api.Recipe.paginate({limit, page}));
 	});
 
 	app.get('/search', async (request, response) => {
 		const query = request.search.get('q');
 
 		if (!query) {
-			response.send(
-				render.search(
-					{
-						user: response.locals.user,
-						url: '/search',
-					},
-					undefined,
-					undefined,
-				),
-			);
+			response.send$.search(undefined, undefined);
 			return;
 		}
 
 		const {page, limit} = resolvePaginationParameters(request);
 
-		response.send(
-			render.search(
-				{
-					user: response.locals.user,
-					url: '/search',
-				},
+		response.send$.search(
+			query,
+			await api.Recipe.search({
+				limit,
+				page,
 				query,
-				await api.Recipe.search({
-					limit,
-					page,
-					query,
-				}),
-			),
+			}),
 		);
 	});
 
@@ -143,12 +122,7 @@ export function setupServer(api: Api) {
 			response.status(401);
 
 			if (request.accepts('html')) {
-				response.send(
-					render.error[401]({
-						user: response.locals.user,
-						url: undefined,
-					}),
-				);
+				response.send$.error[401]();
 			} else {
 				response.send({
 					error: 'Unauthorised',
@@ -159,12 +133,7 @@ export function setupServer(api: Api) {
 			response.status(500);
 
 			if (request.accepts('html')) {
-				response.send(
-					render.error[500]({
-						user: response.locals.user,
-						url: undefined,
-					}),
-				);
+				response.send$.error[500]();
 			} else {
 				response.send({
 					error: 'Internal error',
@@ -174,12 +143,7 @@ export function setupServer(api: Api) {
 	}) satisfies ErrorRequestHandler);
 
 	app.use((_request, response, _next) => {
-		response.status(404).send(
-			render.error[404]({
-				user: response.locals.user,
-				url: undefined,
-			}),
-		);
+		response.status(404).send$.error[404]();
 	});
 
 	return app;

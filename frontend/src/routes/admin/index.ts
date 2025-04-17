@@ -20,7 +20,7 @@
 
 import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
-import {createRoute} from '../_utilities.js';
+import {createRoute, type RouteCommon} from '../_utilities.js';
 
 import {renderAdminEditUser} from './user/edit.js';
 import {renderAdminListUsers} from './user/list.js';
@@ -38,10 +38,12 @@ const renderAdminIndex = createRoute(() => ({
 	`),
 }));
 
-export const renderAdmin = {
-	userList: renderAdminListUsers,
-	userEdit: renderAdminEditUser,
-	index: renderAdminIndex,
-	newUser: renderAdminNewUser,
-	newUserResult: renderAdminNewUserResult,
-} as const;
+export function createRenderAdmin(common: RouteCommon) {
+	return {
+		userList: renderAdminListUsers(common),
+		userEdit: renderAdminEditUser(common),
+		index: renderAdminIndex(common),
+		newUser: renderAdminNewUser(common),
+		newUserResult: renderAdminNewUserResult(common),
+	} as const;
+}

@@ -20,7 +20,6 @@
 
 import {UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {UnauthorisedError} from '../../errors.ts';
 import {csrf, session} from '../../middleware/token.ts';
@@ -49,16 +48,7 @@ deleteRecipeRouter.get(
 			return;
 		}
 
-		response.send(
-			render.deleteRecipe(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				csrf.generate(response.locals.user),
-				recipe,
-			),
-		);
+		response.send$.deleteRecipe(recipe);
 	},
 );
 
@@ -85,16 +75,9 @@ deleteRecipeRouter.post(
 		}
 
 		if (!csrf.validate(request, response)) {
-			response.send(
-				render.deleteRecipe(
-					{
-						user: requestUser,
-						url: request.originalUrl,
-					},
-					csrf.generate(requestUser),
-					recipe,
-					'Could not validate CSRF Token. Please try again.',
-				),
+			response.send$.deleteRecipe(
+				recipe,
+				'Could not validate CSRF Token. Please try again.',
 			);
 			return;
 		}

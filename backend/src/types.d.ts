@@ -27,5 +27,9 @@ declare global {
 		interface Request {
 			readonly search: URLSearchParams;
 		}
+
+		interface Response {
+			readonly send$: import('frontend').Routes;
+		}
 	}
 }

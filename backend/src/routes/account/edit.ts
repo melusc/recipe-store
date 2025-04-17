@@ -20,7 +20,6 @@
 
 import {UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {readAccountForm} from '../../form-validation/account.ts';
 import {csrf, session} from '../../middleware/token.ts';
@@ -32,16 +31,7 @@ accountEditRouter.get(
 	'/',
 	session.guard(UserRoles.User),
 	(_request, response) => {
-		response.send(
-			render.account(
-				{
-					user: response.locals.user,
-					url: '/account',
-				},
-				csrf.generate(response.locals.user),
-				false,
-			),
-		);
+		response.send$.account(false);
 	},
 );
 
@@ -55,17 +45,11 @@ accountEditRouter.post(
 		const errors = [];
 
 		if (!csrf.validate(request, response)) {
-			response.send(400).send(
-				render.account(
-					{
-						user: response.locals.user,
-						url: '/account',
-					},
-					csrf.generate(response.locals.user),
-					false,
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
+			response
+				.send(400)
+				.send$.account(false, [
+					'Could not validate CSRF Token. Please try again.',
+				]);
 			return;
 		}
 
@@ -107,19 +91,10 @@ accountEditRouter.post(
 		}
 
 		if (errors.length > 0) {
-			response.status(400);
+			response.status(400).send$.account(false, errors);
+			return;
 		}
 
-		response.send(
-			render.account(
-				{
-					user: response.locals.user,
-					url: '/account',
-				},
-				csrf.generate(response.locals.user),
-				errors.length === 0,
-				errors,
-			),
-		);
+		response.send$.account(true);
 	},
 );

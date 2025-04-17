@@ -22,11 +22,11 @@ import {RelativeUrl} from '@lusc/util/relative-url';
 import {UserRoles} from 'api';
 
 import {$} from '../$.js';
-import type {RouteMetadata} from '../routes/_utilities.js';
+import type {RouteCommon} from '../routes/_utilities.js';
 
 import {searchForm} from './search-form.js';
 
-export function header({user, url}: RouteMetadata) {
+export function header({requestUser: user, url}: RouteCommon) {
 	const loginUrl = new RelativeUrl('/login');
 	if (url) {
 		loginUrl.searchParams.set('continue', url);

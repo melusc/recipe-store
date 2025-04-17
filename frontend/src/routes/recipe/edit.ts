@@ -27,8 +27,7 @@ import {createRoute} from '../_utilities.js';
 
 export const renderEditRecipe = createRoute(
 	(
-		_,
-		csrfToken: string,
+		{csrfToken},
 		recipe: Recipe,
 		prefill: RecipePrefill,
 		errors?: readonly string[],

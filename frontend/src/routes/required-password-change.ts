@@ -26,7 +26,7 @@ import {passwordRequirements} from '../components/password-requirements.js';
 import {createRoute} from './_utilities.js';
 
 export const renderRequiredPasswordChange = createRoute(
-	(_, csrfToken: string, errors?: string[]) => ({
+	({csrfToken}, errors?: string[]) => ({
 		title: 'Change Password',
 		body: centeredMain($`
 			<section>

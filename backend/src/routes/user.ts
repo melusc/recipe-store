@@ -20,7 +20,6 @@
 
 import {UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {resolvePaginationParameters} from '../pagination.ts';
 
@@ -54,15 +53,5 @@ userRouter.get('/:id', async (request, response, next) => {
 
 	const recipes = await profileUser.paginateRecipes({limit, page});
 
-	response.send(
-		render.user(
-			{
-				user: requestUser,
-				url: request.originalUrl,
-			},
-			profileUser,
-			recipes,
-			!isOwner && isAdmin,
-		),
-	);
+	response.send$.user(profileUser, recipes, !isOwner && isAdmin);
 });

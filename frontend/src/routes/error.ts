@@ -20,9 +20,9 @@
 
 import {$} from '../$.js';
 
-import {createRoute} from './_utilities.js';
+import {createRoute, type RouteCommon} from './_utilities.js';
 
-const createErrorRoute = (title: string, body: string) =>
+const createErrorRoute = (common: RouteCommon, title: string, body: string) =>
 	createRoute(() => ({
 		title,
 		body: $`
@@ -32,10 +32,12 @@ const createErrorRoute = (title: string, body: string) =>
 				<h1>${body}</h1>
 			</div>
 		`,
-	}));
+	}))(common);
 
-export const renderError = {
-	404: createErrorRoute('404 - Not Found', '404 - Not Found :('),
-	401: createErrorRoute('401 - Unauthorised', 'Unauthorised'),
-	500: createErrorRoute('500 - Internal Error', 'Internal error.'),
-};
+export function createRenderError(common: RouteCommon) {
+	return {
+		404: createErrorRoute(common, '404 - Not Found', '404 - Not Found :('),
+		401: createErrorRoute(common, '401 - Unauthorised', 'Unauthorised'),
+		500: createErrorRoute(common, '500 - Internal Error', 'Internal error.'),
+	} as const;
+}

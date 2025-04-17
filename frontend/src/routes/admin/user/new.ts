@@ -27,7 +27,7 @@ import {iconCopy} from '../../../components/icons/copy.js';
 import {createRoute} from '../../_utilities.js';
 
 export const renderAdminNewUser = createRoute(
-	({user}, csrfToken: string, errors?: string[]) => {
+	({requestUser: user, csrfToken}, errors?: string[]) => {
 		const allowedRoles: ReadonlyArray<keyof typeof UserRoles> =
 			user && user.role === UserRoles.Owner ? [...UserRolesLabels] : ['User'];
 

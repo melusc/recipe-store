@@ -24,7 +24,11 @@ import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderAccountEdit = createRoute(
-	({user}, csrfToken: string, showSuccess: boolean, errors?: string[]) => ({
+	(
+		{requestUser: user, csrfToken},
+		showSuccess: boolean,
+		errors?: string[],
+	) => ({
 		title: 'Account',
 		body: centeredMain($`
 			<section>

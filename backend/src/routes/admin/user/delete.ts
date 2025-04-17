@@ -20,7 +20,6 @@
 
 import {UserDeletion} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {csrf} from '../../../middleware/token.ts';
 import {formdataMiddleware} from '../../../upload.ts';
@@ -35,17 +34,7 @@ adminUserDeleteRouter.get('/:id/delete', (request, response, next) => {
 		return;
 	}
 
-	response.send(
-		render.accountDelete(
-			{
-				user: response.locals.user,
-				url: request.originalUrl,
-			},
-			csrf.generate(response.locals.user),
-			user,
-			true,
-		),
-	);
+	response.send$.accountDelete(user, true);
 });
 
 adminUserDeleteRouter.post(
@@ -60,18 +49,13 @@ adminUserDeleteRouter.post(
 		}
 
 		if (!csrf.validate(request, response)) {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: request.originalUrl,
-					},
-					csrf.generate(response.locals.user),
+			response
+				.status(400)
+				.send$.accountDelete(
 					user,
 					true,
 					'Could not validate CSRF Token. Please try again.',
-				),
-			);
+				);
 			return;
 		}
 
@@ -85,18 +69,13 @@ adminUserDeleteRouter.post(
 					: UserDeletion.KeepRecipes,
 			);
 		} catch {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: request.originalUrl,
-					},
-					csrf.generate(response.locals.user),
+			response
+				.status(400)
+				.send$.accountDelete(
 					user,
 					true,
 					'Could not complete your request. Please try again.',
-				),
-			);
+				);
 			return;
 		}
 

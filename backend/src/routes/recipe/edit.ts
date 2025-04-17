@@ -20,7 +20,7 @@
 
 import {ApiError, UserRoles, type Image} from 'api';
 import {Router} from 'express';
-import {render, type RecipePrefill} from 'frontend';
+import {type RecipePrefill} from 'frontend';
 
 import {UnauthorisedError} from '../../errors.ts';
 import {readForm} from '../../form-validation/recipe.ts';
@@ -52,18 +52,11 @@ editRecipeRouter.post(
 
 		if (!csrf.validate(request, response)) {
 			// Don't save image for csrf violation
-			response.status(403).send(
-				render.editRecipe(
-					{
-						user: response.locals.user,
-						url: `/recipe/${id}/edit`,
-					},
-					csrf.generate(response.locals.user),
-					recipe,
-					body,
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
+			response
+				.status(403)
+				.send$.editRecipe(recipe, body, [
+					'Could not validate CSRF Token. Please try again.',
+				]);
 			return;
 		}
 
@@ -90,22 +83,15 @@ editRecipeRouter.post(
 		const source = readForm.source(body);
 
 		if (errors.length > 0) {
-			response.status(400).send(
-				render.editRecipe(
-					{
-						user: response.locals.user,
-						url: `/recipe/${id}/edit`,
-					},
-					csrf.generate(response.locals.user),
-					recipe,
-					{
-						...body,
-						tags,
-						sections,
-						image: image?.name,
-					},
-					errors,
-				),
+			response.status(400).send$.editRecipe(
+				recipe,
+				{
+					...body,
+					tags,
+					sections,
+					image: image?.name,
+				},
+				errors,
 			);
 			return;
 		}
@@ -155,16 +141,6 @@ editRecipeRouter.get(
 			title: recipe.title,
 		};
 
-		response.send(
-			render.editRecipe(
-				{
-					user: response.locals.user,
-					url: `/recipe/${id}/edit`,
-				},
-				csrf.generate(response.locals.user),
-				recipe,
-				prefill,
-			),
-		);
+		response.send$.editRecipe(recipe, prefill);
 	},
 );

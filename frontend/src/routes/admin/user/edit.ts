@@ -28,9 +28,8 @@ import {createRoute} from '../../_utilities.js';
 
 export const renderAdminEditUser = createRoute(
 	(
-		{user: requestUser},
+		{requestUser, csrfToken},
 		user: User,
-		csrfToken: string,
 		showSuccess: boolean,
 		errors?: readonly string[],
 		newPassword?: string,

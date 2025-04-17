@@ -20,7 +20,6 @@
 
 import {UserDeletion, UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {csrf, session} from '../../middleware/token.ts';
 import {formdataMiddleware} from '../../upload.ts';
@@ -31,17 +30,7 @@ accountDeleteRouter.get(
 	'/',
 	session.guard(UserRoles.User),
 	(_request, response) => {
-		response.send(
-			render.accountDelete(
-				{
-					user: response.locals.user,
-					url: '/account/delete',
-				},
-				csrf.generate(response.locals.user),
-				response.locals.user!,
-				false,
-			),
-		);
+		response.send$.accountDelete(response.locals.user!, false);
 	},
 );
 
@@ -51,18 +40,13 @@ accountDeleteRouter.post(
 	formdataMiddleware.none(),
 	async (request, response) => {
 		if (!csrf.validate(request, response)) {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
+			response
+				.status(400)
+				.send$.accountDelete(
 					response.locals.user!,
 					false,
 					'Could not validate CSRF Token. Please try again.',
-				),
-			);
+				);
 			return;
 		}
 
@@ -71,36 +55,22 @@ accountDeleteRouter.post(
 		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
 
 		if (typeof password !== 'string' || !password) {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
-					response.locals.user!,
-					false,
-					'Missing password.',
-				),
-			);
+			response
+				.status(400)
+				.send$.accountDelete(response.locals.user!, false, 'Missing password.');
 			return;
 		}
 
 		try {
 			response.locals.user!.confirmPassword(password);
 		} catch {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
+			response
+				.status(400)
+				.send$.accountDelete(
 					response.locals.user!,
 					false,
 					'Incorrect password. Please try again.',
-				),
-			);
+				);
 			return;
 		}
 
@@ -111,18 +81,13 @@ accountDeleteRouter.post(
 					: UserDeletion.KeepRecipes,
 			);
 		} catch {
-			response.status(400).send(
-				render.accountDelete(
-					{
-						user: response.locals.user,
-						url: '/account/delete',
-					},
-					csrf.generate(response.locals.user),
+			response
+				.status(400)
+				.send$.accountDelete(
 					response.locals.user!,
 					false,
 					'Could not complete your request. Please try again or contact an admin.',
-				),
-			);
+				);
 			return;
 		}
 

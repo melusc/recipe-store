@@ -18,19 +18,26 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {UserRoles} from 'api';
-import {Router} from 'express';
+import type {RequestHandler} from 'express';
+import {createRender} from 'frontend';
 
-import {session} from '../../middleware/token.ts';
+import {csrf} from './middleware/token.ts';
 
-import {adminUserRouter} from './user/index.ts';
+export function bindRender(): RequestHandler {
+	return (request, response, next) => {
+		Object.defineProperty(response, 'send$', {
+			get() {
+				return createRender({
+					csrfToken: csrf.generate(response.locals.user),
+					requestUser: response.locals.user,
+					url: request.originalUrl,
+					onRender(html) {
+						response.send(html);
+					},
+				});
+			},
+		});
 
-export const adminRouter = Router();
-
-adminRouter.use(session.guard(UserRoles.Admin));
-
-adminRouter.use('/', adminUserRouter);
-
-adminRouter.get('/', (_request, response) => {
-	response.send$.admin.index();
-});
+		next();
+	};
+}

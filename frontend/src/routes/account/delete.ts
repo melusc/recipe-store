@@ -25,7 +25,7 @@ import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderAccountDelete = createRoute(
-	(_, csrfToken: string, user: User, adminForm: boolean, error?: string) => ({
+	({csrfToken}, user: User, adminForm: boolean, error?: string) => ({
 		title: 'Delete Account',
 		body: centeredMain($`
 			<section>

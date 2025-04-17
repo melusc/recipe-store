@@ -21,7 +21,6 @@
 import {RelativeUrl} from '@lusc/util/relative-url';
 import {UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {readAccountForm} from '../form-validation/account.ts';
 import {csrf, session} from '../middleware/token.ts';
@@ -43,15 +42,7 @@ requiredPasswordChangeRouter.use(
 );
 
 requiredPasswordChangeRouter.get('/', (_request, response) => {
-	response.send(
-		render.requiredPasswordChange(
-			{
-				user: response.locals.user,
-				url: '/required-password-change',
-			},
-			csrf.generate(response.locals.user),
-		),
-	);
+	response.send$.requiredPasswordChange();
 });
 
 requiredPasswordChangeRouter.post(
@@ -62,16 +53,11 @@ requiredPasswordChangeRouter.post(
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		if (!csrf.validate(request, response)) {
-			response.send(400).send(
-				render.requiredPasswordChange(
-					{
-						user: response.locals.user,
-						url: '/required-password-change',
-					},
-					csrf.generate(response.locals.user),
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
+			response
+				.send(400)
+				.send$.requiredPasswordChange([
+					'Could not validate CSRF Token. Please try again.',
+				]);
 			return;
 		}
 
@@ -83,16 +69,7 @@ requiredPasswordChangeRouter.post(
 			const errorMessage =
 				error instanceof Error ? error.message : 'Internal error.';
 
-			response.status(400).send(
-				render.requiredPasswordChange(
-					{
-						user: response.locals.user,
-						url: '/required-password-change',
-					},
-					csrf.generate(response.locals.user),
-					[errorMessage],
-				),
-			);
+			response.status(400).send$.requiredPasswordChange([errorMessage]);
 
 			return;
 		}

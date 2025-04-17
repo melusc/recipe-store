@@ -31,35 +31,40 @@ const baseHtml = await readFile(
 	'utf8',
 );
 
-export type RouteMetadata = {
-	user: User | undefined;
-	url: string | undefined;
+export type RouteCommon = {
+	requestUser: User | undefined;
+	url: string;
+	csrfToken: string;
+	onRender(html: string): void;
 };
 
 export function createRoute<Parameters extends readonly unknown[]>(
 	template: (
-		routeMetadata: RouteMetadata,
+		routeMetadata: RouteCommon,
 		...parameters: Parameters
 	) => {
 		title: string;
 		body: SafeString | undefined;
 	},
 ) {
-	return (routeMetadata: RouteMetadata, ...templateParameters: Parameters) => {
-		const {title, body} = template(routeMetadata, ...templateParameters);
+	return (routeMetadata: RouteCommon) =>
+		(...templateParameters: Parameters) => {
+			const {title, body} = template(routeMetadata, ...templateParameters);
 
-		return $`
-			${$.trusted(baseHtml)}
+			routeMetadata.onRender(
+				$`
+					${$.trusted(baseHtml)}
 
-			<title>${title} | Recipe Store</title>
+					<title>${title} | Recipe Store</title>
 
-			<body>
-				${header(routeMetadata)}
+					<body>
+						${header(routeMetadata)}
 
-				<div id="App" class="m-3 d-flex flex-column gap-3">
-					${body}
-				</div>
-			</body>
-		`.render();
-	};
+						<div id="App" class="m-3 d-flex flex-column gap-3">
+							${body}
+						</div>
+					</body>
+				`.render(),
+			);
+		};
 }

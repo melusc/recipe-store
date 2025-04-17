@@ -21,7 +21,6 @@
 import {RelativeUrl} from '@lusc/util/relative-url';
 import type {User} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {csrf, session} from '../middleware/token.ts';
 import {formdataMiddleware} from '../upload.ts';
@@ -33,16 +32,7 @@ loginRouter.get('/login', (request, response) => {
 		const redirect = new RelativeUrl(request.search.get('continue') ?? '/');
 		response.redirect(303, redirect.href);
 	} else {
-		response.status(200).send(
-			render.login(
-				{
-					user: undefined,
-					url: '/login',
-				},
-				csrf.generate(undefined),
-				undefined,
-			),
-		);
+		response.status(200).send$.login(undefined);
 	}
 });
 
@@ -53,16 +43,9 @@ loginRouter.get('/logout', (_request, response) => {
 
 loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	if (!csrf.validate(request, response)) {
-		response.status(400).send(
-			render.login(
-				{
-					user: undefined,
-					url: '/login',
-				},
-				csrf.generate(undefined),
-				'Could not validate CSRF Token. Please try again.',
-			),
-		);
+		response
+			.status(400)
+			.send$.login('Could not validate CSRF Token. Please try again.');
 		return;
 	}
 
@@ -71,16 +54,7 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	const password = body.password;
 
 	if (typeof username !== 'string' || typeof password !== 'string') {
-		response.status(400).send(
-			render.login(
-				{
-					user: undefined,
-					url: '/login',
-				},
-				csrf.generate(undefined),
-				'Please fill all inputs.',
-			),
-		);
+		response.status(400).send$.login('Please fill all inputs.');
 		return;
 	}
 
@@ -88,16 +62,9 @@ loginRouter.post('/login', formdataMiddleware.none(), (request, response) => {
 	try {
 		user = response.locals.api.User.login(username, password);
 	} catch {
-		response.status(400).send(
-			render.login(
-				{
-					user: undefined,
-					url: '/login',
-				},
-				csrf.generate(undefined),
-				'Incorrect credentials. Please try again.',
-			),
-		);
+		response
+			.status(400)
+			.send$.login('Incorrect credentials. Please try again.');
 		return;
 	}
 

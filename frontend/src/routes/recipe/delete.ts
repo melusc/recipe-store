@@ -25,7 +25,7 @@ import {centeredMain} from '../../components/centered-main.js';
 import {createRoute} from '../_utilities.js';
 
 export const renderRecipeDelete = createRoute(
-	(_, csrfToken: string, recipe: Recipe, error?: string) => ({
+	({csrfToken}, recipe: Recipe, error?: string) => ({
 		title: `Delete ${recipe.title}`,
 		body: centeredMain($`
 			<section>

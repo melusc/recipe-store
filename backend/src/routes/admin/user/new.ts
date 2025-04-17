@@ -21,7 +21,6 @@
 import {generatePassword} from '@lusc/util/generate-password';
 import {ApiError, UserRoles} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {readAccountForm} from '../../../form-validation/account.ts';
 import {csrf} from '../../../middleware/token.ts';
@@ -29,32 +28,19 @@ import {formdataMiddleware} from '../../../upload.ts';
 
 export const adminNewUserRouter = Router();
 
-adminNewUserRouter.get('/', (request, response) => {
-	response.send(
-		render.admin.newUser(
-			{
-				user: response.locals.user,
-				url: request.originalUrl,
-			},
-			csrf.generate(response.locals.user),
-			undefined,
-		),
-	);
+adminNewUserRouter.get('/', (_request, response) => {
+	response.send$.admin.newUser();
 });
 
 adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	const requestUser = response.locals.user!;
 
 	if (!csrf.validate(request, response)) {
-		response.status(403).send(
-			render.admin.newUser(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				csrf.generate(requestUser),
-			),
-		);
+		response
+			.status(403)
+			.send$.admin.newUser([
+				'Could not validate CSRF Token. Please try again.',
+			]);
 		return;
 	}
 
@@ -85,16 +71,7 @@ adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	}
 
 	if (errors.length > 0) {
-		response.status(400).send(
-			render.admin.newUser(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				csrf.generate(requestUser),
-				errors,
-			),
-		);
+		response.status(400).send$.admin.newUser(errors);
 		return;
 	}
 
@@ -108,26 +85,8 @@ adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 			true,
 		);
 
-		response.status(201).send(
-			render.admin.newUserResult(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				user,
-				password,
-			),
-		);
+		response.status(201).send$.admin.newUserResult(user, password);
 	} catch (error: unknown) {
-		response.status(409).send(
-			render.admin.newUser(
-				{
-					user: requestUser,
-					url: request.originalUrl,
-				},
-				csrf.generate(requestUser),
-				[(error as ApiError).message],
-			),
-		);
+		response.status(409).send$.admin.newUser([(error as ApiError).message]);
 	}
 });

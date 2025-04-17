@@ -19,7 +19,6 @@
 */
 
 import {Router} from 'express';
-import {render} from 'frontend';
 
 export const viewRecipeRouter = Router();
 
@@ -36,14 +35,5 @@ viewRecipeRouter.get('/:id', async (request, response, next) => {
 	const hasEditPermissions =
 		!!requesterUser && recipe.permissionToModifyRecipe(requesterUser);
 
-	response.send(
-		render.viewRecipe(
-			{
-				user: response.locals.user,
-				url: request.originalUrl,
-			},
-			recipe,
-			hasEditPermissions,
-		),
-	);
+	response.send$.viewRecipe(recipe, hasEditPermissions);
 });

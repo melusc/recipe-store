@@ -23,7 +23,7 @@ import {centeredMain} from '../components/centered-main.js';
 import {createRoute} from './_utilities.js';
 
 export const renderLogin = createRoute(
-	(_, csrfToken: string, error: string | undefined) => ({
+	({csrfToken}, error: string | undefined) => ({
 		title: 'Login',
 		body: centeredMain($`
 			<section>

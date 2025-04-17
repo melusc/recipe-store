@@ -20,7 +20,6 @@
 
 import {ApiError, UserRoles, type Image} from 'api';
 import {Router} from 'express';
-import {render} from 'frontend';
 
 import {readForm} from '../../form-validation/recipe.ts';
 import {csrf, session} from '../../middleware/token.ts';
@@ -37,17 +36,11 @@ newRecipeRouter.post(
 
 		if (!csrf.validate(request, response)) {
 			// Don't save image for csrf violation
-			response.status(403).send(
-				render.newRecipe(
-					{
-						user: response.locals.user,
-						url: '/recipe/new',
-					},
-					csrf.generate(response.locals.user),
-					body,
-					['Could not validate CSRF Token. Please try again.'],
-				),
-			);
+			response
+				.status(403)
+				.send$.newRecipe(body, [
+					'Could not validate CSRF Token. Please try again.',
+				]);
 			return;
 		}
 
@@ -74,21 +67,14 @@ newRecipeRouter.post(
 		const source = readForm.source(body);
 
 		if (errors.length > 0) {
-			response.status(400).send(
-				render.newRecipe(
-					{
-						user: response.locals.user,
-						url: '/recipe/new',
-					},
-					csrf.generate(response.locals.user),
-					{
-						...body,
-						tags,
-						sections,
-						image: image?.name,
-					},
-					errors,
-				),
+			response.status(400).send$.newRecipe(
+				{
+					...body,
+					tags,
+					sections,
+					image: image?.name,
+				},
+				errors,
 			);
 			return;
 		}
@@ -111,15 +97,6 @@ newRecipeRouter.get(
 	'/',
 	session.guard(UserRoles.User),
 	(_request, response) => {
-		response.send(
-			render.newRecipe(
-				{
-					user: response.locals.user,
-					url: '/recipe/new',
-				},
-				csrf.generate(response.locals.user),
-				{},
-			),
-		);
+		response.send$.newRecipe({});
 	},
 );
