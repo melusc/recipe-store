@@ -105,6 +105,7 @@ apiRouter.post(
 			}
 
 			response.json('OK');
+			return;
 		}
 
 		response.status(401).json({
