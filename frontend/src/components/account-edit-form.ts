@@ -52,7 +52,7 @@ export function accountEditForm(
 			<input type="hidden" name="csrf-token" value="${csrfToken}">
 
 			<div>
-				<label for="username" class="form-label">New username:</label>
+				<label for="username" class="form-label">Username:</label>
 				<input
 					type="text"
 					class="form-control"
@@ -65,7 +65,7 @@ export function accountEditForm(
 			</div>
 
 			<div>
-				<label for="displayname" class="form-label">New display name:</label>
+				<label for="displayname" class="form-label">Display name:</label>
 				<input
 					type="text"
 					class="form-control"
@@ -82,7 +82,7 @@ export function accountEditForm(
 				requestUser.permissionToChangeRole(user) &&
 				$`
 					<div>
-						<label for="role" class="form-label">New role:</label>
+						<label for="role" class="form-label">Role:</label>
 						<select class="form-select" name="role" aria-label="Change user role">
 							${[...UserRolesLabels].map(
 								role => $`
