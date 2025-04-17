@@ -96,6 +96,19 @@ export function accountEditForm(
 							)}
 						</select>
 					</div>
+
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="checkbox"
+							id="require-pw-change"
+							name="require-pw-change"
+							${user.requirePasswordChange && $`checked`}
+						>
+						<label class="form-check-label" for="require-pw-change">
+							User required to change password?
+						</label>
+					</div>
 				`
 			}
 

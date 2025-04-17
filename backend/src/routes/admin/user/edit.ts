@@ -95,6 +95,8 @@ adminUserEditRouter.post(
 			}
 		}
 
+		const userMustChangePassword = body['require-pw-change'] === 'on';
+
 		if (errors.length === 0) {
 			try {
 				user.changeUsername(username);
@@ -123,6 +125,7 @@ adminUserEditRouter.post(
 			user.changeRole(role);
 		}
 		user.changeDisplayName(displayName);
+		user.updateRequirePasswordChange(userMustChangePassword);
 
 		response.send$.admin.userEdit(user, true, errors, newPassword);
 	},
