@@ -7,17 +7,17 @@
 	},
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^7.1.0",
+		"@lusc/eslint-config": "^7.1.1",
 		"@lusc/tsconfig": "^6.0.2",
 		"@types/express": "^5.0.1",
 		"@types/he": "^1.2.3",
-		"@types/node": "^22.14.1",
+		"@types/node": "^22.15.2",
 		"api": "workspace:^",
-		"eslint": "^9.24.0",
+		"eslint": "^9.25.1",
 		"typescript": "^5.8.3"
 	},
 	"engines": {
-		"node": ">=22.14.0"
+		"node": ">=22.15.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
