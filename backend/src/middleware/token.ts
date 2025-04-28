@@ -105,7 +105,9 @@ class Session extends Token<{user: number}> {
 					!url.startsWith('/required-password-change') &&
 					!url.startsWith('/logout')
 				) {
-					response.redirect(303, '/required-password-change');
+					const redirectUrl = new RelativeUrl('/required-password-change');
+					redirectUrl.searchParams.set('continue', url);
+					response.redirect(303, redirectUrl.href);
 					return;
 				}
 			}
