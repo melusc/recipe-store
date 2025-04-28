@@ -81,7 +81,7 @@ newRecipeRouter.post(
 
 		const recipe = await response.locals.api.Recipe.create(
 			title,
-			response.locals.user!,
+			response.locals.user,
 			image,
 			source,
 			duration,

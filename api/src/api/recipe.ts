@@ -25,6 +25,7 @@ import {
 } from 'cooklang';
 import {array, object, string} from 'zod';
 
+import {ApiError} from './error.js';
 import type {Image} from './image.js';
 import {InjectableApi} from './injectable.js';
 import {QueryParser, recipeMatchesFilter} from './search.js';
@@ -74,7 +75,19 @@ SELECT recipe_id,
 FROM   recipes
        LEFT JOIN recipe_tags using (recipe_id)`;
 
-const privateConstructorKey = Symbol();
+const privateUsageKey = Symbol();
+
+export type JsonRecipe = {
+	readonly title: string;
+	readonly createdAt: string;
+	readonly updatedAt: string;
+	readonly image: string | null;
+	readonly tags: readonly string[];
+	readonly sections: readonly string[];
+	readonly author: string | null;
+	readonly source: string | null;
+	readonly duration: string | null;
+};
 
 export class Recipe extends InjectableApi {
 	// These are accessed by getters
@@ -104,7 +117,7 @@ export class Recipe extends InjectableApi {
 		sections: readonly RecipeSection[],
 		constructorKey: symbol,
 	) {
-		if (constructorKey !== privateConstructorKey) {
+		if (constructorKey !== privateUsageKey) {
 			throw new TypeError('Recipe.constructor is private.');
 		}
 
@@ -173,13 +186,24 @@ export class Recipe extends InjectableApi {
 
 	static async create(
 		title: string,
-		author: User,
+		author: User | undefined,
 		image: Image | undefined,
 		source: string | undefined,
 		duration: string | undefined,
 		tags: readonly string[],
 		sections: readonly string[],
+		_internals?: {
+			internalCreatedAt: ReadonlyDate;
+			internalUpdatedAt: ReadonlyDate;
+			usageKey: symbol;
+		},
 	) {
+		if (_internals !== undefined && _internals.usageKey !== privateUsageKey) {
+			throw new ApiError(
+				'Passing _internals to Recipe.create is only permitted internally.',
+			);
+		}
+
 		const createdAt = new Date();
 
 		const sectionsParsed = sections.map(
@@ -202,7 +226,7 @@ export class Recipe extends InjectableApi {
 			)
 			.get({
 				title,
-				author: author.userId,
+				author: author?.userId ?? -1,
 				createdAt: createdAt.getTime(),
 				sections: JSON.stringify(sectionsParsed),
 				imagePath: null,
@@ -221,7 +245,7 @@ export class Recipe extends InjectableApi {
 			duration,
 			[],
 			sectionsParsed,
-			privateConstructorKey,
+			privateUsageKey,
 		);
 
 		// This requires some logic to deduplicate tags
@@ -233,6 +257,27 @@ export class Recipe extends InjectableApi {
 		}
 
 		await recipe.updateImage(image);
+
+		// Previous steps (#addTag and #updateImage)
+		// modify updatedAt
+		if (_internals !== undefined) {
+			const {internalCreatedAt: createdAt, internalUpdatedAt: updatedAt} =
+				_internals;
+
+			this.database
+				.prepare(
+					`UPDATE recipes
+					SET
+						updated_at = :updatedAt,
+						created_at = :createdAt
+					WHERE recipe_id = :recipeId`,
+				)
+				.run({
+					recipeId: recipe.recipeId,
+					updatedAt: updatedAt.getTime(),
+					createdAt: createdAt.getTime(),
+				});
+		}
 
 		return recipe;
 	}
@@ -255,6 +300,40 @@ export class Recipe extends InjectableApi {
 			.all(parameters) as Array<SqlRecipeRow>;
 
 		return Promise.all(recipes.map(row => this._fromRow(row)));
+	}
+
+	static async fromJson(json: JsonRecipe, image: Image | undefined) {
+		const author =
+			json.author === null ? undefined : this.User.fromUsername(json.author);
+
+		return this.create(
+			json.title,
+			author,
+			image,
+			json.source ?? undefined,
+			json.duration ?? undefined,
+			json.tags,
+			json.sections,
+			{
+				internalCreatedAt: new Date(json.createdAt),
+				internalUpdatedAt: new Date(json.updatedAt),
+				usageKey: privateUsageKey,
+			},
+		);
+	}
+
+	toJson(): JsonRecipe {
+		return {
+			title: this.title,
+			createdAt: this.createdAt.toISOString(),
+			updatedAt: this.updatedAt.toISOString(),
+			image: this.image?.name ?? null,
+			tags: this.tags,
+			sections: this.sections.map(({source}) => source),
+			author: this.author?.username ?? null,
+			source: this.source ?? null,
+			duration: this.duration ?? null,
+		};
 	}
 
 	// Internal parameters `userId` is for use via `User#paginateRecipes`
@@ -444,7 +523,7 @@ export class Recipe extends InjectableApi {
 			row.duration ?? undefined,
 			tags,
 			parsedSections,
-			privateConstructorKey,
+			privateUsageKey,
 		);
 	}
 

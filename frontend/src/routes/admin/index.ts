@@ -22,6 +22,7 @@ import {$} from '../../$.js';
 import {centeredMain} from '../../components/centered-main.js';
 import {createRoute, type RouteCommon} from '../_utilities.js';
 
+import {renderAdminBackup} from './backup.js';
 import {renderAdminEditUser} from './user/edit.js';
 import {renderAdminListUsers} from './user/list.js';
 import {renderAdminNewUser, renderAdminNewUserResult} from './user/new.js';
@@ -29,11 +30,17 @@ import {renderAdminNewUser, renderAdminNewUserResult} from './user/new.js';
 const renderAdminIndex = createRoute(() => ({
 	title: 'Admin Interface',
 	body: centeredMain($`
-		<h1>User Admin</h1>
+		<h1>Admin</h1>
+		<h2>User Admin</h2>
 
 		<ul>
 			<li><a href="/admin/users">List users</a></li>
 			<li><a href="/admin/user/new">Create user</a></li>
+		</ul>
+
+		<h2>Backup</h2>
+		<ul>
+			<li><a href="/admin/backup">Backup Management</a></li>
 		</ul>
 	`),
 }));
@@ -45,5 +52,6 @@ export function createRenderAdmin(common: RouteCommon) {
 		index: renderAdminIndex(common),
 		newUser: renderAdminNewUser(common),
 		newUserResult: renderAdminNewUserResult(common),
+		backup: renderAdminBackup(common),
 	} as const;
 }
