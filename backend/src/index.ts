@@ -23,6 +23,7 @@ import {parseArgs} from 'node:util';
 import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
+import {cleanImages} from './cleanup.ts';
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
 import {setupServer} from './server.js';
 
@@ -41,6 +42,8 @@ const api = createApi({
 	imageDirectory,
 	temporaryImageDirectory: temporaryImageDirectory,
 });
+
+await cleanImages(api, imageDirectory);
 
 if (createOwnerUsername) {
 	const password = generatePassword({length: 16});
