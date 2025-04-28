@@ -23,6 +23,7 @@ import {Router} from 'express';
 
 import {session} from '../../middleware/token.ts';
 
+import {adminBackupRouter} from './backup.ts';
 import {adminUserRouter} from './user/index.ts';
 
 export const adminRouter = Router();
@@ -34,3 +35,5 @@ adminRouter.use('/', adminUserRouter);
 adminRouter.get('/', (_request, response) => {
 	response.send$.admin.index();
 });
+
+adminRouter.use('/backup', adminBackupRouter);

@@ -20,7 +20,11 @@
 
 import {$} from '../$.js';
 
-export function formError(errors?: readonly string[]) {
+export function formError(errors?: readonly string[] | string) {
+	if (typeof errors === 'string') {
+		errors = [errors];
+	}
+
 	if (!errors || errors.length === 0) {
 		return;
 	}

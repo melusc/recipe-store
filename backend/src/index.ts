@@ -18,20 +18,34 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {createWriteStream} from 'node:fs';
+import {readFile} from 'node:fs/promises';
 import {parseArgs} from 'node:util';
 
 import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
+import {createBackup, restoreBackup} from './backup.ts';
 import {cleanImages} from './cleanup.ts';
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
 import {setupServer} from './server.js';
 
 const {
-	values: {'create-owner': createOwnerUsername},
+	values: {
+		'create-owner': createOwnerUsername,
+		'create-backup': shouldCreateBackup,
+		'restore-backup': restoreBackupPath,
+	},
 } = parseArgs({
 	options: {
 		'create-owner': {
+			type: 'string',
+		},
+		'create-backup': {
+			type: 'boolean',
+			default: false,
+		},
+		'restore-backup': {
 			type: 'string',
 		},
 	},
@@ -44,6 +58,26 @@ const api = createApi({
 });
 
 await cleanImages(api, imageDirectory);
+
+if (shouldCreateBackup) {
+	const {filename, stream} = await createBackup(api);
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const writeStream = createWriteStream(filename);
+	stream.pipe(writeStream);
+	console.log('Saving backup to', filename);
+}
+
+if (restoreBackupPath !== undefined) {
+	// eslint-disable-next-line security/detect-non-literal-fs-filename
+	const zip = await readFile(restoreBackupPath);
+	const skippedUsers = await restoreBackup(api, zip);
+	if (skippedUsers.length > 0) {
+		console.debug('Skipped creating users:');
+		for (const user of skippedUsers) {
+			console.debug(`  - ${user}`);
+		}
+	}
+}
 
 if (createOwnerUsername) {
 	const password = generatePassword({length: 16});

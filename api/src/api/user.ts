@@ -57,6 +57,16 @@ type SqlUserRow = {
 	password: string;
 };
 
+export type JsonUser = {
+	readonly username: string;
+	readonly displayName: string;
+	readonly passwordHash: string;
+	readonly role: UserRoles;
+	readonly requirePasswordChange: boolean;
+	readonly createdAt: string;
+	readonly updatedAt: string;
+};
+
 const BASE_SQL_USER_SELECT = `
 SELECT username,
        displayname,
@@ -70,7 +80,7 @@ FROM   users`;
 
 const HASH_ROUNDS = 10;
 
-const privateConstructorKey = Symbol();
+const privateUsageKey = Symbol();
 
 export class User extends InjectableApi {
 	// Internally r/w, externally readonly
@@ -91,7 +101,7 @@ export class User extends InjectableApi {
 		updatedAt: ReadonlyDate,
 		constructorKey: symbol,
 	) {
-		if (constructorKey !== privateConstructorKey) {
+		if (constructorKey !== privateUsageKey) {
 			throw new TypeError('User.constructor is private.');
 		}
 
@@ -146,16 +156,30 @@ export class User extends InjectableApi {
 	static create(
 		username: string,
 		displayName: string,
-		password: string,
+		password: string | {passwordHash: string},
 		role: UserRoles,
 		requirePasswordChange: boolean,
+		_internals?: {
+			internalCreatedAt: ReadonlyDate;
+			internalUpdatedAt: ReadonlyDate;
+			usageKey: symbol;
+		},
 	) {
+		if (_internals !== undefined && _internals.usageKey !== privateUsageKey) {
+			throw new ApiError(
+				'Passing _internals to User.create is only permitted internally.',
+			);
+		}
 		if (this.fromUsername(username)) {
 			throw new ApiError('User already exists. Use another username.');
 		}
 
-		const passwordHash = bcrypt.hashSync(password, HASH_ROUNDS);
-		const createdAt = new Date();
+		const passwordHash =
+			typeof password === 'string'
+				? bcrypt.hashSync(password, HASH_ROUNDS)
+				: password.passwordHash;
+		const createdAt = _internals?.internalCreatedAt ?? new Date();
+		const updatedAt = _internals?.internalUpdatedAt ?? createdAt;
 
 		const {user_id: userId} = this.database
 			.prepare(
@@ -165,7 +189,7 @@ export class User extends InjectableApi {
 				)
 				VALUES (
 					:username, :displayName, :passwordHash, :role,
-					:requirePasswordChange, :createdAt, :createdAt
+					:requirePasswordChange, :createdAt, :updatedAt
 				)
 				RETURNING user_id`,
 			)
@@ -176,6 +200,7 @@ export class User extends InjectableApi {
 				role,
 				requirePasswordChange: requirePasswordChange ? 1 : 0,
 				createdAt: createdAt.getTime(),
+				updatedAt: updatedAt.getTime(),
 			}) as {user_id: number};
 
 		return new this.User(
@@ -185,9 +210,36 @@ export class User extends InjectableApi {
 			role,
 			requirePasswordChange,
 			createdAt,
-			createdAt,
-			privateConstructorKey,
+			updatedAt,
+			privateUsageKey,
 		);
+	}
+
+	static fromJson(json: JsonUser) {
+		return this.create(
+			json.username,
+			json.displayName,
+			{passwordHash: json.passwordHash},
+			json.role,
+			json.requirePasswordChange,
+			{
+				internalCreatedAt: new Date(json.createdAt),
+				internalUpdatedAt: new Date(json.updatedAt),
+				usageKey: privateUsageKey,
+			},
+		);
+	}
+
+	toJson(): JsonUser {
+		return {
+			username: this.username,
+			displayName: this.displayName,
+			passwordHash: this.getPasswordHash(),
+			role: this.role,
+			requirePasswordChange: this.requirePasswordChange,
+			createdAt: this.createdAt.toISOString(),
+			updatedAt: this.updatedAt.toISOString(),
+		};
 	}
 
 	static login(username: string, password: string): User {
@@ -249,7 +301,7 @@ export class User extends InjectableApi {
 			row.require_pw_change,
 			new Date(row.created_at),
 			new Date(row.updated_at),
-			privateConstructorKey,
+			privateUsageKey,
 		);
 	}
 
@@ -365,7 +417,7 @@ export class User extends InjectableApi {
 			});
 	}
 
-	confirmPassword(password: string) {
+	getPasswordHash() {
 		const hash = this.database
 			.prepare(
 				`SELECT password FROM users
@@ -377,7 +429,13 @@ export class User extends InjectableApi {
 			throw new ApiError('Internal error! Try refreshing the page.');
 		}
 
-		const oldPasswordMatches = bcrypt.compareSync(password, hash.password);
+		return hash.password;
+	}
+
+	confirmPassword(password: string) {
+		const hash = this.getPasswordHash();
+
+		const oldPasswordMatches = bcrypt.compareSync(password, hash);
 
 		if (!oldPasswordMatches) {
 			throw new ApiError('Incorrect current password.');
