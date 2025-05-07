@@ -19,5 +19,8 @@
 		"frontend/",
 		"bootstrap/"
 	],
-	"license": "GPL-3.0-only"
+	"license": "GPL-3.0-only",
+	"resolutions": {
+		"jwa@npm:^1.4.1": "patch:jwa@npm%3A1.4.1#~/.yarn/patches/jwa-npm-1.4.1-4f19d6572c.patch"
+	}
 }
