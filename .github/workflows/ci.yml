@@ -55,6 +55,7 @@ jobs:
             !.git
             !cooklang/target
             !.yarn/install-state.gz
+            !bootstrap/src/bootstrap
 
   upload:
     runs-on: ubuntu-latest
