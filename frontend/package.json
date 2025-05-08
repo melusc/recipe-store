@@ -17,7 +17,7 @@
 		"typescript": "^5.8.3"
 	},
 	"engines": {
-		"node": ">=22.15.0"
+		"node": "^24.0.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {

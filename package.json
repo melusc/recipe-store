@@ -12,6 +12,9 @@
 		"start": "yarn workspace backend run start",
 		"dev": "yarn build && yarn start"
 	},
+	"engines": {
+		"node": "^24.0.0"
+	},
 	"workspaces": [
 		"api/",
 		"backend/",
