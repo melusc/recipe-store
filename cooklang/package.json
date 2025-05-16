@@ -10,7 +10,7 @@
 		"#wasm": "./dist/wasm/cooklang_wasm.cjs"
 	},
 	"engines": {
-		"node": "^24.0.0"
+		"node": "^24.0.2"
 	},
 	"scripts": {
 		"build": "yarn clean && yarn build:wasm && tsc",
@@ -22,16 +22,16 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@lusc/eslint-config": "^7.1.1",
+		"@lusc/eslint-config": "^7.2.0",
 		"@lusc/tsconfig": "^7.0.0",
-		"@types/node": "^22.15.2",
-		"eslint": "^9.25.1",
+		"@types/node": "^22.15.18",
+		"eslint": "^9.26.0",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3",
-		"vitest": "^3.1.2",
+		"vitest": "^3.1.3",
 		"wasm-pack": "^0.13.1"
 	},
 	"dependencies": {
-		"zod": "^3.24.3"
+		"zod": "^3.24.4"
 	}
 }
