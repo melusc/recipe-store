@@ -430,10 +430,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lusc/util@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "@lusc/util@npm:1.4.3"
-  checksum: 10c0/49614013740f8fe25c6458af0faa9974edb3319a7c00304412eac7bac9ebd80b8340dadd95429b4d69d93efc15dffc5043d7c8e88b6802dc94f23b2124d5c103
+"@lusc/util@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@lusc/util@npm:2.0.0"
+  checksum: 10c0/aec6430116ad442f79e2085a69d9ae4677a4071d167cad39aa73fad73d0a9220dd38c41c58b0c9146e083472ae0aba0e8a9bd5c683e0edd7cb46b920988da899
   languageName: node
   linkType: hard
 
@@ -1419,7 +1419,7 @@ __metadata:
   dependencies:
     "@lusc/eslint-config": "npm:^7.2.0"
     "@lusc/tsconfig": "npm:^7.0.0"
-    "@lusc/util": "npm:^1.4.3"
+    "@lusc/util": "npm:^2.0.0"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/node": "npm:^22.15.21"
     "@vitest/runner": "npm:^3.1.4"
@@ -1469,7 +1469,7 @@ __metadata:
   dependencies:
     "@lusc/eslint-config": "npm:^7.2.0"
     "@lusc/tsconfig": "npm:^7.0.0"
-    "@lusc/util": "npm:^1.4.3"
+    "@lusc/util": "npm:^2.0.0"
     "@types/cookie-parser": "npm:^1.4.8"
     "@types/cors": "npm:^2.8.18"
     "@types/express": "npm:^5.0.2"
@@ -2812,7 +2812,7 @@ __metadata:
   dependencies:
     "@lusc/eslint-config": "npm:^7.2.0"
     "@lusc/tsconfig": "npm:^7.0.0"
-    "@lusc/util": "npm:^1.4.3"
+    "@lusc/util": "npm:^2.0.0"
     "@types/express": "npm:^5.0.2"
     "@types/he": "npm:^1.2.3"
     "@types/node": "npm:^22.15.21"

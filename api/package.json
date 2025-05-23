@@ -23,7 +23,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@lusc/util": "^1.4.3",
+		"@lusc/util": "^2.0.0",
 		"bcrypt": "^6.0.0",
 		"cooklang": "workspace:^",
 		"file-type": "^21.0.0",
