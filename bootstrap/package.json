@@ -4,11 +4,11 @@
 	"private": true,
 	"devDependencies": {
 		"csso-cli": "^4.0.2",
-		"esbuild": "^0.25.4",
-		"sass": "^1.89.0"
+		"esbuild": "^0.25.5",
+		"sass": "^1.89.1"
 	},
 	"engines": {
-		"node": "^24.0.2"
+		"node": "^24.1.0"
 	},
 	"exports": {
 		".": "./dist"
