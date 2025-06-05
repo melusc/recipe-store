@@ -49,6 +49,11 @@ export function setupServer(api: Api) {
 	app.use(cookieParser());
 	app.use(
 		helmet({
+			contentSecurityPolicy: {
+				directives: {
+					'style-src': ["'self'", 'https://fonts.googleapis.com/'],
+				},
+			},
 			// Nginx already sets the following
 			xContentTypeOptions: false,
 			strictTransportSecurity: false,
