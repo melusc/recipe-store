@@ -87,7 +87,7 @@ jobs:
           rsync -vhaR --checksum --delete \
             -e "ssh -i ~/.ssh/ssh-key" \
             {backend,frontend,api,bootstrap,cooklang}/{dist/,package.json} \
-            package.json .yarn/patches \
+            package.json \
             frontend/static/ frontend/src/base.html \
             "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}:/var/www/recipe-store/"
 
