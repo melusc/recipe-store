@@ -51,7 +51,8 @@ export function setupServer(api: Api) {
 		helmet({
 			contentSecurityPolicy: {
 				directives: {
-					'style-src': ["'self'", 'https://fonts.googleapis.com/'],
+					'style-src': ["'self'", 'https://fonts.googleapis.com'],
+					'style-src-attr': ["'unsafe-inline'"],
 				},
 			},
 			// Nginx already sets the following
