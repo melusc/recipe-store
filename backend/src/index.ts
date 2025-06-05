@@ -28,7 +28,8 @@ import {createApi, UserRoles} from 'api';
 import {createBackup, restoreBackup} from './backup.ts';
 import {cleanImages} from './cleanup.ts';
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
-import {setupServer} from './server.js';
+import * as env from './env.ts';
+import {setupServer} from './server.ts';
 
 const {
 	values: {
@@ -98,12 +99,11 @@ if (createOwnerUsername) {
 }
 
 const app = setupServer(api);
-const port = 3108;
 
-app.listen(port, '127.0.0.1', error => {
+app.listen(env.port, '127.0.0.1', error => {
 	if (error) {
 		throw error;
 	}
 
-	console.log('Server listening on http://localhost:%s', port);
+	console.log('Server listening on http://localhost:%s', env.port);
 });
