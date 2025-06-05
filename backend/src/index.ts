@@ -28,7 +28,7 @@ import {createApi, UserRoles} from 'api';
 import {createBackup, restoreBackup} from './backup.ts';
 import {cleanImages} from './cleanup.ts';
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
-import * as env from './env.ts';
+import env from './env.ts';
 import {setupServer} from './server.ts';
 
 const {

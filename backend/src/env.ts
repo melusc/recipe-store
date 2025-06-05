@@ -18,7 +18,16 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {env} from 'node:process';
+import {randomBytes} from 'node:crypto';
+import process from 'node:process';
 
-const envPort = Number.parseInt(env['RS_PORT']!, 10);
-export const port = Number.isSafeInteger(envPort) ? envPort : 3108;
+const envPort = Number.parseInt(process.env['RS_PORT']!, 10);
+const port = Number.isSafeInteger(envPort) ? envPort : 3108;
+
+const sessionSecret = process.env['RS_SESSION_SECRET'] ?? randomBytes(128);
+
+const env = {
+	port,
+	sessionSecret,
+};
+export default env;

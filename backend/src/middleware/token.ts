@@ -18,19 +18,17 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {randomBytes} from 'node:crypto';
-import {env} from 'node:process';
-
 import {RelativeUrl} from '@lusc/util/relative-url';
 import type {Api, User, UserRoles} from 'api';
 import type {Request, RequestHandler, Response} from 'express';
 import jwtProvider from 'jsonwebtoken';
 import type {StringValue} from 'ms';
 
+import env from '../env.ts';
 import {UnauthorisedError} from '../errors.ts';
 
 class Token<T extends Record<string, unknown>> {
-	#secret = env['RS_SESSION_SECRET'] ?? randomBytes(128);
+	#secret = env.sessionSecret;
 
 	constructor(
 		private readonly audience: string,
