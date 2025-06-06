@@ -75,8 +75,6 @@ export function setupServer(api: Api) {
 			enumerable: true,
 		});
 
-		response.setHeader('permissions-policy', 'interest-cohort=()');
-
 		next();
 	});
 
