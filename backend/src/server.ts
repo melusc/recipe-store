@@ -21,7 +21,6 @@
 import {RelativeUrl} from '@lusc/util/relative-url';
 import type {Api} from 'api';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import express, {type ErrorRequestHandler} from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -62,7 +61,6 @@ export function setupServer(api: Api) {
 			xXssProtection: false,
 		}),
 	);
-	app.use(cors());
 	app.use(morgan('dev'));
 
 	app.use((request, response, next) => {
