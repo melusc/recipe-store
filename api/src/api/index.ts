@@ -18,7 +18,8 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {DatabaseSync, type SQLInputValue} from 'node:sqlite';
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
+import type {DatabaseSync, SQLInputValue} from 'node:sqlite';
 
 import {makeSlug} from '@lusc/util/slug';
 

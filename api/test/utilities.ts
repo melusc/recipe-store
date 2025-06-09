@@ -22,6 +22,7 @@ import {Buffer} from 'node:buffer';
 import {createHash, randomBytes, type BinaryLike} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {readdir, mkdir, rm, writeFile} from 'node:fs/promises';
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import {DatabaseSync} from 'node:sqlite';
 
 import type {Use} from '@vitest/runner';
