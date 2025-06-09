@@ -19,6 +19,7 @@
 */
 
 import {mkdir, rm} from 'node:fs/promises';
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import {DatabaseSync} from 'node:sqlite';
 import {fileURLToPath} from 'node:url';
 
