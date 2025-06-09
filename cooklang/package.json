@@ -22,13 +22,13 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@lusc/eslint-config": "^7.2.0",
+		"@lusc/eslint-config": "^7.3.0",
 		"@lusc/tsconfig": "^7.0.0",
 		"@types/node": "^22.15.30",
 		"eslint": "^9.28.0",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3",
-		"vitest": "^3.2.2",
+		"vitest": "^3.2.3",
 		"wasm-pack": "^0.13.1"
 	},
 	"dependencies": {
