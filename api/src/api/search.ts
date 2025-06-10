@@ -18,6 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import {makeSlug} from '@lusc/util/slug';
 import {sectionToText} from 'cooklang';
 
 import type {Recipe} from './recipe.js';
@@ -215,8 +216,14 @@ function normaliseSearchValue(value: string) {
 	// Treat all whitespace equal by normalising it to a space
 	// "abc\r\ndef" == "abc\tdef"
 	// Ignore punctuation: "Firstly, add" == "firstly add"
+	// Remove diacritics "ö" -> "o"
 	// Don't care about case
-	return value.toLowerCase().replaceAll(/[\s,.:;\-!?\\/]+/g, ' ');
+	return value
+		.toLowerCase()
+		.normalize('NFKD')
+		.replaceAll(/\p{Diacritic}/gu, '')
+		.normalize()
+		.replaceAll(/[\s,.:;\-!?\\/]+/g, ' ');
 }
 
 function searchContains(needle: string, haystack: string) {
@@ -241,7 +248,12 @@ const filterMatchers = {
 		return searchContains(filterValue, recipe.title);
 	},
 	tagged(filterValue: string, recipe: Recipe) {
-		return recipe.tags.some(tag => searchContains(filterValue, tag));
+		return recipe.tags.some(
+			tag =>
+				makeSlug(tag, {
+					appendRandomHex: false,
+				}) === filterValue || searchContains(filterValue, tag),
+		);
 	},
 	author(filterValue: string, recipe: Recipe) {
 		if (!recipe.author) {
