@@ -2844,6 +2844,8 @@ __metadata:
     cooklang: "workspace:^"
     eslint: "npm:^9.28.0"
     he: "npm:^1.2.0"
+    preact: "npm:^10.26.8"
+    preact-render-to-string: "npm:^6.5.13"
     typescript: "npm:^5.8.3"
   languageName: unknown
   linkType: soft
@@ -4211,6 +4213,22 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/b75510d7b28c3ab728c8733dd01538314a18c52af426f199a3c9177e63eb08602a3938bfb66b62dc01350b9aed62087eabbf229af97a1659eb8d3513cec823b3
+  languageName: node
+  linkType: hard
+
+"preact-render-to-string@npm:^6.5.13":
+  version: 6.5.13
+  resolution: "preact-render-to-string@npm:6.5.13"
+  peerDependencies:
+    preact: ">=10"
+  checksum: 10c0/10c6c424af03066b832cb3f2c44372dd64180e9e2a6038cccb758e06337b13b3dd399bf26697afff07d7c5b253fd6bc194524d726ec36d930e36ea2defbb60f7
+  languageName: node
+  linkType: hard
+
+"preact@npm:^10.26.8":
+  version: 10.26.8
+  resolution: "preact@npm:10.26.8"
+  checksum: 10c0/83b6a38af15386c0d93bbaf12996d624354f9c511f79d188f0d673b8f91740849b0603c207da1f10450b07a8659333864a3735d3b5fe23a790ef6cb85d1107c8
   languageName: node
   linkType: hard
 

@@ -27,6 +27,8 @@
 	"dependencies": {
 		"@lusc/util": "^2.0.0",
 		"cooklang": "workspace:^",
-		"he": "^1.2.0"
+		"he": "^1.2.0",
+		"preact": "^10.26.8",
+		"preact-render-to-string": "^6.5.13"
 	}
 }
