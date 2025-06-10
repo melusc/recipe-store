@@ -69,7 +69,9 @@ export const renderViewRecipe = createRoute(
 					{imageUrl && (
 						<img
 							class="object-fit-cover w-100 rounded"
-							style="max-height: 500px;"
+							style={{
+								maxHeight: '500px',
+							}}
 							src={imageUrl}
 							alt={`Photo of ${recipe.title}`}
 						/>

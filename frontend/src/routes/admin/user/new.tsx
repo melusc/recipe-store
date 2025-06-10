@@ -100,7 +100,9 @@ export const renderAdminNewUserResult = createRoute(
 							New password (Copy this! You won't see it again)
 						</label>
 						<div
-							style="width: max-content"
+							style={{
+								width: 'max-content',
+							}}
 							class="form-control d-flex align-items-center"
 						>
 							<pre class="m-0" id="reset-password">

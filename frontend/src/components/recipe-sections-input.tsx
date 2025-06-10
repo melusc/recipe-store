@@ -29,7 +29,9 @@ function SectionRow({section}: {section?: string}) {
 				placeholder="Recipe Step"
 				class="form-control rounded-end-0"
 				autocomplete="off"
-				style="resize: vertical"
+				style={{
+					resize: 'vertical',
+				}}
 			>
 				{section}
 			</textarea>
@@ -75,7 +77,9 @@ export function RecipeSectionsInput({
 					id="nojs-sections"
 					placeholder="Enter sections. Separate each section by two line breaks."
 					class="form-control"
-					style="min-height: 500px"
+					style={{
+						minHeight: '500px',
+					}}
 					autocomplete="off"
 				>
 					{sections.join('\n\n')}
@@ -102,7 +106,12 @@ export function RecipeSectionsInput({
 				"
 				>
 					Add step
-					<span style="height: 1em; width: 1em">
+					<span
+						style={{
+							height: '1em',
+							width: '1em',
+						}}
+					>
 						<IconPlus />
 					</span>
 				</button>

@@ -24,7 +24,12 @@ export function EditUserButton({url}: {url: string}) {
 	return (
 		<a href={url} class="btn btn-outline-dark icon-link align-self-end">
 			Modify user
-			<span style="height: 1em; width: 1em">
+			<span
+				style={{
+					height: '1em',
+					width: '1em',
+				}}
+			>
 				<IconPen />
 			</span>
 		</a>

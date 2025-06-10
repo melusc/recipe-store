@@ -65,7 +65,10 @@ export function RecipeImageInput({
 						id="js-remove-image"
 						type="button"
 						class="d-none btn p-0 me-2"
-						style="width: 1em; height: 1em"
+						style={{
+							width: '1em',
+							height: '1em',
+						}}
 					>
 						<IconCross />
 					</button>
