@@ -28,9 +28,7 @@ import {
 
 function RecipeRow({section}: {section: CooklangSection}) {
 	return (
-		<div
-			class="grid gap-0 border-bottom border-1 border-dark-subtle"
-		>
+		<div class="grid gap-0 border-bottom border-1 border-dark-subtle">
 			<div class="g-col-4 p-2">
 				{section.ingredients.map(ingredient => (
 					<div class="grid gap-2">

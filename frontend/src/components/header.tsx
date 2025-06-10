@@ -19,13 +19,11 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import {UserRoles} from 'api';
-
-import type {RouteCommon} from '../routes/_utilities.js';
+import {UserRoles, type User} from 'api';
 
 import {SearchForm} from './search-form.js';
 
-export function Header({requestUser: user, url}: RouteCommon) {
+export function Header({user, url}: {user: User | undefined; url: string}) {
 	const loginUrl = new RelativeUrl('/login');
 	if (url) {
 		loginUrl.searchParams.set('continue', url);
