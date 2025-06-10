@@ -24,11 +24,11 @@ function JsTag({value}: {value?: string}) {
 	return (
 		<div
 			id="tag-parent"
-			class="
-				btn btn-primary
-				d-flex flex-row align-items-center
-				g-col-12 g-col-sm-6 g-col-lg-3
-			"
+			class={[
+				'btn btn-primary',
+				'd-flex flex-row align-items-center',
+				'g-col-12 g-col-sm-6 g-col-lg-3',
+			].join(' ')}
 		>
 			<input
 				type="text"
@@ -78,12 +78,7 @@ export function RecipeTagsInput({tags}: {tags: readonly string[] | undefined}) {
 				<template id="tag-template">
 					<JsTag />
 				</template>
-				<div
-					class="
-				border border-1 rounded p-2
-				grid gap-2
-			"
-				>
+				<div class="border border-1 rounded p-2 grid gap-2">
 					{tags.map(tag => (
 						<JsTag value={tag} />
 					))}

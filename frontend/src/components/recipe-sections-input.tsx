@@ -36,10 +36,10 @@ function SectionRow({section}: {section?: string}) {
 				{section}
 			</textarea>
 			<button
-				class="
-					btn btn-danger rounded-start-0
-					d-flex align-items-center justify-content-center
-				"
+				class={[
+					'btn btn-danger rounded-start-0',
+					'd-flex align-items-center justify-content-center',
+				].join(' ')}
 				id="btn-remove-step"
 				type="button"
 				style={{
@@ -99,11 +99,11 @@ export function RecipeSectionsInput({
 					type="button"
 					aria-label="Add step"
 					id="btn-add-step"
-					class="
-					btn btn-primary
-					float-end
-					d-flex align-items-center gap-2
-				"
+					class={[
+						'btn btn-primary',
+						'float-end',
+						'd-flex align-items-center gap-2',
+					].join(' ')}
 				>
 					Add step
 					<span

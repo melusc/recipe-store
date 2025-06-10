@@ -23,11 +23,11 @@ import type {ComponentChildren} from 'preact';
 export function CenteredMain({children}: {children: ComponentChildren}) {
 	return (
 		<main
-			class="
-				col-10 col-md-6
-				align-self-center
-				d-flex flex-column gap-3
-			"
+			class={[
+				'col-10 col-md-6',
+				'align-self-center',
+				'd-flex flex-column gap-3',
+			].join(' ')}
 		>
 			{children}
 		</main>
