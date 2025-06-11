@@ -7,14 +7,14 @@
 		"@lusc/eslint-config": "^7.3.0",
 		"@lusc/tsconfig": "^7.0.0",
 		"@types/bcrypt": "^5.0.2",
-		"@types/node": "^22.15.30",
+		"@types/node": "^22.15.31",
 		"@vitest/runner": "^3.2.3",
 		"eslint": "^9.28.0",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.3"
 	},
 	"engines": {
-		"node": "^24.1.0"
+		"node": "^24.2.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
@@ -27,6 +27,6 @@
 		"bcrypt": "^6.0.0",
 		"cooklang": "workspace:^",
 		"file-type": "^21.0.0",
-		"zod": "^3.25.56"
+		"zod": "^3.25.62"
 	}
 }
