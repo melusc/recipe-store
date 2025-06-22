@@ -1,4 +1,4 @@
 [submodule "bootstrap/src/bootstrap"]
 	path = bootstrap/src/bootstrap
 	url = https://github.com/twbs/bootstrap
-	branch = v5.3.6
+	branch = v5.3.7
