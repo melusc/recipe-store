@@ -10,7 +10,7 @@
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
-		"@types/multer": "^1.4.13",
+		"@types/multer": "^2.0.0",
 		"@types/node": "^22.16.0",
 		"esbuild": "^0.25.5",
 		"eslint": "^9.30.1",
