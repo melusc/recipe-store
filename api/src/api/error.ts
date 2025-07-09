@@ -18,4 +18,6 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export class ApiError extends Error {}
+export class ApiError extends Error {
+	override name = 'ApiError';
+}
