@@ -49,9 +49,14 @@ export function setupServer(api: Api) {
 	app.use(
 		helmet({
 			contentSecurityPolicy: {
+				useDefaults: false,
 				directives: {
-					'style-src': ["'self'", 'https://fonts.googleapis.com'],
+					'default-src': ["'none'"],
+					'script-src': ["'self'"],
+					'img-src': ["'self'", 'data:'],
+					'style-src-elem': ["'self'", 'https://fonts.googleapis.com'],
 					'style-src-attr': ["'unsafe-inline'"],
+					'font-src': ['https://fonts.gstatic.com'],
 				},
 			},
 
