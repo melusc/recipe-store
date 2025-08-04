@@ -20,13 +20,14 @@
 
 import {createWriteStream} from 'node:fs';
 import {readFile} from 'node:fs/promises';
+import process from 'node:process';
 import {parseArgs} from 'node:util';
 
 import {generatePassword} from '@lusc/util/generate-password';
 import {createApi, UserRoles} from 'api';
 
 import {createBackup, restoreBackup} from './backup.ts';
-import {cleanImages} from './cleanup.ts';
+import {cleanImages, cleanupBeforeExit} from './cleanup.ts';
 import {database, imageDirectory, temporaryImageDirectory} from './data.ts';
 import env from './env.ts';
 import {setupServer} from './server.ts';
@@ -100,10 +101,16 @@ if (createOwnerUsername) {
 
 const app = setupServer(api);
 
-app.listen(env.port, '127.0.0.1', error => {
+const server = app.listen(env.port, '127.0.0.1', error => {
 	if (error) {
 		throw error;
 	}
 
 	console.log('Server listening on http://localhost:%s', env.port);
+	process.send?.('ready');
+});
+
+cleanupBeforeExit(() => {
+	server.close();
+	database.close();
 });

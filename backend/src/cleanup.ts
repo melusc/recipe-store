@@ -19,6 +19,7 @@
 */
 
 import {readdir, rm} from 'node:fs/promises';
+import process from 'node:process';
 
 import type {Api} from 'api';
 
@@ -42,3 +43,26 @@ export async function cleanImages(api: Api, imageDirectory: URL) {
 		}
 	}
 }
+
+type ExitHandler = () => void;
+const exitHandlers = new Set<ExitHandler>();
+
+export function cleanupBeforeExit(callback: ExitHandler) {
+	exitHandlers.add(callback);
+}
+
+process.once('SIGINT', () => {
+	let exitCode = 0;
+
+	for (const handler of exitHandlers) {
+		try {
+			handler();
+		} catch (error: unknown) {
+			console.error(error);
+			exitCode = 1;
+		}
+	}
+
+	// eslint-disable-next-line n/no-process-exit
+	process.exit(exitCode);
+});
