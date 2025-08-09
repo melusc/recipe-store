@@ -6,7 +6,8 @@ exports[`Cookware quantity stringify("1 1/2") -> "1 1/2" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "number",
       "value": {
@@ -29,7 +30,8 @@ exports[`Cookware quantity stringify("1 300/401") -> "1 300/401" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "number",
       "value": {
@@ -52,7 +54,8 @@ exports[`Cookware quantity stringify("1/2") -> "1/2" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "number",
       "value": {
@@ -75,7 +78,8 @@ exports[`Cookware quantity stringify("1-2") -> "1-2" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "text",
       "value": "1-2",
@@ -90,7 +94,8 @@ exports[`Cookware quantity stringify("100") -> "100" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "number",
       "value": {
@@ -108,7 +113,8 @@ exports[`Cookware quantity stringify("one") -> "one" 1`] = `
   "name": "a",
   "note": null,
   "quantity": {
-    "type": "fixed",
+    "scalable": false,
+    "unit": null,
     "value": {
       "type": "text",
       "value": "one",

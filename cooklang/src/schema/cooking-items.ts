@@ -20,11 +20,7 @@
 import {object, string} from 'zod';
 import type z from 'zod';
 
-import {
-	quantitySchema,
-	stringifyQuantity,
-	unitlessQuantitySchema,
-} from './quantity.js';
+import {quantitySchema, stringifyQuantity} from './quantity.js';
 
 /* @__PURE__ */
 export const ingredientSchema = object({
@@ -40,7 +36,7 @@ export type Ingredient = z.infer<typeof ingredientSchema>;
 export const cookwareSchema = object({
 	name: string(),
 	alias: string().nullable(),
-	quantity: unitlessQuantitySchema.nullable(),
+	quantity: quantitySchema.nullable(),
 	note: string().nullable(),
 }).readonly();
 

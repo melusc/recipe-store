@@ -92,11 +92,8 @@ Mash the potatoes with a potato masher.`,
 	expect(sectionToText(parsedSection)).toStrictEqual(output);
 });
 
-test.for(['~{', '@abc{1%}', '#abc{1%def}'])(
-	'parseSection(%j) should throw',
-	input => {
-		expect(() => {
-			parseSection(input);
-		}).toThrow(ParseError);
-	},
-);
+test.for(['~{', '@abc{1%}'])('parseSection(%j) should throw', input => {
+	expect(() => {
+		parseSection(input);
+	}).toThrow(ParseError);
+});

@@ -25,8 +25,6 @@ import {
 	stringifyQuantity,
 	quantitySchema,
 	type Quantity,
-	unitlessQuantitySchema,
-	type UnitlessQuantity,
 } from '../../src/schema/quantity.js';
 
 test.for<[string, string]>([
@@ -58,7 +56,7 @@ test.for<[string, string]>([
 	expect(stringifyQuantity(quantity)).toStrictEqual(output);
 });
 
-test.for([
+test.for<[string, string]>([
 	['100%min', '100 min'],
 	['1.5%h', '1.5 h'],
 	['1/2%h', '1/2 h'],
@@ -107,17 +105,10 @@ test.for([
 	expect(parsed).toHaveProperty('cookware');
 	expect(parsed.cookware).toHaveLength(1);
 	expect(parsed.cookware[0]).toMatchSnapshot();
-	let quantity!: UnitlessQuantity;
+	let quantity!: Quantity;
 	expect(() => {
-		quantity = unitlessQuantitySchema.parse(parsed.cookware[0]!.quantity);
+		quantity = quantitySchema.parse(parsed.cookware[0]!.quantity);
 	}).not.to.throw();
 
 	expect(stringifyQuantity(quantity)).toStrictEqual(output);
-});
-
-test.for(['1%g', 'one%g'])('Invalid cookware quantity %j', cookwareInput => {
-	const cooklangSource = `#a{${cookwareInput}}`;
-	expect(() => {
-		parseSection(cooklangSource);
-	}).toThrow(ParseError);
 });

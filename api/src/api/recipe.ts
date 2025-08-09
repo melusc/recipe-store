@@ -495,14 +495,26 @@ export class Recipe extends InjectableApi {
 			return;
 		}
 
-		const parsedSections = array(
-			object({
-				source: string(),
-				parsed: cooklangSectionSchema,
-			}).readonly(),
-		)
-			.readonly()
-			.parse(JSON.parse(row.sections));
+		let parsedSections: readonly RecipeSection[];
+		let shouldMigrate = false;
+		let sources: readonly string[];
+
+		try {
+			parsedSections = array(
+				object({
+					source: string(),
+					parsed: cooklangSectionSchema,
+				}).readonly(),
+			)
+				.readonly()
+				.parse(JSON.parse(row.sections));
+		} catch {
+			sources = array(object({source: string()}))
+				.readonly()
+				.parse(JSON.parse(row.sections))
+				.map(({source}) => source);
+			shouldMigrate = true;
+		}
 
 		// Left join means right (=recipe_tags) can be null
 		// I.e. if a recipe has no tags it returns [null]
@@ -512,7 +524,7 @@ export class Recipe extends InjectableApi {
 
 		const image = row.image ? await this.Image.fromName(row.image) : undefined;
 
-		return new this.Recipe(
+		const recipe = new this.Recipe(
 			row.recipe_id,
 			row.title,
 			row.author === -1 ? undefined : this.User.fromUserid(row.author),
@@ -522,9 +534,16 @@ export class Recipe extends InjectableApi {
 			row.source ?? undefined,
 			row.duration ?? undefined,
 			tags,
-			parsedSections,
+			shouldMigrate ? [] : parsedSections!,
 			privateUsageKey,
 		);
+
+		if (shouldMigrate) {
+			console.debug('Migrating', recipe.recipeId);
+			recipe.updateSections(sources!);
+		}
+
+		return recipe;
 	}
 
 	static fromRecipeId(recipeId: number) {

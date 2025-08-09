@@ -17,7 +17,7 @@
 	You should have received a copy of the GNU General Public
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-import {literal, number, object, string} from 'zod';
+import {boolean, literal, number, object, string} from 'zod';
 import type z from 'zod';
 
 /* @__PURE__ */
@@ -52,27 +52,12 @@ const textQuantity = object({
 }).readonly();
 
 /* @__PURE__ */
-const fixedQuantity = object({
-	type: literal('fixed'),
-	value: textQuantity.or(numberQuantity),
-}).readonly();
-
-/* @__PURE__ */
-const linearQuantity = object({
-	type: literal('linear'),
-	value: numberQuantity,
-}).readonly();
-
-/* @__PURE__ */
-export const unitlessQuantitySchema = fixedQuantity.or(linearQuantity);
-
-/* @__PURE__ */
 export const quantitySchema = object({
 	unit: string().nullable(),
-	value: unitlessQuantitySchema,
+	value: textQuantity.or(numberQuantity),
+	scalable: boolean(),
 }).readonly();
 
-export type UnitlessQuantity = z.infer<typeof unitlessQuantitySchema>;
 export type Quantity = z.infer<typeof quantitySchema>;
 
 function stringifyNumberQuantity(quantity: NumberQuantity) {
@@ -89,21 +74,12 @@ function stringifyNumberQuantity(quantity: NumberQuantity) {
 	return `${num}/${den}`;
 }
 
-export function stringifyQuantity(
-	quantity: Quantity | UnitlessQuantity,
-): string {
-	if ('unit' in quantity) {
-		const unit = quantity.unit ? ` ${quantity.unit}` : '';
-		return `${stringifyQuantity(quantity.value as unknown as UnitlessQuantity)}${unit}`;
-	}
+export function stringifyQuantity(quantity: Quantity): string {
+	const stringified =
+		quantity.value.type === 'text'
+			? quantity.value.value
+			: stringifyNumberQuantity(quantity.value);
 
-	if (quantity.type === 'linear') {
-		return stringifyNumberQuantity(quantity.value);
-	}
-
-	if (quantity.value.type === 'number') {
-		return stringifyNumberQuantity(quantity.value);
-	}
-
-	return quantity.value.value;
+	const unit = quantity.unit ? ` ${quantity.unit}` : '';
+	return `${stringified}${unit}`;
 }
