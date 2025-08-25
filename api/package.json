@@ -4,17 +4,17 @@
 	"exports": "./dist/src/index.js",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^7.4.1",
-		"@lusc/tsconfig": "^7.0.0",
+		"@lusc/eslint-config": "^7.4.2",
+		"@lusc/tsconfig": "^7.1.0",
 		"@types/bcrypt": "^6.0.0",
-		"@types/node": "^22.17.1",
+		"@types/node": "^22.18.0",
 		"@vitest/runner": "^3.2.4",
-		"eslint": "^9.33.0",
+		"eslint": "^9.34.0",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	},
 	"engines": {
-		"node": "^24.5.0"
+		"node": "^24.6.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
@@ -23,10 +23,10 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@lusc/util": "^2.0.0",
+		"@lusc/util": "^2.0.1",
 		"bcrypt": "^6.0.0",
 		"cooklang": "workspace:^",
 		"file-type": "^21.0.0",
-		"zod": "^4.0.16"
+		"zod": "^4.1.1"
 	}
 }

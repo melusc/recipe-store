@@ -3,21 +3,21 @@
 	"name": "backend",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^7.4.1",
-		"@lusc/tsconfig": "^7.0.0",
+		"@lusc/eslint-config": "^7.4.2",
+		"@lusc/tsconfig": "^7.1.0",
 		"@types/cookie-parser": "^1.4.9",
 		"@types/express": "^5.0.3",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
 		"@types/multer": "^2.0.0",
-		"@types/node": "^22.17.1",
-		"esbuild": "^0.25.8",
-		"eslint": "^9.33.0",
+		"@types/node": "^22.18.0",
+		"esbuild": "^0.25.9",
+		"eslint": "^9.34.0",
 		"typescript": "^5.9.2"
 	},
 	"engines": {
-		"node": "^24.5.0"
+		"node": "^24.6.0"
 	},
 	"scripts": {
 		"fmt": "eslint --fix",
@@ -28,7 +28,7 @@
 	},
 	"license": "GPL-3.0-only",
 	"dependencies": {
-		"@lusc/util": "^2.0.0",
+		"@lusc/util": "^2.0.1",
 		"api": "workspace:^",
 		"bootstrap-slim": "workspace:^",
 		"cookie-parser": "^1.4.7",

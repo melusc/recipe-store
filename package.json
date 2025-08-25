@@ -1,6 +1,6 @@
 {
 	"type": "module",
-	"packageManager": "yarn@4.9.2",
+	"packageManager": "yarn@4.9.3",
 	"devDependencies": {
 		"prettier": "^3.6.2"
 	},
@@ -13,7 +13,7 @@
 		"dev": "yarn build && yarn start"
 	},
 	"engines": {
-		"node": "^24.5.0"
+		"node": "^24.6.0"
 	},
 	"workspaces": [
 		"api/",
