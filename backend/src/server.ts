@@ -57,6 +57,7 @@ export function setupServer(api: Api) {
 					'style-src-elem': ["'self'", 'https://fonts.googleapis.com'],
 					'style-src-attr': ["'unsafe-inline'"],
 					'font-src': ['https://fonts.gstatic.com'],
+					'connect-src': ["'self'"],
 				},
 			},
 		}),
