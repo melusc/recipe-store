@@ -21,13 +21,19 @@
 import {randomBytes} from 'node:crypto';
 import process from 'node:process';
 
-const envPort = Number.parseInt(process.env['RS_PORT']!, 10);
+const envPort = Number.parseInt(process.env['BIND_PORT']!, 10);
 const port = Number.isSafeInteger(envPort) ? envPort : 3108;
 
-const sessionSecret = process.env['RS_SESSION_SECRET'] ?? randomBytes(128);
+const host = process.env['BIND_HOST'] ?? '127.0.0.1';
+
+const socket = process.env['BIND_SOCKET'];
+
+const sessionSecret = process.env['SESSION_SECRET'] ?? randomBytes(128);
 
 const env = {
 	port,
+	host,
+	socket,
 	sessionSecret,
 };
 export default env;

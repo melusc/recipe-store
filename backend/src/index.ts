@@ -101,14 +101,19 @@ if (createOwnerUsername) {
 
 const app = setupServer(api);
 
-const server = app.listen(env.port, '127.0.0.1', error => {
+function onServerListening(error: Error | undefined) {
 	if (error) {
 		throw error;
 	}
 
-	console.log('Server listening on http://localhost:%s', env.port);
+	const listening = env.socket ?? `http://${env.host}:${env.port}`;
+	console.log('Server listening on %s', listening);
 	process.send?.('ready');
-});
+}
+
+const server = env.socket
+	? app.listen(env.socket, onServerListening)
+	: app.listen(env.port, env.host, onServerListening);
 
 cleanupBeforeExit(() => {
 	server.close();
