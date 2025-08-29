@@ -1,4 +1,6 @@
 {
 	"extends": "@lusc/tsconfig",
-	"include": ["src", "test"]
+	"compilerOptions": {
+		"noEmit": true
+	}
 }

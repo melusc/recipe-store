@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "api",
-	"exports": "./dist/src/index.js",
+	"exports": "./dist/index.js",
 	"private": true,
 	"devDependencies": {
 		"@lusc/eslint-config": "^7.4.2",
@@ -19,7 +19,7 @@
 	"license": "GPL-3.0-only",
 	"scripts": {
 		"fmt": "eslint --fix",
-		"build": "tsc",
+		"build": "tsc && tsc -p tsconfig.build.json",
 		"test": "vitest run"
 	},
 	"dependencies": {
