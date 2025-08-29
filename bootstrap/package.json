@@ -5,10 +5,10 @@
 	"devDependencies": {
 		"csso-cli": "^4.0.2",
 		"esbuild": "^0.25.9",
-		"sass": "^1.90.0"
+		"sass": "^1.91.0"
 	},
 	"engines": {
-		"node": "^24.6.0"
+		"node": "^24.7.0"
 	},
 	"exports": {
 		".": "./dist"

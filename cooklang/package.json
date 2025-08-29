@@ -10,7 +10,7 @@
 		"#wasm": "./dist/wasm/cooklang_wasm.cjs"
 	},
 	"engines": {
-		"node": "^24.6.0"
+		"node": "^24.7.0"
 	},
 	"scripts": {
 		"build": "yarn clean && yarn build:wasm && tsc",
@@ -32,6 +32,6 @@
 		"wasm-pack": "^0.13.1"
 	},
 	"dependencies": {
-		"zod": "^4.1.1"
+		"zod": "^4.1.5"
 	}
 }
