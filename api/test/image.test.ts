@@ -23,7 +23,7 @@ import {readFile} from 'node:fs/promises';
 
 import {describe, expect} from 'vitest';
 
-import {detectExiftoolSupport, ImageSaveType} from '../src/api/image.js';
+import {ImageSaveType} from '../src/api/image.js';
 import {ApiError} from '../src/index.js';
 
 import {apiTest, sampleImagePaths} from './utilities.js';
@@ -104,8 +104,6 @@ describe('Image', () => {
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const buffer = await readFile(sampleImagePaths.jpg);
 
-		const exiftoolIsInstalled = await detectExiftoolSupport();
-
 		const exifRemoved = await Image.create(
 			buffer,
 			ImageSaveType.PermanentImage,
@@ -119,12 +117,8 @@ describe('Image', () => {
 		const exifRemovedBuffer = await exifRemoved.read();
 		const exifUnchangedBuffer = await exifUnchanged.read();
 
-		if (exiftoolIsInstalled) {
-			expect(exifRemovedBuffer.byteLength).toBeLessThan(
-				exifUnchangedBuffer.byteLength,
-			);
-		} else {
-			expect(exifRemovedBuffer).toStrictEqual(exifUnchangedBuffer);
-		}
+		expect(exifRemovedBuffer.byteLength).toBeLessThan(
+			exifUnchangedBuffer.byteLength,
+		);
 	});
 });

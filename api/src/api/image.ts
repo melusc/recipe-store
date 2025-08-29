@@ -30,7 +30,7 @@ import {fileTypeFromBuffer} from 'file-type';
 import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
 
-export async function detectExiftoolSupport(): Promise<boolean> {
+async function detectExiftoolSupport(): Promise<boolean> {
 	const childProcess = spawn('exiftool', ['--help']);
 	const {promise, resolve} = Promise.withResolvers<boolean>();
 
@@ -48,6 +48,10 @@ export async function detectExiftoolSupport(): Promise<boolean> {
 }
 
 const isExiftoolSupported = await detectExiftoolSupport();
+
+if (!isExiftoolSupported) {
+	throw new Error('exiftool must be installed in $PATH.');
+}
 
 async function exiftoolRemoveExif(path: URL): Promise<boolean> {
 	const childProcess = spawn('exiftool', [
@@ -183,7 +187,7 @@ export class Image extends InjectableApi {
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		await writeFile(filePath, image);
 
-		if (options?.removeExif !== false && isExiftoolSupported) {
+		if (options?.removeExif !== false) {
 			const success = await exiftoolRemoveExif(filePath);
 			if (!success) {
 				console.error('Unsuccessful removing metadata of', fileName);
