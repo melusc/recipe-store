@@ -23,7 +23,7 @@ import {readFile} from 'node:fs/promises';
 
 import {describe, expect} from 'vitest';
 
-import {ImageSaveType} from '../src/api/image.js';
+import {detectExiftoolSupport, ImageSaveType} from '../src/api/image.js';
 import {ApiError} from '../src/index.js';
 
 import {apiTest, sampleImagePaths} from './utilities.js';
@@ -89,8 +89,8 @@ describe('Image', () => {
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		let buffer = await readFile(sampleImagePaths.png);
 
-		// Duplicating should still leave it a valid png
-		// asking `file-type` because the headers aren't changed
+		// This keeps it a valid png per `file-type`
+		// as headers are unchanged
 		while (buffer.byteLength < 11e6) {
 			buffer = Buffer.concat([buffer, buffer]);
 		}
@@ -98,5 +98,33 @@ describe('Image', () => {
 		await expect(
 			Image.create(buffer, ImageSaveType.PermanentImage),
 		).rejects.throw(ApiError, /large/);
+	});
+
+	apiTest('Removing EXIF', async ({api: {Image}}) => {
+		// eslint-disable-next-line security/detect-non-literal-fs-filename
+		const buffer = await readFile(sampleImagePaths.jpg);
+
+		const exiftoolIsInstalled = await detectExiftoolSupport();
+
+		const exifRemoved = await Image.create(
+			buffer,
+			ImageSaveType.PermanentImage,
+		);
+		const exifUnchanged = await Image.create(
+			buffer,
+			ImageSaveType.PermanentImage,
+			{removeExif: false},
+		);
+
+		const exifRemovedBuffer = await exifRemoved.read();
+		const exifUnchangedBuffer = await exifUnchanged.read();
+
+		if (exiftoolIsInstalled) {
+			expect(exifRemovedBuffer.byteLength).toBeLessThan(
+				exifUnchangedBuffer.byteLength,
+			);
+		} else {
+			expect(exifRemovedBuffer).toStrictEqual(exifUnchangedBuffer);
+		}
 	});
 });

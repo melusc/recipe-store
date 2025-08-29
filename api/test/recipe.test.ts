@@ -174,6 +174,7 @@ apiTest('Adding image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const newImage = await Image.create(
 		newImageBuffer,
 		ImageSaveType.PermanentImage,
+		{removeExif: false},
 	);
 	await recipe.updateImage(newImage);
 
@@ -194,6 +195,7 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const firstImage = await Image.create(
 		firstImageBuffer,
 		ImageSaveType.PermanentImage,
+		{removeExif: false},
 	);
 
 	const recipe = await Recipe.create(
@@ -220,6 +222,7 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const secondImage = await Image.create(
 		secondImageBuffer,
 		ImageSaveType.PermanentImage,
+		{removeExif: false},
 	);
 	await recipe.updateImage(secondImage);
 
@@ -237,7 +240,9 @@ apiTest('Deleting image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User, false);
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const imageBuffer = await readFile(sampleImagePaths.png);
-	const image = await Image.create(imageBuffer, ImageSaveType.PermanentImage);
+	const image = await Image.create(imageBuffer, ImageSaveType.PermanentImage, {
+		removeExif: false,
+	});
 
 	const recipe = await Recipe.create(
 		'recipe',

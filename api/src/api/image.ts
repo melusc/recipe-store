@@ -18,20 +18,63 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {Buffer} from 'node:buffer';
+import {Buffer} from 'node:buffer';
+import {spawn} from 'node:child_process';
 import {randomBytes} from 'node:crypto';
 import {readFile, rm, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import {fileTypeFromBuffer} from 'file-type';
 
 import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
 
+export async function detectExiftoolSupport(): Promise<boolean> {
+	const childProcess = spawn('exiftool', ['--help']);
+	const {promise, resolve} = Promise.withResolvers<boolean>();
+
+	// This fires first before stdout is closed
+	// the second resolve will not change the result
+	childProcess.addListener('error', () => {
+		resolve(false);
+	});
+
+	const outputChunks = (await Array.fromAsync(childProcess.stdout)) as Buffer[];
+	const output = Buffer.concat(outputChunks);
+	resolve(output.includes('exiftool'));
+
+	return promise;
+}
+
+const isExiftoolSupported = await detectExiftoolSupport();
+
+async function exiftoolRemoveExif(path: URL): Promise<boolean> {
+	const childProcess = spawn('exiftool', [
+		'-all=',
+		'-overwrite_original',
+		fileURLToPath(path),
+	]);
+
+	const {promise, resolve} = Promise.withResolvers<boolean>();
+
+	childProcess.addListener('close', code => {
+		resolve(code === 0);
+	});
+
+	for await (const _ of childProcess.stdout);
+
+	return promise;
+}
+
 export enum ImageSaveType {
 	TemporaryImage,
 	PermanentImage,
 }
+
+export type ImageOptions = {
+	removeExif?: boolean;
+};
 
 async function validateAndGetExtension(image: Buffer) {
 	const allowedImageMimes: ReadonlySet<string> = new Set([
@@ -125,7 +168,11 @@ export class Image extends InjectableApi {
 		await rm(this._resolvePath());
 	}
 
-	static async create(image: Buffer, saveType: ImageSaveType) {
+	static async create(
+		image: Buffer,
+		saveType: ImageSaveType,
+		options?: ImageOptions,
+	) {
 		const extension = await validateAndGetExtension(image);
 
 		const fileName = [randomBytes(40).toString('base64url'), extension].join(
@@ -135,6 +182,14 @@ export class Image extends InjectableApi {
 
 		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		await writeFile(filePath, image);
+
+		if (options?.removeExif !== false && isExiftoolSupported) {
+			const success = await exiftoolRemoveExif(filePath);
+			if (!success) {
+				console.error('Unsuccessful removing metadata of', fileName);
+			}
+		}
+
 		return new this.Image(fileName, saveType, privateConstructorKey);
 	}
 
