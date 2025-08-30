@@ -20,12 +20,13 @@
 
 export {ApiError} from './api/error.js';
 export {createApi, type Api} from './api/index.js';
-export type {Recipe} from './api/recipe.js';
+export type {Recipe, JsonRecipe} from './api/recipe.js';
 export {
 	UserDeletion,
 	UserRoles,
 	UserRolesLabels,
 	type User,
+	type JsonUser,
 } from './api/user.js';
 export {ImageSaveType, type Image} from './api/image.js';
 export {

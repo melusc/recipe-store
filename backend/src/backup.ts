@@ -20,11 +20,14 @@
 
 import type {Buffer} from 'node:buffer';
 
-import {ImageSaveType, type Api, type Image} from 'api';
+import {
+	ImageSaveType,
+	type Api,
+	type Image,
+	type JsonRecipe,
+	type JsonUser,
+} from 'api';
 import JSZip from 'jszip';
-
-import type {JsonRecipe} from '../../api/dist/src/api/recipe';
-import type {JsonUser} from '../../api/dist/src/api/user';
 
 export async function createBackup(api: Api) {
 	const zip = new JSZip();
