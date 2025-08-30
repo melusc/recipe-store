@@ -1483,7 +1483,7 @@ __metadata:
     file-type: "npm:^21.0.0"
     typescript: "npm:^5.9.2"
     vitest: "npm:^3.2.4"
-    zod: "npm:^4.1.1"
+    zod: "npm:^4.1.5"
   languageName: unknown
   linkType: soft
 
@@ -1617,7 +1617,7 @@ __metadata:
   dependencies:
     csso-cli: "npm:^4.0.2"
     esbuild: "npm:^0.25.9"
-    sass: "npm:^1.90.0"
+    sass: "npm:^1.91.0"
   languageName: unknown
   linkType: soft
 
@@ -1966,7 +1966,7 @@ __metadata:
     typescript: "npm:^5.9.2"
     vitest: "npm:^3.2.4"
     wasm-pack: "npm:^0.13.1"
-    zod: "npm:^4.1.1"
+    zod: "npm:^4.1.5"
   languageName: unknown
   linkType: soft
 
@@ -4620,9 +4620,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.90.0":
-  version: 1.90.0
-  resolution: "sass@npm:1.90.0"
+"sass@npm:^1.91.0":
+  version: 1.91.0
+  resolution: "sass@npm:1.91.0"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
     chokidar: "npm:^4.0.0"
@@ -4633,7 +4633,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: 10c0/cd882a61811447c079cdc78b41f3be8164f2a2ced56e0b256b33da2de383a5f10e11ed15f8080bd832e6df302238e11649b07eb5f6e7d257d9b6982a8325d269
+  checksum: 10c0/5be1c98f7a618cb5f90b62f63d2aa0f78f9bf369c93ec7cd9880752a26b0ead19aa63cc341e8a26ce6c74d080baa5705f1685dff52fe6a3f28a7828ae50182b6
   languageName: node
   linkType: hard
 
@@ -5564,9 +5564,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "zod@npm:4.1.1"
-  checksum: 10c0/bbc5936b313e96401d8a384531cb87dd68a45acf6b1a624a4806dc7934c4ee7e1257937ba676a3c02973bc3045b1086f2621ef683c8019ea63cc05dd9a568293
+"zod@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "zod@npm:4.1.5"
+  checksum: 10c0/7826fb931bc71d4d0fff2fbb72f1a1cf30a6672cf9dbe6933a216bbb60242ef1c3bdfbcd3c5b27e806235a35efaad7a4a9897ff4d3621452f9ea278bce6fd42a
   languageName: node
   linkType: hard
