@@ -7,6 +7,7 @@
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/cookie-parser": "^1.4.9",
 		"@types/express": "^5.0.3",
+		"@types/express-serve-static-core": "^5.0.7",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
@@ -22,9 +23,9 @@
 	"scripts": {
 		"fmt": "eslint --fix",
 		"esbuild": "esbuild --outdir=dist --format=esm --platform=node --bundle --sourcemap --packages=external src/index.ts",
-		"build": "tsc && yarn esbuild",
+		"build": "tsc && pnpm esbuild",
 		"start": "node --env-file-if-exists ../.env dist/index.js",
-		"dev": "yarn esbuild && yarn start"
+		"dev": "pnpm esbuild && pnpm start"
 	},
 	"license": "GPL-3.0-only",
 	"dependencies": {

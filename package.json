@@ -1,29 +1,19 @@
 {
 	"type": "module",
-	"packageManager": "yarn@4.9.4",
+	"packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67",
 	"devDependencies": {
 		"prettier": "^3.6.2"
 	},
 	"private": true,
 	"scripts": {
-		"fmt": "prettier -w . && yarn workspaces foreach -A run fmt",
-		"build": "yarn workspaces foreach -A --topological-dev run build",
-		"test": "yarn workspaces foreach -A run test",
-		"start": "yarn workspace backend run start",
-		"dev": "yarn build && yarn start"
+		"fmt": "prettier -w . && pnpm -r fmt",
+		"build": "pnpm -r build",
+		"test": "pnpm -r test",
+		"start": "pnpm --filter backend start",
+		"dev": "pnpm build && pnpm start"
 	},
 	"engines": {
 		"node": "^24.7.0"
 	},
-	"workspaces": [
-		"api/",
-		"backend/",
-		"cooklang/",
-		"frontend/",
-		"bootstrap/"
-	],
-	"license": "GPL-3.0-only",
-	"resolutions": {
-		"jwa@npm:^1.4.1": "npm:^1.4.2"
-	}
+	"license": "GPL-3.0-only"
 }

@@ -1,0 +1,13 @@
+packages:
+  - api
+  - backend
+  - bootstrap
+  - cooklang
+  - frontend
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - bcrypt
+  - esbuild
+  - unrs-resolver
+  - wasm-pack

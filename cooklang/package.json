@@ -13,8 +13,8 @@
 		"node": "^24.7.0"
 	},
 	"scripts": {
-		"build": "yarn clean && yarn build:wasm && tsc",
-		"build:wasm": "wasm-pack build --release --no-pack --target nodejs --out-dir dist/wasm && yarn postbuild:wasm",
+		"build": "pnpm clean && pnpm build:wasm && tsc",
+		"build:wasm": "wasm-pack build --release --no-pack --target nodejs --out-dir dist/wasm && pnpm postbuild:wasm",
 		"postbuild:wasm": "node scripts/postbuild-wasm.ts",
 		"clean": "rimraf dist",
 		"fmt": "cargo fmt && eslint --fix",
