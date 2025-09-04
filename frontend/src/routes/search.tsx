@@ -19,7 +19,7 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import {type DynamicPaginationResult, type Recipe} from 'api';
+import type {DynamicPaginationResult, Recipe} from 'api';
 
 import {Pagination} from '../components/pagination.js';
 import {RecipeCard} from '../components/recipe-card.js';

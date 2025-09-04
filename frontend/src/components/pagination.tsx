@@ -19,7 +19,7 @@
 */
 
 import {RelativeUrl} from '@lusc/util/relative-url';
-import {type DynamicPaginationResult} from 'api';
+import type {DynamicPaginationResult} from 'api';
 
 export function Pagination({
 	baseUrl,
