@@ -185,6 +185,9 @@ importers:
       '@lusc/util':
         specifier: ^2.0.1
         version: 2.0.1
+      api:
+        specifier: workspace:^
+        version: link:../api
       cooklang:
         specifier: workspace:^
         version: link:../cooklang
@@ -207,9 +210,6 @@ importers:
       '@types/node':
         specifier: ^22.18.0
         version: 22.18.1
-      api:
-        specifier: workspace:^
-        version: link:../api
       eslint:
         specifier: ^9.34.0
         version: 9.34.0
