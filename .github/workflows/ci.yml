@@ -53,7 +53,7 @@ jobs:
           include-hidden-files: true
           path: |
             .
-            !node_modules
+            !**/node_modules
             !.git
             !cooklang/target
             !bootstrap/src/bootstrap
