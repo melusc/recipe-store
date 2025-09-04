@@ -18,7 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {type PaginationResult, type Recipe} from 'api';
+import type {PaginationResult, Recipe} from 'api';
 
 import {createRecipeButton} from '../components/buttons/create-recipe.js';
 import {Pagination} from '../components/pagination.js';
