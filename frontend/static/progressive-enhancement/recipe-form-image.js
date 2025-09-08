@@ -154,32 +154,34 @@
 	}
 
 	/**
+	 * @param {'success' | 'uploading' | 'error'} type
+	 */
+	function setImagePreviewVisibilities(type) {
+		imagePreviewParent.classList.remove('d-none');
+
+		imagePreviewSpinner.classList.toggle('d-none', type !== 'uploading');
+		imageUploadError.classList.toggle('d-none', type !== 'error');
+		imagePreview.classList.toggle('d-none', type !== 'success');
+	}
+
+	/**
 	 * @param {string} url
 	 */
-	function handleUploadSuccess() {
-		imagePreviewSpinner.classList.add('d-none');
-		imageUploadError.classList.add('d-none');
-		imagePreview.classList.remove('d-none');
+	function showUploadSuccess() {
+		setImagePreviewVisibilities('success');
 		imagePreview.src = uploadedImage.url;
-		imagePreviewParent.classList.remove('d-none');
 
 		uploadedImageInput.value = uploadedImage.name;
 		removeInputName(fileInput);
 	}
 
-	function showUploadLoading() {
-		imagePreview.classList.add('d-none');
-		imageUploadError.classList.add('d-none');
-		imagePreviewSpinner.classList.remove('d-none');
-		imagePreviewParent.classList.remove('d-none');
+	function showUploading() {
+		setImagePreviewVisibilities('uploading');
 	}
 
-	function handleUploadError(error) {
-		imagePreviewSpinner.classList.add('d-none');
-		imagePreview.classList.add('d-none');
-		imageUploadError.classList.remove('d-none');
+	function showUploadError(error) {
+		setImagePreviewVisibilities('error');
 		imageUploadError.textContent = error;
-		imagePreviewParent.classList.remove('d-none');
 	}
 
 	/** @type {AbortController | undefined} */
@@ -191,13 +193,13 @@
 		uploadAbortController?.abort();
 		uploadAbortController = new AbortController();
 
-		showUploadLoading();
+		showUploading();
 
 		const result = await uploadImage(file, uploadAbortController.signal);
 		if (result === true) {
-			handleUploadSuccess();
+			showUploadSuccess();
 		} else {
-			handleUploadError(result);
+			showUploadError(result);
 		}
 	}
 
