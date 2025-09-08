@@ -22,7 +22,7 @@ import {UserRoles, UserRolesLabels, type User} from 'api';
 
 import {CenteredMain} from '../../../components/centered-main.js';
 import {FormError} from '../../../components/form-error.js';
-import {IconCopy} from '../../../components/icons/copy.js';
+import {PasswordResetCopy} from '../../../components/password-reset-copy.js';
 import {createRoute} from '../../_utilities.js';
 
 export const renderAdminNewUser = createRoute(
@@ -95,36 +95,7 @@ export const renderAdminNewUserResult = createRoute(
 						Successfully created user {user.username}
 					</div>
 
-					<div class="mb-3">
-						<label class="form-label">
-							New password (Copy this! You won't see it again)
-						</label>
-						<div
-							style={{
-								width: 'max-content',
-							}}
-							class="form-control d-flex align-items-center"
-						>
-							<pre class="m-0" id="reset-password">
-								{password}
-							</pre>
-							<button
-								class="btn btn-outline-secondary ms-2 d-flex w-auto h-auto"
-								data-copy
-								data-target="#reset-password"
-							>
-								<span
-									style={{
-										width: '1em',
-										height: '1em',
-									}}
-								>
-									<IconCopy />
-								</span>
-							</button>
-						</div>
-						<script src="/static/progressive-enhancement/copy-button.js"></script>
-					</div>
+					<PasswordResetCopy password={password} />
 
 					<a href={`/user/${user.userId}`} class="btn btn-primary">
 						Continue to profile

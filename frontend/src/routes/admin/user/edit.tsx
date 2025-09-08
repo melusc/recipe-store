@@ -22,7 +22,7 @@ import type {User} from 'api';
 
 import {AccountEditForm} from '../../../components/account-edit-form.js';
 import {CenteredMain} from '../../../components/centered-main.js';
-import {IconCopy} from '../../../components/icons/copy.js';
+import {PasswordResetCopy} from '../../../components/password-reset-copy.js';
 import {createRoute} from '../../_utilities.js';
 
 export const renderAdminEditUser = createRoute(
@@ -40,36 +40,7 @@ export const renderAdminEditUser = createRoute(
 					<h1>Account {user.username}</h1>
 
 					{newPassword !== undefined && (
-						<div class="mb-3">
-							<label class="form-label">
-								New password (Copy this! You won't see it again)
-							</label>
-							<div
-								style={{
-									width: 'max-content',
-								}}
-								class="form-control d-flex align-items-center"
-							>
-								<pre class="m-0" id="reset-password">
-									{newPassword}
-								</pre>
-								<button
-									class="btn btn-outline-secondary ms-2 d-flex w-auto h-auto"
-									data-copy
-									data-target="#reset-password"
-								>
-									<span
-										style={{
-											width: '1em',
-											height: '1em',
-										}}
-									>
-										<IconCopy />
-									</span>
-								</button>
-							</div>
-							<script src="/static/progressive-enhancement/copy-button.js"></script>
-						</div>
+						<PasswordResetCopy password={newPassword} />
 					)}
 
 					<AccountEditForm
