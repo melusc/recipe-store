@@ -18,21 +18,30 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const copyButtons =
-	document.querySelectorAll<HTMLButtonElement>('button[data-copy]');
+const copyButtons = document.querySelectorAll<HTMLButtonElement>(
+	'button[data-copy][data-target]',
+);
 
 function handleCopy(targetButton: HTMLElement) {
 	const targetInput = document.querySelector<HTMLElement>(
 		targetButton.dataset['target']!,
 	);
+
 	if (targetInput) {
-		const clipboardValue =
+		// Visual feedback by selecting the text
+		const selection = getSelection()!;
+		const range = document.createRange();
+		range.selectNodeContents(targetInput);
+		selection.empty();
+		selection.addRange(range);
+
+		const copyValue =
 			targetInput instanceof HTMLInputElement
 				? targetInput.value
 				: targetInput.textContent;
 
 		// eslint-disable-next-line n/no-unsupported-features/node-builtins
-		void navigator.clipboard.writeText(clipboardValue);
+		void navigator.clipboard.writeText(copyValue);
 	}
 }
 
