@@ -57,12 +57,15 @@ export const renderAdminEditUser = createRoute(
 									class="btn btn-outline-secondary ms-2 d-flex w-auto h-auto"
 									data-copy
 									data-target="#reset-password"
-									style={{
-										width: '1em',
-										height: '1em',
-									}}
 								>
-									<IconCopy />
+									<span
+										style={{
+											width: '1em',
+											height: '1em',
+										}}
+									>
+										<IconCopy />
+									</span>
 								</button>
 							</div>
 							<script src="/static/progressive-enhancement/copy-button.js"></script>
