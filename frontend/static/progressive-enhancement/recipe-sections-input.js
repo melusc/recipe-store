@@ -18,61 +18,59 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-(() => {
-	/** @type {HTMLElement} */
-	const noJsSections = document.querySelector('#sections-nojs-parent');
-	// noJs-textarea won't be updated
-	// noJs content gets prioritised serverside, so don't submit it
-	// so it doesn't get used
-	noJsSections.querySelector('textarea').name = '';
-	noJsSections.classList.add('d-none');
+/** @type {HTMLElement} */
+const noJsSections = document.querySelector('#sections-nojs-parent');
+// noJs-textarea won't be updated
+// noJs content gets prioritised serverside, so don't submit it
+// so it doesn't get used
+noJsSections.querySelector('textarea').name = '';
+noJsSections.classList.add('d-none');
 
-	/** @type {HTMLElement} */
-	const jsSections = document.querySelector('#js-sections');
-	jsSections.classList.remove('d-none');
+/** @type {HTMLElement} */
+const jsSections = document.querySelector('#js-sections');
+jsSections.classList.remove('d-none');
 
-	/** @type {HTMLButtonElement} */
-	const addStepButton = document.querySelector('#btn-add-step');
+/** @type {HTMLButtonElement} */
+const addStepButton = document.querySelector('#btn-add-step');
 
-	/** @type {HTMLTemplateElement} */
-	const rowTemplate = document.querySelector('#section-row-template');
+/** @type {HTMLTemplateElement} */
+const rowTemplate = document.querySelector('#section-row-template');
 
-	function addStep() {
-		addStepButton.before(rowTemplate.content.cloneNode(true));
+function addStep() {
+	addStepButton.before(rowTemplate.content.cloneNode(true));
+}
+
+/**
+ * @param {HTMLElement} target
+ */
+function removeStep(target) {
+	target.closest('#step-parent').remove();
+}
+
+/**
+ * @param {Event} event
+ */
+function handleButton(event) {
+	const target = event.target;
+	if (!(target instanceof Element)) {
+		return;
 	}
 
-	/**
-	 * @param {HTMLElement} target
-	 */
-	function removeStep(target) {
-		target.closest('#step-parent').remove();
+	if (target.matches('#btn-add-step, #btn-add-step *')) {
+		addStep();
+		event.stopImmediatePropagation();
+	} else if (target.matches('#btn-remove-step, #btn-remove-step *')) {
+		removeStep(target);
+		event.stopImmediatePropagation();
 	}
+}
 
-	/**
-	 * @param {Event} event
-	 */
-	function handleButton(event) {
-		const target = event.target;
-		if (!(target instanceof Element)) {
-			return;
-		}
-
-		if (target.matches('#btn-add-step, #btn-add-step *')) {
-			addStep();
-			event.stopImmediatePropagation();
-		} else if (target.matches('#btn-remove-step, #btn-remove-step *')) {
-			removeStep(target);
-			event.stopImmediatePropagation();
-		}
-	}
-
-	jsSections.addEventListener('click', event => {
+jsSections.addEventListener('click', event => {
+	handleButton(event);
+});
+jsSections.addEventListener('keypress', event => {
+	const code = event.code.toLowerCase();
+	if (code === 'space' || code === 'enter') {
 		handleButton(event);
-	});
-	jsSections.addEventListener('keypress', event => {
-		const code = event.code.toLowerCase();
-		if (code === 'space' || code === 'enter') {
-			handleButton(event);
-		}
-	});
-})();
+	}
+});

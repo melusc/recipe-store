@@ -18,33 +18,29 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-(() => {
-	/** @type {NodeListOf<HTMLElement>} */
-	const copyButtons = document.querySelectorAll('button[data-copy]');
+/** @type {NodeListOf<HTMLElement>} */
+const copyButtons = document.querySelectorAll('button[data-copy]');
 
-	/**
-	 * @param {HTMLElement} targetButton
-	 */
-	function handleCopy(targetButton) {
-		const targetInput = document.querySelector(targetButton.dataset.target);
-		if (targetInput) {
-			// eslint-disable-next-line n/no-unsupported-features/node-builtins
-			navigator.clipboard.writeText(
-				targetInput.value ?? targetInput.textContent,
-			);
-		}
+/**
+ * @param {HTMLElement} targetButton
+ */
+function handleCopy(targetButton) {
+	const targetInput = document.querySelector(targetButton.dataset.target);
+	if (targetInput) {
+		// eslint-disable-next-line n/no-unsupported-features/node-builtins
+		navigator.clipboard.writeText(targetInput.value ?? targetInput.textContent);
 	}
+}
 
-	for (const copyButton of copyButtons) {
-		copyButton.addEventListener('click', () => {
+for (const copyButton of copyButtons) {
+	copyButton.addEventListener('click', () => {
+		handleCopy(copyButton);
+	});
+
+	copyButton.addEventListener('keydown', event => {
+		const code = event.code.toLowerCase();
+		if (code === 'space' || code === 'enter') {
 			handleCopy(copyButton);
-		});
-
-		copyButton.addEventListener('keydown', event => {
-			const code = event.code.toLowerCase();
-			if (code === 'space' || code === 'enter') {
-				handleCopy(copyButton);
-			}
-		});
-	}
-})();
+		}
+	});
+}

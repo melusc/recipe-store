@@ -3,7 +3,7 @@
 	"name": "frontend",
 	"exports": {
 		".": "./dist/index.js",
-		"./static": "./static"
+		"./static": "./dist/static"
 	},
 	"private": true,
 	"devDependencies": {
@@ -11,6 +11,7 @@
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/express": "^5.0.3",
 		"@types/node": "^22.18.0",
+		"esbuild": "^0.25.9",
 		"eslint": "^9.34.0",
 		"typescript": "^5.9.2"
 	},
@@ -20,7 +21,7 @@
 	"license": "GPL-3.0-only",
 	"scripts": {
 		"fmt": "eslint --fix",
-		"build": "tsc"
+		"build": "tsc && tsc -p tsconfig.build.json && node esbuild.ts"
 	},
 	"dependencies": {
 		"@lusc/util": "^2.0.1",
