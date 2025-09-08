@@ -18,34 +18,28 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {HTMLDivElement} */
-const noJsInput = document.querySelector('#tags-nojs-parent');
+const noJsInput = document.querySelector<HTMLElement>('#tags-nojs-parent')!;
 noJsInput.classList.add('d-none');
 // Prevent stale data being used
 // Don't even send it to the server
 // Scenario in mind: User wants to remove all tags,
 // server sees no `tags-js` so it uses `tags-nojs`
-noJsInput.querySelector('input').name = '';
+noJsInput.querySelector('input')!.name = '';
 
-/** @type {HTMLDivElement} */
-const jsInput = document.querySelector('#js-tags');
+const jsInput = document.querySelector<HTMLElement>('#js-tags')!;
 jsInput.classList.remove('d-none');
 
-/** @type {HTMLInputElement} */
-const tagsInput = document.querySelector('#tags-input');
+const tagsInput = document.querySelector<HTMLInputElement>('#tags-input')!;
 
-/** @type {HTMLTemplateElement} */
-const tagTemplate = document.querySelector('#tag-template');
+const tagTemplate =
+	document.querySelector<HTMLTemplateElement>('#tag-template')!;
 
-/**
- * @param {boolean} shouldAddAll
- */
-function splitIntoTags(shouldAddAll) {
+function splitIntoTags(shouldAddAll: boolean) {
 	const text = tagsInput.value;
 	let cursorLocation =
 		tagsInput.selectionDirection === 'backward'
-			? tagsInput.selectionStart
-			: tagsInput.selectionEnd;
+			? tagsInput.selectionStart!
+			: tagsInput.selectionEnd!;
 
 	const split = text.split(',');
 
@@ -59,13 +53,13 @@ function splitIntoTags(shouldAddAll) {
 				continue;
 			}
 
-			/** @type {HTMLElement} */
-			const tag = tagTemplate.content.cloneNode(true);
-			tag.querySelector('input[name="tags-js"]').value = item;
+			const tag = tagTemplate.content.cloneNode(true) as HTMLElement;
+			tag.querySelector<HTMLInputElement>('input[name="tags-js"]')!.value =
+				item;
 			tagsInput.before(tag);
 		}
 
-		tagsInput.value = shouldAddAll ? '' : split.at(-1);
+		tagsInput.value = shouldAddAll ? '' : split.at(-1)!;
 
 		tagsInput.selectionStart = tagsInput.selectionEnd = Math.max(
 			cursorLocation,
@@ -82,22 +76,21 @@ tagsInput.addEventListener('keydown', event => {
 	}
 });
 
-/** @param {Event} event */
-function handleButton(event) {
+function handleButton(event: Event) {
 	const target = event.target;
 	if (!(target instanceof Element)) {
 		return;
 	}
 
 	if (target.matches('#btn-remove-tag, #btn-remove-tag *')) {
-		target.closest('#tag-parent').remove();
+		target.closest('#tag-parent')!.remove();
 		event.stopImmediatePropagation();
 		event.preventDefault();
 	}
 }
 
 tagsInput.addEventListener('input', () => {
-	splitIntoTags();
+	splitIntoTags(false);
 });
 
 jsInput.addEventListener('click', event => {

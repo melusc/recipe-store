@@ -18,14 +18,10 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {NodeListOf<HTMLTimeElement>} */
-const timeElements = document.querySelectorAll('time[datetime]');
+const timeElements =
+	document.querySelectorAll<HTMLTimeElement>('time[datetime]');
 
-/**
- * @param {Date} date
- * @param {string | undefined} display
- */
-function formatDateTime(date, display) {
+function formatDateTime(date: Date, display: string | undefined) {
 	if (display === 'date') {
 		return date.toLocaleDateString();
 	}

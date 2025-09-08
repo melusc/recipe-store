@@ -18,41 +18,36 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {HTMLElement} */
-const noJsSections = document.querySelector('#sections-nojs-parent');
+const noJsSections = document.querySelector<HTMLElement>(
+	'#sections-nojs-parent',
+)!;
 // noJs-textarea won't be updated
 // noJs content gets prioritised serverside, so don't submit it
 // so it doesn't get used
-noJsSections.querySelector('textarea').name = '';
+noJsSections.querySelector('textarea')!.name = '';
 noJsSections.classList.add('d-none');
 
-/** @type {HTMLElement} */
-const jsSections = document.querySelector('#js-sections');
+const jsSections = document.querySelector<HTMLElement>('#js-sections')!;
 jsSections.classList.remove('d-none');
 
-/** @type {HTMLButtonElement} */
-const addStepButton = document.querySelector('#btn-add-step');
+const addStepButton =
+	document.querySelector<HTMLButtonElement>('#btn-add-step')!;
 
-/** @type {HTMLTemplateElement} */
-const rowTemplate = document.querySelector('#section-row-template');
+const rowTemplate = document.querySelector<HTMLTemplateElement>(
+	'#section-row-template',
+)!;
 
 function addStep() {
 	addStepButton.before(rowTemplate.content.cloneNode(true));
 }
 
-/**
- * @param {HTMLElement} target
- */
-function removeStep(target) {
-	target.closest('#step-parent').remove();
+function removeStep(target: HTMLElement) {
+	target.closest('#step-parent')!.remove();
 }
 
-/**
- * @param {Event} event
- */
-function handleButton(event) {
+function handleButton(event: Event) {
 	const target = event.target;
-	if (!(target instanceof Element)) {
+	if (!(target instanceof HTMLElement)) {
 		return;
 	}
 

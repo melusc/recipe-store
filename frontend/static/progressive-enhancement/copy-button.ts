@@ -18,17 +18,21 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {NodeListOf<HTMLElement>} */
-const copyButtons = document.querySelectorAll('button[data-copy]');
+const copyButtons =
+	document.querySelectorAll<HTMLButtonElement>('button[data-copy]');
 
-/**
- * @param {HTMLElement} targetButton
- */
-function handleCopy(targetButton) {
-	const targetInput = document.querySelector(targetButton.dataset.target);
+function handleCopy(targetButton: HTMLElement) {
+	const targetInput = document.querySelector<HTMLElement>(
+		targetButton.dataset['target']!,
+	);
 	if (targetInput) {
+		const clipboardValue =
+			targetInput instanceof HTMLInputElement
+				? targetInput.value
+				: targetInput.textContent;
+
 		// eslint-disable-next-line n/no-unsupported-features/node-builtins
-		navigator.clipboard.writeText(targetInput.value ?? targetInput.textContent);
+		void navigator.clipboard.writeText(clipboardValue);
 	}
 }
 

@@ -18,21 +18,18 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/** @type {HTMLFormElement} */
-const form = document.querySelector('#account-form');
-/** @type {readonly HTMLInputElement[]} */
-const passwordInputs = [...form.querySelectorAll('input[type="password"]')];
-/** @type {HTMLInputElement} */
-const newPasswordInput = form.querySelector('#new-password');
-/** @type {HTMLInputElement} */
-const newPasswordRepeatInput = form.querySelector('#new-password-repeat');
+const form = document.querySelector<HTMLFormElement>('#account-form')!;
+const passwordInputs = [
+	...form.querySelectorAll<HTMLInputElement>('input[type="password"]'),
+];
+const newPasswordInput = form.querySelector<HTMLInputElement>('#new-password')!;
+const newPasswordRepeatInput = form.querySelector<HTMLInputElement>(
+	'#new-password-repeat',
+)!;
 
 const allPasswordsRequired = passwordInputs.every(input => input.required);
 
-/**
- * @param {string} password
- */
-function checkPasswordValidity(password) {
+function checkPasswordValidity(password: string) {
 	if (password.length < 10) {
 		return 'too short';
 	}
@@ -63,7 +60,7 @@ for (const input of passwordInputs) {
 		// But don't accidentally make them optional
 		// if they were required to begin with
 		if (!allPasswordsRequired) {
-			let hasFilledInput = passwordInputs.some(input => !!input.value);
+			const hasFilledInput = passwordInputs.some(input => !!input.value);
 
 			for (const input of passwordInputs) {
 				input.required = hasFilledInput;
