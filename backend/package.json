@@ -3,7 +3,7 @@
 	"name": "backend",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^8.0.0",
+		"@lusc/eslint-config": "^8.0.1",
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/cookie-parser": "^1.4.9",
 		"@types/express": "^5.0.3",
@@ -12,13 +12,13 @@
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
 		"@types/multer": "^2.0.0",
-		"@types/node": "^22.18.1",
+		"@types/node": "^22.18.4",
 		"esbuild": "^0.25.9",
 		"eslint": "^9.35.0",
 		"typescript": "^5.9.2"
 	},
 	"engines": {
-		"node": "^24.7.0"
+		"node": "^24.8.0"
 	},
 	"scripts": {
 		"fmt": "eslint --fix",
