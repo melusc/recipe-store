@@ -30,10 +30,13 @@ const socket = process.env['BIND_SOCKET'];
 
 const sessionSecret = process.env['SESSION_SECRET'] ?? randomBytes(128);
 
+const trustProxy = process.env['TRUST_PROXY'] ?? 'loopback';
+
 const env = {
 	port,
 	host,
 	socket,
 	sessionSecret,
+	trustProxy,
 };
 export default env;

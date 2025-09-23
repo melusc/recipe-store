@@ -25,6 +25,7 @@ import express, {type ErrorRequestHandler} from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import env from './env.ts';
 import {UnauthorisedError} from './errors.ts';
 import {rateLimit} from './middleware/rate-limit.ts';
 import {session} from './middleware/token.ts';
@@ -42,7 +43,7 @@ import {userRouter} from './routes/user.ts';
 export function setupServer(api: Api) {
 	const app = express();
 
-	app.set('trust proxy', 'loopback');
+	app.set('trust proxy', env.trustProxy);
 	app.set('x-powered-by', false);
 
 	app.use(cookieParser());
