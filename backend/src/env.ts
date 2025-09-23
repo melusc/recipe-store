@@ -30,7 +30,12 @@ const socket = process.env['BIND_SOCKET'];
 
 const sessionSecret = process.env['SESSION_SECRET'] ?? randomBytes(128);
 
-const trustProxy = process.env['TRUST_PROXY'] ?? 'loopback';
+let trustProxy: string | boolean = process.env['TRUST_PROXY'] ?? 'loopback';
+if (/^(?:true|1)$/i.test(trustProxy)) {
+	trustProxy = true;
+} else if (/^(?:false|0)$/i.test(trustProxy)) {
+	trustProxy = false;
+}
 
 const env = {
 	port,
