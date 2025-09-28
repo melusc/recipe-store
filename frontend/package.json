@@ -10,9 +10,9 @@
 		"@lusc/eslint-config": "^8.0.1",
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/express": "^5.0.3",
-		"@types/node": "^22.18.4",
-		"esbuild": "^0.25.9",
-		"eslint": "^9.35.0",
+		"@types/node": "^24.5.2",
+		"esbuild": "^0.25.10",
+		"eslint": "^9.36.0",
 		"typescript": "^5.9.2"
 	},
 	"engines": {

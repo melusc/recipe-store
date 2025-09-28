@@ -4,8 +4,8 @@
 	"private": true,
 	"devDependencies": {
 		"csso-cli": "^4.0.2",
-		"esbuild": "^0.25.9",
-		"sass": "^1.92.1"
+		"esbuild": "^0.25.10",
+		"sass": "^1.93.2"
 	},
 	"engines": {
 		"node": "^24.8.0"
