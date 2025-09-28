@@ -7,9 +7,9 @@
 		"@lusc/eslint-config": "^8.0.1",
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/bcrypt": "^6.0.0",
-		"@types/node": "^22.18.4",
+		"@types/node": "^24.5.2",
 		"@vitest/runner": "^3.2.4",
-		"eslint": "^9.35.0",
+		"eslint": "^9.36.0",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	},
@@ -27,6 +27,6 @@
 		"bcrypt": "^6.0.0",
 		"cooklang": "workspace:^",
 		"file-type": "^21.0.0",
-		"zod": "^4.1.8"
+		"zod": "^4.1.11"
 	}
 }
