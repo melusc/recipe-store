@@ -19,28 +19,38 @@
 */
 
 import type {RequestHandler} from 'express';
-import rateLimitLib, {type RateLimitRequestHandler} from 'express-rate-limit';
+import rateLimitLib, {
+	type Options as RateLimitOptions,
+	type RateLimitRequestHandler,
+} from 'express-rate-limit';
+
+const baseOptions = {
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	validate: {
+		// trust proxy is set from env variable
+		// user knows risks
+		trustProxy: false,
+	},
+} satisfies Partial<RateLimitOptions>;
 
 export function rateLimit(): RequestHandler {
 	const staticLimiter = rateLimitLib({
 		windowMs: 5 * 60 * 1000, // 5 minutes
 		limit: 500, // Limit each IP to 100 requests per window
-		standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-		legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+		...baseOptions,
 	});
 
 	const getLimiter = rateLimitLib({
 		windowMs: 5 * 60 * 1000,
 		limit: 100,
-		standardHeaders: true,
-		legacyHeaders: false,
+		...baseOptions,
 	});
 
 	const postLimiter = rateLimitLib({
 		windowMs: 15 * 60 * 1000,
 		limit: 20,
-		standardHeaders: true,
-		legacyHeaders: false,
+		...baseOptions,
 	});
 
 	return async (request, response, next) => {
