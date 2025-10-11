@@ -7,18 +7,18 @@
 		"@lusc/tsconfig": "^7.1.0",
 		"@types/cookie-parser": "^1.4.9",
 		"@types/express": "^5.0.3",
-		"@types/express-serve-static-core": "^5.0.7",
+		"@types/express-serve-static-core": "^5.1.0",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
 		"@types/multer": "^2.0.0",
-		"@types/node": "^24.5.2",
+		"@types/node": "^24.7.2",
 		"esbuild": "^0.25.10",
-		"eslint": "^9.36.0",
-		"typescript": "^5.9.2"
+		"eslint": "^9.37.0",
+		"typescript": "^5.9.3"
 	},
 	"engines": {
-		"node": "^24.8.0"
+		"node": "^24.10.0"
 	},
 	"scripts": {
 		"fmt": "eslint --fix",
