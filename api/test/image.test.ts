@@ -44,7 +44,7 @@ describe('Image', () => {
 			);
 
 			// eslint-disable-next-line security/detect-non-literal-regexp
-			expect(image.name).match(new RegExp(`\\.${extension}$`));
+			expect(image.name).match(new RegExp(String.raw`\.${extension}$`));
 
 			const secondImage = await Image.fromName(image.name);
 			expect(secondImage).toBeDefined();
@@ -75,11 +75,14 @@ describe('Image', () => {
 			);
 
 			// eslint-disable-next-line security/detect-non-literal-regexp
-			expect(image.name).match(new RegExp(`\\.${extension}$`));
+			expect(image.name).match(new RegExp(String.raw`\.${extension}$`));
 
 			const permanentImage = await image.makePermament();
-			// eslint-disable-next-line security/detect-non-literal-regexp
-			expect(permanentImage.name).match(new RegExp(`\\.${extension}$`));
+
+			expect(permanentImage.name).match(
+				// eslint-disable-next-line security/detect-non-literal-regexp
+				new RegExp(String.raw`\.${extension}$`),
+			);
 
 			await expect(image.read()).rejects.toThrow();
 		},
