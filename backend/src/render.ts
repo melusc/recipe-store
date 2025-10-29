@@ -24,6 +24,7 @@ import {createRender} from 'frontend';
 import {csrf} from './middleware/token.ts';
 
 export function bindRender(): RequestHandler {
+	// eslint-disable-next-line unicorn/consistent-function-scoping
 	return (request, response, next) => {
 		Object.defineProperty(response, 'send$', {
 			get() {
