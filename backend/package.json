@@ -12,9 +12,9 @@
 		"@types/morgan": "^1.9.10",
 		"@types/ms": "^2",
 		"@types/multer": "^2.0.0",
-		"@types/node": "^24.9.2",
-		"esbuild": "^0.25.11",
-		"eslint": "^9.38.0",
+		"@types/node": "^24.10.0",
+		"esbuild": "^0.25.12",
+		"eslint": "^9.39.1",
 		"typescript": "^5.9.3"
 	},
 	"engines": {
@@ -34,7 +34,7 @@
 		"bootstrap-slim": "workspace:^",
 		"cookie-parser": "^1.4.7",
 		"express": "^5.1.0",
-		"express-rate-limit": "^8.2.0",
+		"express-rate-limit": "^8.2.1",
 		"frontend": "workspace:^",
 		"helmet": "^8.1.0",
 		"jsonwebtoken": "^9.0.2",
