@@ -5,11 +5,11 @@ packages:
   - cooklang
   - frontend
 
-onlyBuiltDependencies:
+ignoredBuiltDependencies:
   - '@parcel/watcher'
   - bcrypt
   - esbuild
   - unrs-resolver
   - wasm-pack
 
-trustPolicy: on
+trustPolicy: no-downgrade
