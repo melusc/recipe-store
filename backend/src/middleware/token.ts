@@ -42,7 +42,9 @@ class Token<T extends Record<string, unknown>> {
 		});
 	}
 
-	protected verify(token: string | undefined): (T & {exp: number}) | false {
+	protected verify(
+		token: string | undefined,
+	): (T & {exp: number; iat: number}) | false {
 		if (typeof token !== 'string') {
 			return false;
 		}
@@ -50,7 +52,7 @@ class Token<T extends Record<string, unknown>> {
 		try {
 			const payload = jwtProvider.verify(token, this.#secret, {
 				audience: this.audience,
-			}) as T & {exp: number};
+			}) as T & {exp: number; iat: number};
 
 			return payload;
 		} catch {
@@ -78,12 +80,24 @@ class Session extends Token<{user: number}> {
 			const jwtPayload = this.#verifyRequest(request);
 
 			if (!jwtPayload) {
+				this.clearCookie(request, response);
+				next();
+				return;
+			}
+
+			const user = api.User.fromUserid(jwtPayload.user);
+
+			if (
+				!user ||
+				user.passwordLastChanged.getTime() >= jwtPayload.iat * 1000
+			) {
+				this.clearCookie(request, response);
 				next();
 				return;
 			}
 
 			Object.defineProperty(response.locals, 'user', {
-				value: api.User.fromUserid(jwtPayload.user),
+				value: user,
 				enumerable: true,
 			});
 
@@ -151,11 +165,13 @@ class Session extends Token<{user: number}> {
 		});
 	}
 
-	clearCookie(response: Response) {
-		response.clearCookie('session', {
-			httpOnly: true,
-			secure: true,
-		});
+	clearCookie(request: Request, response: Response) {
+		if (Object.hasOwn(request.cookies, 'session')) {
+			response.clearCookie('session', {
+				httpOnly: true,
+				secure: true,
+			});
+		}
 	}
 }
 

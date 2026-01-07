@@ -36,8 +36,8 @@ loginRouter.get('/login', (request, response) => {
 	}
 });
 
-loginRouter.get('/logout', (_request, response) => {
-	session.clearCookie(response);
+loginRouter.get('/logout', (request, response) => {
+	session.clearCookie(request, response);
 	response.redirect(303, '/');
 });
 

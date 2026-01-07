@@ -73,6 +73,7 @@ apiTest('Change password of user', ({api: {User}}) => {
 
 	const user = User.create(username, username, password, UserRoles.User, true);
 	const oldUpdatedAt = user.updatedAt;
+	const oldPasswordLastChanged = user.passwordLastChanged;
 
 	expect(user.requirePasswordChange).toStrictEqual(true);
 
@@ -88,6 +89,9 @@ apiTest('Change password of user', ({api: {User}}) => {
 
 	expect(User.login(username, newPassword)).toStrictEqual(user);
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
+	expect(user.passwordLastChanged.getTime()).toBeGreaterThan(
+		oldPasswordLastChanged.getTime(),
+	);
 
 	expect(user.requirePasswordChange).toStrictEqual(false);
 });
@@ -99,6 +103,7 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 
 	const user = User.create(username, username, password, UserRoles.Admin, true);
 	const oldUpdatedAt = user.updatedAt;
+	const oldPasswordLastChanged = user.passwordLastChanged;
 
 	expect(user.requirePasswordChange).toStrictEqual(true);
 	user.resetPassword(newPassword);
@@ -110,6 +115,9 @@ apiTest('Reset password reset of user', ({api: {User}}) => {
 	expect(User.login(username, newPassword)).toStrictEqual(user);
 
 	expect(user.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime());
+	expect(user.passwordLastChanged.getTime()).toBeGreaterThan(
+		oldPasswordLastChanged.getTime(),
+	);
 
 	expect(user.requirePasswordChange).toStrictEqual(false);
 });

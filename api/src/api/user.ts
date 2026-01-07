@@ -54,6 +54,7 @@ type SqlUserRow = {
 	require_pw_change: 0 | 1;
 	created_at: number;
 	updated_at: number;
+	password_last_changed: number;
 	password: string;
 };
 
@@ -63,6 +64,7 @@ export type JsonUser = {
 	readonly passwordHash: string;
 	readonly role: UserRoles;
 	readonly requirePasswordChange: boolean;
+	readonly passwordLastChanged: string;
 	readonly createdAt: string;
 	readonly updatedAt: string;
 };
@@ -75,7 +77,8 @@ SELECT username,
        require_pw_change,
        created_at,
        updated_at,
-			 password
+       password,
+       password_last_changed
 FROM   users`;
 
 const HASH_ROUNDS = 10;
@@ -89,6 +92,7 @@ export class User extends InjectableApi {
 	private _role: UserRoles;
 	private _requirePasswordChange: boolean;
 	private _updatedAt: ReadonlyDate;
+	private _passwordLastChanged: ReadonlyDate;
 	private readonly _createdAt: ReadonlyDate;
 
 	constructor(
@@ -99,6 +103,7 @@ export class User extends InjectableApi {
 		requirePasswordChange: boolean | 0 | 1,
 		createdAt: ReadonlyDate,
 		updatedAt: ReadonlyDate,
+		passwordLastChanged: ReadonlyDate,
 		constructorKey: symbol,
 	) {
 		if (constructorKey !== privateUsageKey) {
@@ -113,6 +118,7 @@ export class User extends InjectableApi {
 		this._requirePasswordChange = requirePasswordChange ? true : false;
 		this._createdAt = createdAt;
 		this._updatedAt = updatedAt;
+		this._passwordLastChanged = passwordLastChanged;
 	}
 
 	get username() {
@@ -153,6 +159,10 @@ export class User extends InjectableApi {
 		return new Date(this._createdAt as Date);
 	}
 
+	get passwordLastChanged(): ReadonlyDate {
+		return new Date(this._passwordLastChanged as Date);
+	}
+
 	static create(
 		username: string,
 		displayName: string,
@@ -162,6 +172,7 @@ export class User extends InjectableApi {
 		_internals?: {
 			internalCreatedAt: ReadonlyDate;
 			internalUpdatedAt: ReadonlyDate;
+			internalPasswordLastChanged: ReadonlyDate;
 			usageKey: symbol;
 		},
 	) {
@@ -180,16 +191,20 @@ export class User extends InjectableApi {
 				: password.passwordHash;
 		const createdAt = _internals?.internalCreatedAt ?? new Date();
 		const updatedAt = _internals?.internalUpdatedAt ?? createdAt;
+		const passwordLastChanged =
+			_internals?.internalPasswordLastChanged ?? updatedAt;
 
 		const {user_id: userId} = this.database
 			.prepare(
 				`INSERT INTO users (
 					username, displayname, password, role,
-					require_pw_change, created_at, updated_at
+					require_pw_change, created_at, updated_at,
+					password_last_changed
 				)
 				VALUES (
 					:username, :displayName, :passwordHash, :role,
-					:requirePasswordChange, :createdAt, :updatedAt
+					:requirePasswordChange, :createdAt, :updatedAt,
+					:passwordLastChanged
 				)
 				RETURNING user_id`,
 			)
@@ -201,6 +216,7 @@ export class User extends InjectableApi {
 				requirePasswordChange: requirePasswordChange ? 1 : 0,
 				createdAt: createdAt.getTime(),
 				updatedAt: updatedAt.getTime(),
+				passwordLastChanged: passwordLastChanged.getTime(),
 			}) as {user_id: number};
 
 		return new this.User(
@@ -211,6 +227,7 @@ export class User extends InjectableApi {
 			requirePasswordChange,
 			createdAt,
 			updatedAt,
+			passwordLastChanged,
 			privateUsageKey,
 		);
 	}
@@ -225,6 +242,7 @@ export class User extends InjectableApi {
 			{
 				internalCreatedAt: new Date(json.createdAt),
 				internalUpdatedAt: new Date(json.updatedAt),
+				internalPasswordLastChanged: new Date(json.passwordLastChanged),
 				usageKey: privateUsageKey,
 			},
 		);
@@ -239,6 +257,7 @@ export class User extends InjectableApi {
 			requirePasswordChange: this.requirePasswordChange,
 			createdAt: this.createdAt.toISOString(),
 			updatedAt: this.updatedAt.toISOString(),
+			passwordLastChanged: this.passwordLastChanged.toISOString(),
 		};
 	}
 
@@ -301,6 +320,7 @@ export class User extends InjectableApi {
 			row.require_pw_change,
 			new Date(row.created_at),
 			new Date(row.updated_at),
+			new Date(row.password_last_changed),
 			privateUsageKey,
 		);
 	}
@@ -403,12 +423,17 @@ export class User extends InjectableApi {
 		return this.role === UserRoles.Owner;
 	}
 
-	private _triggerUpdated() {
+	private _triggerUpdated(passwordChanged = false) {
 		this._updatedAt = new Date();
+		if (passwordChanged) {
+			this._passwordLastChanged = new Date(this._updatedAt as Date);
+		}
+
 		this.database
 			.prepare(
 				`UPDATE users
 					SET updated_at = :updatedAt
+					${passwordChanged ? ', password_last_changed = :updatedAt' : ''}
 					WHERE user_id = :userId`,
 			)
 			.run({
@@ -461,7 +486,7 @@ export class User extends InjectableApi {
 
 		this._requirePasswordChange = false;
 
-		this._triggerUpdated();
+		this._triggerUpdated(true);
 	}
 
 	resetPassword(newPassword: string) {
@@ -482,7 +507,7 @@ export class User extends InjectableApi {
 
 		this._requirePasswordChange = false;
 
-		this._triggerUpdated();
+		this._triggerUpdated(true);
 	}
 
 	listRecipes(): Promise<readonly Recipe[]> {

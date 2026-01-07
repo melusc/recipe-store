@@ -91,7 +91,7 @@ accountDeleteRouter.post(
 			return;
 		}
 
-		session.clearCookie(response);
+		session.clearCookie(request, response);
 		response.redirect(303, '/');
 	},
 );
