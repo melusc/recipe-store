@@ -76,7 +76,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
       - name: Sync
         run: |
-          # Make all directories
+          # Trust host public key
           echo "${{ secrets.SSH_HOST }} ${{ secrets.SSH_HOST_KEY }}" >> ~/.ssh/known_hosts
           ssh-keygen -Hf ~/.ssh/known_hosts
 
