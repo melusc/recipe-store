@@ -95,8 +95,7 @@ jobs:
             corepack prepare
             corepack enable
             CI=true pnpm install --prod
-            chown -R ${{ secrets.SSH_USERNAME }}:recipe-store-management node_modules
-            chmod -R go-w node_modules
+            chmod -R go-w node_modules */node_modules
             sudo systemctl restart recipe-store.service
           EOF
       - run: rm ~/.ssh/ssh-key
