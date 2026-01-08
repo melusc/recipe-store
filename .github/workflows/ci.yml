@@ -72,7 +72,6 @@ jobs:
           chmod 700 ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/ssh-key
           chmod 600 ~/.ssh/ssh-key
-          ssh-keygen -lf ~/.ssh/ssh-key
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
       - name: Sync
@@ -95,7 +94,7 @@ jobs:
             cd /opt/recipe-store
             corepack prepare
             corepack enable
-            pnpm install --prod
+            CI=true pnpm install --prod
             chown -R ${{ secrets.SSH_USERNAME }}:recipe-store-management node_modules
             chmod -R go-w node_modules
             sudo systemctl restart recipe-store.service
