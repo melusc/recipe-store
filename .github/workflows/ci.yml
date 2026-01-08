@@ -76,6 +76,10 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
       - name: Sync
         run: |
+          # Make all directories
+          echo "${{ secrets.SSH_HOST }} ${{ secrets.SSH_HOST_KEY }}" >> ~/.ssh/known_hosts
+          ssh-keygen -Hf ~/.ssh/known_hosts
+
           # rsync all relevant files
           rsync -vhaR --checksum --delete \
             -e "ssh -i ~/.ssh/ssh-key" \
@@ -84,7 +88,7 @@ jobs:
             frontend/static/ frontend/src/base.html \
             "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/opt/recipe-store/"
 
-          ssh -i ~/.ssh/ssh-key "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}" /bin/bash << 'EOF'
+          ssh -i ~/.ssh/ssh-key "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}" /bin/bash << 'EOF'
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd /opt/recipe-store
