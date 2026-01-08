@@ -95,7 +95,7 @@ jobs:
             corepack prepare
             corepack enable
             CI=true pnpm install --prod
-            chmod -R go-w node_modules */node_modules
+            /opt/recipe-store/post-deploy.sh 2> /dev/null
             sudo systemctl restart recipe-store.service
           EOF
       - run: rm ~/.ssh/ssh-key
