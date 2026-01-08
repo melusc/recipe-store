@@ -95,7 +95,8 @@ jobs:
             corepack prepare
             corepack enable
             pnpm install --prod
-            chown -R deploy-user:recipe-store-management node_modules/
+            chown -R ${{ secrets.SSH_USERNAME }}:recipe-store-management node_modules
+            chmod -R go-w node_modules
             sudo systemctl restart recipe-store.service
           EOF
       - run: rm ~/.ssh/ssh-key
