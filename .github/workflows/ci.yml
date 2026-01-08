@@ -76,29 +76,23 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
       - name: Sync
         run: |
-          # Make all directories
-          ssh -i ~/.ssh/ssh-key -o StrictHostKeyChecking=accept-new "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}" "
-            cd /var/www
-            mkdir -p recipe-store
-          "
-
           # rsync all relevant files
           rsync -vhaR --checksum --delete \
             -e "ssh -i ~/.ssh/ssh-key" \
             {backend,frontend,api,bootstrap,cooklang}/{dist/,package.json} \
             package.json pnpm-*.yaml \
             frontend/static/ frontend/src/base.html \
-            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}:/var/www/recipe-store/"
+            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/opt/recipe-store/"
 
           ssh -i ~/.ssh/ssh-key "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST}}" /bin/bash << 'EOF'
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd /var/www/recipe-store
+            cd /opt/recipe-store
             corepack prepare
             corepack enable
             pnpm install --prod
-            cd ..
-            pm2 start recipe-store.config.js > /dev/null
+            chown -R deploy-user:recipe-store-management node_modules/
+            sudo systemctl restart recipe-store.service
           EOF
       - run: rm ~/.ssh/ssh-key
         if: always()
