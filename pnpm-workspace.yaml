@@ -13,3 +13,5 @@ ignoredBuiltDependencies:
   - wasm-pack
 
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - 'chokidar@4.0.3'

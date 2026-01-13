@@ -18,7 +18,7 @@
 	License along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import bcrypt from 'bcrypt';
+import bcrypt from '@node-rs/bcrypt';
 
 import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
@@ -270,7 +270,7 @@ export class User extends InjectableApi {
 			.get({username}) as SqlUserRow | undefined;
 
 		const passwordMatch =
-			!!result && bcrypt.compareSync(password, result.password);
+			!!result && bcrypt.verifySync(password, result.password);
 		if (!passwordMatch) {
 			throw new ApiError('Invalid credentials. Please try again.');
 		}
@@ -460,7 +460,7 @@ export class User extends InjectableApi {
 	confirmPassword(password: string) {
 		const hash = this.getPasswordHash();
 
-		const oldPasswordMatches = bcrypt.compareSync(password, hash);
+		const oldPasswordMatches = bcrypt.verifySync(password, hash);
 
 		if (!oldPasswordMatches) {
 			throw new ApiError('Incorrect current password.');
