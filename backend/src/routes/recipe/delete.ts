@@ -27,11 +27,11 @@ import {formdataMiddleware} from '../../upload.ts';
 
 export const deleteRecipeRouter = Router();
 
-deleteRecipeRouter.get(
+deleteRecipeRouter.get<{id: string}>(
 	'/:id/delete',
 	session.guard(UserRoles.User),
 	async (request, response, next) => {
-		const recipeId = Number.parseInt(request.params['id']!, 10);
+		const recipeId = Number.parseInt(request.params.id, 10);
 		const recipe = await response.locals.api.Recipe.fromRecipeId(recipeId);
 
 		if (!recipe) {
@@ -52,12 +52,12 @@ deleteRecipeRouter.get(
 	},
 );
 
-deleteRecipeRouter.post(
+deleteRecipeRouter.post<{id: string}>(
 	'/:id/delete',
 	session.guard(UserRoles.User),
 	formdataMiddleware.none(),
 	async (request, response, next) => {
-		const recipeId = Number.parseInt(request.params['id']!, 10);
+		const recipeId = Number.parseInt(request.params.id, 10);
 		const recipe = await response.locals.api.Recipe.fromRecipeId(recipeId);
 
 		if (!recipe) {

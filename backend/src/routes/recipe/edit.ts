@@ -29,14 +29,14 @@ import {formdataMiddleware} from '../../upload.ts';
 
 export const editRecipeRouter = Router();
 
-editRecipeRouter.post(
+editRecipeRouter.post<{id: string}>(
 	'/:id/edit',
 	session.guard(UserRoles.User),
 	formdataMiddleware.single('file-image'),
 	async (request, response, next) => {
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
-		const id = Number.parseInt(request.params['id']!, 10);
+		const id = Number.parseInt(request.params.id, 10);
 		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 
@@ -114,11 +114,11 @@ editRecipeRouter.post(
 	},
 );
 
-editRecipeRouter.get(
+editRecipeRouter.get<{id: string}>(
 	'/:id/edit',
 	session.guard(UserRoles.User),
 	async (request, response, next) => {
-		const id = Number.parseInt(request.params['id']!, 10);
+		const id = Number.parseInt(request.params.id, 10);
 		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
 		const requestUser = response.locals.user;
 

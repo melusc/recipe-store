@@ -37,11 +37,11 @@ adminUserDeleteRouter.get('/:id/delete', (request, response, next) => {
 	response.send$.accountDelete(user, true);
 });
 
-adminUserDeleteRouter.post(
+adminUserDeleteRouter.post<{id: string}>(
 	'/:id/delete',
 	formdataMiddleware.none(),
 	async (request, response, next) => {
-		const id = Number.parseInt(request.params['id']!, 10);
+		const id = Number.parseInt(request.params.id, 10);
 		const user = response.locals.api.User.fromUserid(id);
 		if (!user) {
 			next();

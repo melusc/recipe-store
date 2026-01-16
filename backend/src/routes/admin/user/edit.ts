@@ -39,11 +39,11 @@ adminUserEditRouter.get('/:id', (request, response, next) => {
 	response.send$.admin.userEdit(user, false, undefined);
 });
 
-adminUserEditRouter.post(
+adminUserEditRouter.post<{id: string}>(
 	'/:id',
 	formdataMiddleware.none(),
 	(request, response, next) => {
-		const id = Number.parseInt(request.params['id']!, 10);
+		const id = Number.parseInt(request.params.id, 10);
 		const user = response.locals.api.User.fromUserid(id);
 
 		if (!user) {
