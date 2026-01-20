@@ -29,7 +29,7 @@
 		"rimraf": "^6.1.2",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.17",
-		"wasm-pack": "^0.13.1"
+		"wasm-pack": "^0.14.0"
 	},
 	"dependencies": {
 		"zod": "^4.3.5"
