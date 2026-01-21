@@ -23,6 +23,7 @@ import {spawn} from 'node:child_process';
 import {randomBytes} from 'node:crypto';
 import {readFile, rm, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {env} from 'node:process';
 import {fileURLToPath} from 'node:url';
 
 import {fileTypeFromBuffer} from 'file-type';
@@ -31,7 +32,11 @@ import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
 
 async function detectExiftoolSupport(): Promise<boolean> {
-	const childProcess = spawn('exiftool', ['--help']);
+	const childProcess = spawn('exiftool', ['--help'], {
+		env: {
+			PATH: env['PATH'],
+		},
+	});
 	const {promise, resolve} = Promise.withResolvers<boolean>();
 
 	// This fires first before stdout is closed
@@ -54,11 +59,15 @@ if (!isExiftoolSupported) {
 }
 
 async function exiftoolRemoveExif(path: URL): Promise<boolean> {
-	const childProcess = spawn('exiftool', [
-		'-all=',
-		'-overwrite_original',
-		fileURLToPath(path),
-	]);
+	const childProcess = spawn(
+		'exiftool',
+		['-all=', '-overwrite_original', fileURLToPath(path)],
+		{
+			env: {
+				PATH: env['PATH'],
+			},
+		},
+	);
 
 	const {promise, resolve} = Promise.withResolvers<boolean>();
 
