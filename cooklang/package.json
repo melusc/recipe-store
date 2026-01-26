@@ -22,16 +22,16 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@lusc/eslint-config": "^8.5.0",
+		"@lusc/eslint-config": "^8.6.0",
 		"@lusc/tsconfig": "^7.2.0",
 		"@types/node": "^24.10.9",
 		"eslint": "^9.39.2",
 		"rimraf": "^6.1.2",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.17",
+		"vitest": "^4.0.18",
 		"wasm-pack": "^0.14.0"
 	},
 	"dependencies": {
-		"zod": "^4.3.5"
+		"zod": "^4.3.6"
 	}
 }
