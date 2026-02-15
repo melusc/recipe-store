@@ -7,16 +7,16 @@
 	},
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^8.5.0",
+		"@lusc/eslint-config": "^8.6.0",
 		"@lusc/tsconfig": "^7.2.0",
 		"@types/express": "^5.0.6",
-		"@types/node": "^24.10.9",
-		"esbuild": "^0.27.2",
+		"@types/node": "^24.10.13",
+		"esbuild": "^0.27.3",
 		"eslint": "^9.39.2",
 		"typescript": "^5.9.3"
 	},
 	"engines": {
-		"node": "^24.13.0"
+		"node": "^24.13.1"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
@@ -27,7 +27,7 @@
 		"@lusc/util": "^2.1.0",
 		"api": "workspace:^",
 		"cooklang": "workspace:^",
-		"preact": "^10.28.2",
+		"preact": "^10.28.3",
 		"preact-render-to-string": "^6.6.5"
 	}
 }
