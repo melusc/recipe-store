@@ -8,7 +8,6 @@ const fileRenames = {
 };
 
 for (const [oldName, newName] of Object.entries(fileRenames)) {
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	await rename(
 		new URL(oldName, baseDirectory),
 		new URL(newName, baseDirectory),
