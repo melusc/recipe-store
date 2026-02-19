@@ -26,7 +26,6 @@ import {render} from 'preact-render-to-string';
 
 import {Header} from '../components/header.js';
 
-// eslint-disable-next-line security/detect-non-literal-fs-filename
 const baseHtml = await readFile(
 	new URL('../../src/base.html', import.meta.url),
 	'utf8',

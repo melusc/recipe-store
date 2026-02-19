@@ -32,7 +32,6 @@ export async function cleanImages(api: Api, imageDirectory: URL) {
 		}
 	}
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	for (const file of await readdir(imageDirectory, {withFileTypes: true})) {
 		if (!file.isFile()) {
 			continue;

@@ -63,14 +63,12 @@ await cleanImages(api, imageDirectory);
 
 if (shouldCreateBackup) {
 	const {filename, stream} = await createBackup(api);
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const writeStream = createWriteStream(filename);
 	stream.pipe(writeStream);
 	console.log('Saving backup to', filename);
 }
 
 if (restoreBackupPath !== undefined) {
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const zip = await readFile(restoreBackupPath);
 	const skippedUsers = await restoreBackup(api, zip);
 	if (skippedUsers.length > 0) {

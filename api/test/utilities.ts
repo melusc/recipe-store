@@ -31,9 +31,7 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
-// eslint-disable-next-line security/detect-non-literal-fs-filename
 await mkdir(parentTemporaryDirectory, {recursive: true});
-// eslint-disable-next-line security/detect-non-literal-fs-filename
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
 type UtilityApi = Readonly<
@@ -73,7 +71,6 @@ export async function hashFile(pathOrImage: URL | Buffer) {
 	if (Buffer.isBuffer(pathOrImage)) {
 		hash.update(pathOrImage);
 	} else {
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const stream = createReadStream(pathOrImage);
 
 		for await (const chunk of stream) {
@@ -92,7 +89,6 @@ export const apiTest = test.extend({
 		);
 		const temporaryImageDirectory = new URL('temp/', permanentImageDirectory);
 
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		await mkdir(temporaryImageDirectory, {recursive: true});
 
 		const database = new DatabaseSync(':memory:');
@@ -104,7 +100,6 @@ export const apiTest = test.extend({
 
 		function makeListFunction(directory: URL) {
 			return async () => {
-				// eslint-disable-next-line security/detect-non-literal-fs-filename
 				const items = await readdir(directory, {
 					withFileTypes: true,
 				});

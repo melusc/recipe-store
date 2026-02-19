@@ -145,7 +145,6 @@ export class Image extends InjectableApi {
 	}
 
 	async read() {
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		return readFile(this._resolvePath());
 	}
 
@@ -154,7 +153,6 @@ export class Image extends InjectableApi {
 
 		const permanentPath = this._resolvePath(name, ImageSaveType.PermanentImage);
 		try {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			await stat(permanentPath);
 			return new this.Image(
 				name,
@@ -165,7 +163,6 @@ export class Image extends InjectableApi {
 
 		const temporaryPath = this._resolvePath(name, ImageSaveType.TemporaryImage);
 		try {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			await stat(temporaryPath);
 			return new this.Image(
 				name,
@@ -193,7 +190,6 @@ export class Image extends InjectableApi {
 		);
 		const filePath = this._resolvePath(fileName, saveType);
 
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		await writeFile(filePath, image);
 
 		if (options?.removeExif !== false) {

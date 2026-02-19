@@ -169,7 +169,6 @@ apiTest('Adding image', async ({api: {User, Recipe, listImages, Image}}) => {
 
 	expect((await Recipe.fromRecipeId(recipe.recipeId))!.image).toBeUndefined();
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const newImageBuffer = await readFile(sampleImagePaths.jpg);
 	const newImage = await Image.create(
 		newImageBuffer,
@@ -190,7 +189,6 @@ apiTest('Adding image', async ({api: {User, Recipe, listImages, Image}}) => {
 
 apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const user = User.create('ajops', 'dbukz', 'xrcnm', UserRoles.User, false);
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const firstImageBuffer = await readFile(sampleImagePaths.webp);
 	const firstImage = await Image.create(
 		firstImageBuffer,
@@ -217,7 +215,6 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
 	);
 	await expect(listImages()).resolves.toStrictEqual([recipe.image!.name]);
 
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const secondImageBuffer = await readFile(sampleImagePaths.png);
 	const secondImage = await Image.create(
 		secondImageBuffer,
@@ -238,7 +235,6 @@ apiTest('Replacing image', async ({api: {User, Recipe, listImages, Image}}) => {
 
 apiTest('Deleting image', async ({api: {User, Recipe, listImages, Image}}) => {
 	const user = User.create('gfyju', 'nlwik', 'lkkpy', UserRoles.User, false);
-	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const imageBuffer = await readFile(sampleImagePaths.png);
 	const image = await Image.create(imageBuffer, ImageSaveType.PermanentImage, {
 		removeExif: false,
@@ -292,7 +288,6 @@ apiTest(
 			sampleImagePaths.png,
 			sampleImagePaths.webp,
 		]) {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			const imageBuffer = await readFile(path);
 			const image = await Image.create(
 				imageBuffer,

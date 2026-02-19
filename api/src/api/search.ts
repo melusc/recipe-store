@@ -159,7 +159,7 @@ export class QueryParser {
 
 		const filters: QueryFilter[] = [];
 
-		let invert = false;
+		let invert: boolean;
 
 		while ((this.skipWS(), this.hasChar())) {
 			invert = false;

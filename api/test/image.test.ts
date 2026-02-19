@@ -36,14 +36,12 @@ describe('Image', () => {
 	])(
 		'Saving and reading images permanently (%s)',
 		async ([extension, imagePath], {api: {Image}}) => {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			const imageBuffer = await readFile(imagePath);
 			const image = await Image.create(
 				imageBuffer,
 				ImageSaveType.PermanentImage,
 			);
 
-			// eslint-disable-next-line security/detect-non-literal-regexp
 			expect(image.name).match(new RegExp(String.raw`\.${extension}$`));
 
 			const secondImage = await Image.fromName(image.name);
@@ -53,7 +51,6 @@ describe('Image', () => {
 	);
 
 	apiTest('Saving invalid image (gif)', async ({api: {Image}}) => {
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const imageBuffer = await readFile(sampleImagePaths.gif);
 		await expect(
 			Image.create(imageBuffer, ImageSaveType.PermanentImage),
@@ -67,20 +64,17 @@ describe('Image', () => {
 	])(
 		'Making temporary image permanent (%s)',
 		async ([extension, imagePath], {api: {Image}}) => {
-			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			const imageBuffer = await readFile(imagePath);
 			const image = await Image.create(
 				imageBuffer,
 				ImageSaveType.TemporaryImage,
 			);
 
-			// eslint-disable-next-line security/detect-non-literal-regexp
 			expect(image.name).match(new RegExp(String.raw`\.${extension}$`));
 
 			const permanentImage = await image.makePermament();
 
 			expect(permanentImage.name).match(
-				// eslint-disable-next-line security/detect-non-literal-regexp
 				new RegExp(String.raw`\.${extension}$`),
 			);
 
@@ -89,7 +83,6 @@ describe('Image', () => {
 	);
 
 	apiTest('Rejects too large images', async ({api: {Image}}) => {
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		let buffer = await readFile(sampleImagePaths.png);
 
 		// This keeps it a valid png per `file-type`
@@ -104,7 +97,6 @@ describe('Image', () => {
 	});
 
 	apiTest('Removing EXIF', async ({api: {Image}}) => {
-		// eslint-disable-next-line security/detect-non-literal-fs-filename
 		const buffer = await readFile(sampleImagePaths.jpg);
 
 		const exifRemoved = await Image.create(
