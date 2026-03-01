@@ -40,13 +40,13 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.10.15
         version: 24.11.0
       '@vitest/runner':
         specifier: ^4.0.18
         version: 4.0.18
       eslint:
-        specifier: ^10.0.0
+        specifier: ^10.0.2
         version: 10.0.2
       typescript:
         specifier: ^5.9.3
@@ -125,13 +125,13 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.10.15
         version: 24.11.0
       esbuild:
         specifier: ^0.27.3
         version: 0.27.3
       eslint:
-        specifier: ^10.0.0
+        specifier: ^10.0.2
         version: 10.0.2
       typescript:
         specifier: ^5.9.3
@@ -162,13 +162,13 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.10.15
         version: 24.11.0
       eslint:
-        specifier: ^10.0.0
+        specifier: ^10.0.2
         version: 10.0.2
       rimraf:
-        specifier: ^6.1.2
+        specifier: ^6.1.3
         version: 6.1.3
       typescript:
         specifier: ^5.9.3
@@ -192,10 +192,10 @@ importers:
         specifier: workspace:^
         version: link:../cooklang
       preact:
-        specifier: ^10.28.3
+        specifier: ^10.28.4
         version: 10.28.4
       preact-render-to-string:
-        specifier: ^6.6.5
+        specifier: ^6.6.6
         version: 6.6.6(preact@10.28.4)
     devDependencies:
       '@lusc/eslint-config':
@@ -208,13 +208,13 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.10.15
         version: 24.11.0
       esbuild:
         specifier: ^0.27.3
         version: 0.27.3
       eslint:
-        specifier: ^10.0.0
+        specifier: ^10.0.2
         version: 10.0.2
       typescript:
         specifier: ^5.9.3
