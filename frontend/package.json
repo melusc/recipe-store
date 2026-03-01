@@ -10,13 +10,13 @@
 		"@lusc/eslint-config": "^9.0.0",
 		"@lusc/tsconfig": "^7.2.0",
 		"@types/express": "^5.0.6",
-		"@types/node": "^24.10.13",
+		"@types/node": "^24.10.15",
 		"esbuild": "^0.27.3",
-		"eslint": "^10.0.0",
+		"eslint": "^10.0.2",
 		"typescript": "^5.9.3"
 	},
 	"engines": {
-		"node": "^24.13.1"
+		"node": "^24.14.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
@@ -27,7 +27,7 @@
 		"@lusc/util": "^2.1.0",
 		"api": "workspace:^",
 		"cooklang": "workspace:^",
-		"preact": "^10.28.3",
-		"preact-render-to-string": "^6.6.5"
+		"preact": "^10.28.4",
+		"preact-render-to-string": "^6.6.6"
 	}
 }
