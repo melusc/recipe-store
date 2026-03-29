@@ -8,13 +8,13 @@
 		"@lusc/tsconfig": "^7.2.0",
 		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^24.12.0",
-		"@vitest/runner": "^4.1.0",
-		"eslint": "^10.0.3",
+		"@vitest/runner": "^4.1.2",
+		"eslint": "^10.1.0",
 		"typescript": "^5.9.3",
-		"vitest": "^4.1.0"
+		"vitest": "^4.1.2"
 	},
 	"engines": {
-		"node": "^24.14.0"
+		"node": "^24.14.1"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
@@ -26,7 +26,7 @@
 		"@lusc/util": "^2.1.0",
 		"@node-rs/bcrypt": "^1.10.7",
 		"cooklang": "workspace:^",
-		"file-type": "^21.3.0",
+		"file-type": "^21.3.4",
 		"zod": "^4.3.6"
 	}
 }
