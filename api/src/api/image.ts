@@ -45,7 +45,7 @@ async function detectExiftoolSupport(): Promise<boolean> {
 		resolve(false);
 	});
 
-	const outputChunks = (await Array.fromAsync(childProcess.stdout)) as Buffer[];
+	const outputChunks = await Array.fromAsync(childProcess.stdout);
 	const output = Buffer.concat(outputChunks);
 	resolve(output.includes('exiftool'));
 
