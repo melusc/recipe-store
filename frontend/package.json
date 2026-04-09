@@ -10,9 +10,9 @@
 		"@lusc/eslint-config": "^10.0.0",
 		"@lusc/tsconfig": "^7.2.0",
 		"@types/express": "^5.0.6",
-		"@types/node": "^24.12.0",
+		"@types/node": "^24.12.2",
 		"esbuild": "^0.28.0",
-		"eslint": "^10.1.0",
+		"eslint": "^10.2.0",
 		"typescript": "^5.9.3"
 	},
 	"engines": {
@@ -27,7 +27,7 @@
 		"@lusc/util": "^2.1.0",
 		"api": "workspace:^",
 		"cooklang": "workspace:^",
-		"preact": "^10.29.0",
+		"preact": "^10.29.1",
 		"preact-render-to-string": "^6.6.7"
 	}
 }
