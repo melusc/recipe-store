@@ -29,6 +29,7 @@ import env from './env.ts';
 import {UnauthorisedError} from './errors.ts';
 import {rateLimit} from './middleware/rate-limit.ts';
 import {session} from './middleware/token.ts';
+import {loginFromXAuthorisedAs} from './middleware/x-authorised-as.ts';
 import {resolvePaginationParameters} from './pagination.ts';
 import {bindRender} from './render.ts';
 import {accountRouter} from './routes/account/index.ts';
@@ -82,6 +83,7 @@ export function setupServer(api: Api) {
 
 	app.use(rateLimit());
 
+	app.use(loginFromXAuthorisedAs(api));
 	app.use(session.middleware(api));
 
 	app.use('/static', staticRouter);

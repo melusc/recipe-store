@@ -77,6 +77,11 @@ class Session extends Token<{user: number}> {
 
 	middleware(api: Api): RequestHandler {
 		return (request, response, next) => {
+			if (response.locals.user) {
+				next();
+				return;
+			}
+
 			const jwtPayload = this.#verifyRequest(request);
 
 			if (!jwtPayload) {
@@ -108,8 +113,8 @@ class Session extends Token<{user: number}> {
 				this.setCookie(jwtPayload.user, response);
 			}
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (response.locals.user) {
-				const user = response.locals.user;
 				const url = request.originalUrl;
 				if (
 					user.requirePasswordChange &&
