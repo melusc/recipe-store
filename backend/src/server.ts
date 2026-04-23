@@ -60,6 +60,7 @@ export function setupServer(api: Api) {
 					'style-src-attr': ["'unsafe-inline'"],
 					'font-src': ['https://fonts.gstatic.com'],
 					'connect-src': ["'self'"],
+					'frame-ancestors': ["'none'"],
 				},
 			},
 		}),
