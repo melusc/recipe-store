@@ -12,11 +12,11 @@
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.12.2",
 		"esbuild": "^0.28.0",
-		"eslint": "^10.2.0",
-		"typescript": "^6.0.2"
+		"eslint": "^10.2.1",
+		"typescript": "^6.0.3"
 	},
 	"engines": {
-		"node": "^24.14.1"
+		"node": "^24.15.0"
 	},
 	"license": "GPL-3.0-only",
 	"scripts": {
