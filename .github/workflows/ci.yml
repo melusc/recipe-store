@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install --frozen-lockfile
+          pnpm ci
           sudo apt install -y libimage-exiftool-perl
 
       - name: Build
