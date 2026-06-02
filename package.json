@@ -1,6 +1,6 @@
 {
 	"type": "module",
-	"packageManager": "pnpm@11.0.6",
+	"packageManager": "pnpm@11.5.0",
 	"devDependencies": {
 		"prettier": "^3.8.3"
 	},
