@@ -237,11 +237,11 @@ const filterMatchers = {
 	any(this, filterValue: string, recipe: Recipe) {
 		// `contains:` last because it is probably the slowest, because it has to stringify the sections
 		return (
-			this.title(filterValue, recipe) ||
-			this.source(filterValue, recipe) ||
-			this.tagged(filterValue, recipe) ||
-			this.author(filterValue, recipe) ||
-			this.contains(filterValue, recipe)
+			filterMatchers.title(filterValue, recipe) ||
+			filterMatchers.source(filterValue, recipe) ||
+			filterMatchers.tagged(filterValue, recipe) ||
+			filterMatchers.author(filterValue, recipe) ||
+			filterMatchers.contains(filterValue, recipe)
 		);
 	},
 	title(filterValue: string, recipe: Recipe) {
