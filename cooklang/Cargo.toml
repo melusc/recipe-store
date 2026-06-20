@@ -8,8 +8,8 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-cooklang = "0.18.6"
-wasm-bindgen = "0.2.122"
+cooklang = "0.18.7"
+wasm-bindgen = "0.2.125"
 serde_json = "1.0.150"
 
 [profile.release]
