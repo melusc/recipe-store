@@ -68,8 +68,10 @@ export function setupServer(api: Api) {
 	app.use(morgan('dev'));
 
 	app.use((request, response, next) => {
+		const relativeUrl = new RelativeUrl(request.url);
+
 		Object.defineProperty(request, 'search', {
-			value: new RelativeUrl(request.url).searchParams,
+			value: relativeUrl.searchParams,
 			enumerable: true,
 		});
 		Object.defineProperty(response.locals, 'api', {

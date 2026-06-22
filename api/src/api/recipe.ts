@@ -47,6 +47,7 @@ type SqlNullRecipeRow = {
 };
 
 type SqlRecipeRow =
+	| SqlNullRecipeRow
 	| {
 			recipe_id: number;
 			title: string;
@@ -58,8 +59,7 @@ type SqlRecipeRow =
 			tags: string;
 			source: string | null;
 			duration: string | null;
-	  }
-	| SqlNullRecipeRow;
+	  };
 
 const BASE_SQL_RECIPE_SELECT = `
 SELECT recipe_id,
@@ -134,56 +134,6 @@ export class Recipe extends InjectableApi {
 		this._sections = sections;
 	}
 
-	get title() {
-		return this._title;
-	}
-
-	get author() {
-		return this._author;
-	}
-
-	get createdAt(): ReadonlyDate {
-		return new Date(this._createdAt as Date);
-	}
-
-	get updatedAt(): ReadonlyDate {
-		return new Date(this._updatedAt as Date);
-	}
-
-	get image() {
-		return this._image;
-	}
-
-	get source() {
-		return this._source;
-	}
-
-	get duration() {
-		return this._duration;
-	}
-
-	get tags() {
-		return this._tags;
-	}
-
-	get sections() {
-		return this._sections;
-	}
-
-	private _triggerUpdated() {
-		this._updatedAt = new Date();
-		this.database
-			.prepare(
-				`UPDATE recipes
-				SET updated_at = :updatedAt
-				WHERE recipe_id = :recipeId`,
-			)
-			.run({
-				updatedAt: this._updatedAt.getTime(),
-				recipeId: this.recipeId,
-			});
-	}
-
 	static async create(
 		title: string,
 		author: User | undefined,
@@ -234,6 +184,7 @@ export class Recipe extends InjectableApi {
 				duration: duration ?? null,
 			}) as {recipe_id: number};
 
+		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		const recipe = new this.Recipe(
 			recipeId,
 			title,
@@ -322,20 +273,6 @@ export class Recipe extends InjectableApi {
 		);
 	}
 
-	toJson(): JsonRecipe {
-		return {
-			title: this.title,
-			createdAt: this.createdAt.toISOString(),
-			updatedAt: this.updatedAt.toISOString(),
-			image: this.image?.name ?? null,
-			tags: this.tags,
-			sections: this.sections.map(({source}) => source),
-			author: this.author?.username ?? null,
-			source: this.source ?? null,
-			duration: this.duration ?? null,
-		};
-	}
-
 	// Internal parameters `userId` is for use via `User#paginateRecipes`
 	// Adding this optional parameter allows for deduplication instead
 	// of one method here and one there
@@ -366,7 +303,6 @@ export class Recipe extends InjectableApi {
 		page: number;
 		query: string;
 	}): Promise<DynamicPaginationResult<Recipe>> {
-		let hasSkipped = 0;
 		const shouldSkip = (page - 1) * limit;
 
 		// Short-circuit if it is asking for a page that
@@ -381,7 +317,8 @@ export class Recipe extends InjectableApi {
 		}
 
 		const items: Recipe[] = [];
-		const queryFilters = new QueryParser(query).parse();
+		const queryParser = new QueryParser(query);
+		const queryFilters = queryParser.parse();
 
 		const statement = this.database.prepare(
 			`${BASE_SQL_RECIPE_SELECT}
@@ -389,6 +326,7 @@ export class Recipe extends InjectableApi {
 			ORDER BY recipe_id ASC`,
 		);
 		const rowIterator = statement.iterate() as NodeJS.Iterator<SqlRecipeRow>;
+		let hasSkipped = 0;
 
 		for (const row of rowIterator) {
 			const recipe = await this._fromRow(row);
@@ -524,6 +462,7 @@ export class Recipe extends InjectableApi {
 
 		const image = row.image ? await this.Image.fromName(row.image) : undefined;
 
+		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		const recipe = new this.Recipe(
 			row.recipe_id,
 			row.title,
@@ -555,6 +494,91 @@ export class Recipe extends InjectableApi {
 			.get({recipeId}) as SqlRecipeRow | undefined;
 
 		return this._fromRow(result);
+	}
+
+	static permissionToCreateRecipe(other: User) {
+		return other.role >= UserRoles.User;
+	}
+
+	private _triggerUpdated() {
+		this._updatedAt = new Date();
+		this.database
+			.prepare(
+				`UPDATE recipes
+				SET updated_at = :updatedAt
+				WHERE recipe_id = :recipeId`,
+			)
+			.run({
+				updatedAt: this._updatedAt.getTime(),
+				recipeId: this.recipeId,
+			});
+	}
+
+	// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
+	// that means it is possible `a !== b`
+	// For simplicity just requery the tags
+	private _syncTags() {
+		const tags = this.database
+			.prepare(
+				`SELECT tag_name FROM recipe_tags
+				WHERE recipe_id = :recipeId
+				ORDER BY tag_slug ASC`,
+			)
+			.all({recipeId: this.recipeId}) as Array<{
+			tag_name: string;
+		}>;
+
+		this._tags = tags.map(({tag_name: tagName}) => tagName);
+	}
+
+	get title() {
+		return this._title;
+	}
+
+	get author() {
+		return this._author;
+	}
+
+	get createdAt(): ReadonlyDate {
+		return new Date(this._createdAt as Date);
+	}
+
+	get updatedAt(): ReadonlyDate {
+		return new Date(this._updatedAt as Date);
+	}
+
+	get image() {
+		return this._image;
+	}
+
+	get source() {
+		return this._source;
+	}
+
+	get duration() {
+		return this._duration;
+	}
+
+	get tags() {
+		return this._tags;
+	}
+
+	get sections() {
+		return this._sections;
+	}
+
+	toJson(): JsonRecipe {
+		return {
+			title: this.title,
+			createdAt: this.createdAt.toISOString(),
+			updatedAt: this.updatedAt.toISOString(),
+			image: this.image?.name ?? null,
+			tags: this.tags,
+			sections: this.sections.map(({source}) => source),
+			author: this.author?.username ?? null,
+			source: this.source ?? null,
+			duration: this.duration ?? null,
+		};
 	}
 
 	addTag(tag: string) {
@@ -610,23 +634,6 @@ export class Recipe extends InjectableApi {
 		}
 
 		this._tags = [];
-	}
-
-	// A tag will be deleted IFF `makeSlug(a) === makeSlug(b)`
-	// that means it is possible `a !== b`
-	// For simplicity just requery the tags
-	private _syncTags() {
-		const tags = this.database
-			.prepare(
-				`SELECT tag_name FROM recipe_tags
-				WHERE recipe_id = :recipeId
-				ORDER BY tag_slug ASC`,
-			)
-			.all({recipeId: this.recipeId}) as Array<{
-			tag_name: string;
-		}>;
-
-		this._tags = tags.map(({tag_name: tagName}) => tagName);
 	}
 
 	async updateImage(image: Image | undefined) {
@@ -782,10 +789,6 @@ export class Recipe extends InjectableApi {
 
 		this._author = undefined;
 		this._triggerUpdated();
-	}
-
-	static permissionToCreateRecipe(other: User) {
-		return other.role >= UserRoles.User;
 	}
 
 	permissionToModifyRecipe(other: User) {

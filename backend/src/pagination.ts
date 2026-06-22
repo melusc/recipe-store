@@ -25,10 +25,9 @@ const LIMIT_MIN = 10;
 const LIMIT_MAX = 50;
 
 export function resolvePaginationParameters(request: Request) {
-	let page = Number.parseInt(request.search.get('page') ?? '1', 10);
-	let limit = Number.parseInt(
-		request.search.get('limit') ?? String(LIMIT_DEFAULT),
-		10,
+	let page = Math.trunc(Number(request.search.get('page') ?? '1'));
+	let limit = Math.trunc(
+		Number(request.search.get('limit') ?? String(LIMIT_DEFAULT)),
 	);
 
 	if (!Number.isSafeInteger(page)) {

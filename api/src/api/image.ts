@@ -89,13 +89,12 @@ export type ImageOptions = {
 	removeExif?: boolean;
 };
 
+const allowedImageMimes: ReadonlySet<string> = new Set([
+	'image/jpeg',
+	'image/png',
+	'image/webp',
+]);
 async function validateAndGetExtension(image: Buffer) {
-	const allowedImageMimes: ReadonlySet<string> = new Set([
-		'image/jpeg',
-		'image/png',
-		'image/webp',
-	]);
-
 	if (image.byteLength > 10e6) {
 		throw new ApiError('Image is too large. Maximum of 10 MB is allowed.');
 	}
@@ -123,17 +122,74 @@ export class Image extends InjectableApi {
 		super();
 	}
 
-	private _resolvePath() {
-		return this.Image._resolvePath(this.name, this.saveType);
+	static async fromName(name: string): Promise<Image | undefined> {
+		name = path.basename(name);
+
+		const permanentPath = this._resolvePath(name, ImageSaveType.PermanentImage);
+		try {
+			await stat(permanentPath);
+			// eslint-disable-next-line unicorn/no-unreadable-new-expression
+			return new this.Image(
+				name,
+				ImageSaveType.PermanentImage,
+				privateConstructorKey,
+			);
+		} catch {}
+
+		const temporaryPath = this._resolvePath(name, ImageSaveType.TemporaryImage);
+		try {
+			await stat(temporaryPath);
+			// eslint-disable-next-line unicorn/no-unreadable-new-expression
+			return new this.Image(
+				name,
+				ImageSaveType.TemporaryImage,
+				privateConstructorKey,
+			);
+		} catch {}
+
+		return;
+	}
+
+	static async create(
+		image: Buffer,
+		saveType: ImageSaveType,
+		options?: ImageOptions,
+	) {
+		const extension = await validateAndGetExtension(image);
+
+		const fileName = [
+			randomBytes(40).toBase64({
+				alphabet: 'base64url',
+			}),
+			extension,
+		].join('.');
+		const filePath = this._resolvePath(fileName, saveType);
+
+		await writeFile(filePath, image);
+
+		if (options?.removeExif !== false) {
+			const success = await exiftoolRemoveExif(filePath);
+			if (!success) {
+				console.error('Unsuccessful removing metadata of', fileName);
+			}
+		}
+
+		// eslint-disable-next-line unicorn/no-unreadable-new-expression
+		return new this.Image(fileName, saveType, privateConstructorKey);
 	}
 
 	private static _resolvePath(name: string, saveType: ImageSaveType) {
 		return new URL(
 			name,
+			// eslint-disable-next-line unicorn/prefer-minimal-ternary
 			saveType === ImageSaveType.PermanentImage
 				? this.imageDirectory
 				: this.temporaryImageDirectory,
 		);
+	}
+
+	private _resolvePath() {
+		return this.Image._resolvePath(this.name, this.saveType);
 	}
 
 	isPermanent() {
@@ -148,58 +204,8 @@ export class Image extends InjectableApi {
 		return readFile(this._resolvePath());
 	}
 
-	static async fromName(name: string): Promise<Image | undefined> {
-		name = path.basename(name);
-
-		const permanentPath = this._resolvePath(name, ImageSaveType.PermanentImage);
-		try {
-			await stat(permanentPath);
-			return new this.Image(
-				name,
-				ImageSaveType.PermanentImage,
-				privateConstructorKey,
-			);
-		} catch {}
-
-		const temporaryPath = this._resolvePath(name, ImageSaveType.TemporaryImage);
-		try {
-			await stat(temporaryPath);
-			return new this.Image(
-				name,
-				ImageSaveType.TemporaryImage,
-				privateConstructorKey,
-			);
-		} catch {}
-
-		return;
-	}
-
 	async rm() {
 		await rm(this._resolvePath());
-	}
-
-	static async create(
-		image: Buffer,
-		saveType: ImageSaveType,
-		options?: ImageOptions,
-	) {
-		const extension = await validateAndGetExtension(image);
-
-		const fileName = [randomBytes(40).toString('base64url'), extension].join(
-			'.',
-		);
-		const filePath = this._resolvePath(fileName, saveType);
-
-		await writeFile(filePath, image);
-
-		if (options?.removeExif !== false) {
-			const success = await exiftoolRemoveExif(filePath);
-			if (!success) {
-				console.error('Unsuccessful removing metadata of', fileName);
-			}
-		}
-
-		return new this.Image(fileName, saveType, privateConstructorKey);
 	}
 
 	async makePermament() {

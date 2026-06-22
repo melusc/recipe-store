@@ -28,7 +28,7 @@ import {formdataMiddleware} from '../../../upload.ts';
 export const adminUserEditRouter = Router();
 
 adminUserEditRouter.get('/:id', (request, response, next) => {
-	const id = Number.parseInt(request.params.id, 10);
+	const id = Math.trunc(Number(request.params.id));
 	const user = response.locals.api.User.fromUserid(id);
 
 	if (!user) {
@@ -43,7 +43,7 @@ adminUserEditRouter.post<{id: string}>(
 	'/:id',
 	formdataMiddleware.none(),
 	(request, response, next) => {
-		const id = Number.parseInt(request.params.id, 10);
+		const id = Math.trunc(Number(request.params.id));
 		const user = response.locals.api.User.fromUserid(id);
 
 		if (!user) {

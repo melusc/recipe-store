@@ -121,48 +121,6 @@ export class User extends InjectableApi {
 		this._passwordLastChanged = passwordLastChanged;
 	}
 
-	get username() {
-		return this._username;
-	}
-
-	get displayName() {
-		return this._displayName;
-	}
-
-	get role() {
-		return this._role;
-	}
-
-	get roleLabel() {
-		switch (this.role) {
-			case UserRoles.User: {
-				return 'User';
-			}
-			case UserRoles.Admin: {
-				return 'Admin';
-			}
-			case UserRoles.Owner: {
-				return 'Owner';
-			}
-		}
-	}
-
-	get requirePasswordChange() {
-		return this._requirePasswordChange;
-	}
-
-	get updatedAt(): ReadonlyDate {
-		return new Date(this._updatedAt as Date);
-	}
-
-	get createdAt(): ReadonlyDate {
-		return new Date(this._createdAt as Date);
-	}
-
-	get passwordLastChanged(): ReadonlyDate {
-		return new Date(this._passwordLastChanged as Date);
-	}
-
 	static create(
 		username: string,
 		displayName: string,
@@ -219,6 +177,7 @@ export class User extends InjectableApi {
 				passwordLastChanged: passwordLastChanged.getTime(),
 			}) as {user_id: number};
 
+		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		return new this.User(
 			userId,
 			username,
@@ -246,19 +205,6 @@ export class User extends InjectableApi {
 				usageKey: privateUsageKey,
 			},
 		);
-	}
-
-	toJson(): JsonUser {
-		return {
-			username: this.username,
-			displayName: this.displayName,
-			passwordHash: this.getPasswordHash(),
-			role: this.role,
-			requirePasswordChange: this.requirePasswordChange,
-			createdAt: this.createdAt.toISOString(),
-			updatedAt: this.updatedAt.toISOString(),
-			passwordLastChanged: this.passwordLastChanged.toISOString(),
-		};
 	}
 
 	static login(username: string, password: string): User {
@@ -312,6 +258,7 @@ export class User extends InjectableApi {
 			return;
 		}
 
+		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		return new this.User(
 			row.user_id,
 			row.username,
@@ -391,6 +338,80 @@ export class User extends InjectableApi {
 		});
 	}
 
+	private _triggerUpdated(passwordChanged = false) {
+		this._updatedAt = new Date();
+		if (passwordChanged) {
+			this._passwordLastChanged = new Date(this._updatedAt as Date);
+		}
+
+		this.database
+			.prepare(
+				`UPDATE users
+					SET updated_at = :updatedAt
+					${passwordChanged ? ', password_last_changed = :updatedAt' : ''}
+					WHERE user_id = :userId`,
+			)
+			.run({
+				updatedAt: this._updatedAt.getTime(),
+				userId: this.userId,
+			});
+	}
+
+	get username() {
+		return this._username;
+	}
+
+	get displayName() {
+		return this._displayName;
+	}
+
+	get role() {
+		return this._role;
+	}
+
+	get roleLabel() {
+		switch (this.role) {
+			case UserRoles.User: {
+				return 'User';
+			}
+			case UserRoles.Admin: {
+				return 'Admin';
+			}
+			case UserRoles.Owner: {
+				return 'Owner';
+			}
+		}
+	}
+
+	get requirePasswordChange() {
+		return this._requirePasswordChange;
+	}
+
+	get updatedAt(): ReadonlyDate {
+		return new Date(this._updatedAt as Date);
+	}
+
+	get createdAt(): ReadonlyDate {
+		return new Date(this._createdAt as Date);
+	}
+
+	get passwordLastChanged(): ReadonlyDate {
+		return new Date(this._passwordLastChanged as Date);
+	}
+
+	toJson(): JsonUser {
+		return {
+			username: this.username,
+			displayName: this.displayName,
+			passwordHash: this.getPasswordHash(),
+			role: this.role,
+			requirePasswordChange: this.requirePasswordChange,
+			createdAt: this.createdAt.toISOString(),
+			updatedAt: this.updatedAt.toISOString(),
+			passwordLastChanged: this.passwordLastChanged.toISOString(),
+		};
+	}
+
 	permissionToCreateUser(): boolean {
 		// Basically invite-only, ask an admin for an account
 		return this.role >= UserRoles.Admin;
@@ -423,32 +444,13 @@ export class User extends InjectableApi {
 		return this.role === UserRoles.Owner;
 	}
 
-	private _triggerUpdated(passwordChanged = false) {
-		this._updatedAt = new Date();
-		if (passwordChanged) {
-			this._passwordLastChanged = new Date(this._updatedAt as Date);
-		}
-
-		this.database
-			.prepare(
-				`UPDATE users
-					SET updated_at = :updatedAt
-					${passwordChanged ? ', password_last_changed = :updatedAt' : ''}
-					WHERE user_id = :userId`,
-			)
-			.run({
-				updatedAt: this._updatedAt.getTime(),
-				userId: this.userId,
-			});
-	}
-
 	getPasswordHash() {
 		const hash = this.database
 			.prepare(
 				`SELECT password FROM users
 					WHERE user_id = :userId`,
 			)
-			.get({userId: this.userId}) as {password: string} | undefined;
+			.get({userId: this.userId}) as undefined | {password: string};
 
 		if (!hash) {
 			throw new ApiError('Internal error! Try refreshing the page.');

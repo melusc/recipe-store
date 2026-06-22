@@ -37,7 +37,7 @@ userRouter.get('/', (_request, response, next) => {
 
 userRouter.get('/:id', async (request, response, next) => {
 	const requestUser = response.locals.user;
-	const profileUserId = Number.parseInt(request.params.id, 10);
+	const profileUserId = Math.trunc(Number(request.params.id));
 	const profileUser = response.locals.api.User.fromUserid(profileUserId);
 
 	if (!profileUser) {

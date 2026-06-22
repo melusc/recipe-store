@@ -98,7 +98,8 @@ apiTest.for<[query: string, ...expectedRecipeTitles: string[]]>([
 	'recipeMatchesFilter(%j)',
 	async ([query, ...expectedTitles], {api: {User, Recipe}}) => {
 		const expectedTitlesSet = new Set(expectedTitles);
-		const queryParsed = new QueryParser(query).parse();
+		const queryParser = new QueryParser(query);
+		const queryParsed = queryParser.parse();
 
 		const user1 = User.create(
 			'michaelcaine33',

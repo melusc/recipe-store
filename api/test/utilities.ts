@@ -31,7 +31,9 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 await mkdir(parentTemporaryDirectory, {recursive: true});
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
 type UtilityApi = Readonly<
@@ -54,9 +56,10 @@ export const sampleImagePaths = {
 
 export const sampleImageHashes = Object.fromEntries(
 	await Promise.all(
-		Object.entries(sampleImagePaths).map(([name, path]) =>
-			hashFile(path).then(hash => [name, hash]),
-		),
+		Object.entries(sampleImagePaths).map(async ([name, path]) => {
+			const hash = await hashFile(path);
+			return [name, hash];
+		}),
 	),
 ) as {
 	jpg: string;
@@ -84,7 +87,9 @@ export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
 	async api({}, use: Use<UtilityApi>) {
 		const permanentImageDirectory = new URL(
-			`${randomBytes(20).toString('base64url')}/`,
+			`${randomBytes(20).toBase64({
+				alphabet: 'base64url',
+			})}/`,
 			parentTemporaryDirectory,
 		);
 		const temporaryImageDirectory = new URL('temp/', permanentImageDirectory);

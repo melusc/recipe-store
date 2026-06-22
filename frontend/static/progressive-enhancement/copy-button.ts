@@ -36,6 +36,7 @@ function handleCopy(targetButton: HTMLElement) {
 		selection.addRange(range);
 
 		const copyValue =
+			// eslint-disable-next-line unicorn/prefer-minimal-ternary
 			targetInput instanceof HTMLInputElement
 				? targetInput.value
 				: targetInput.textContent;

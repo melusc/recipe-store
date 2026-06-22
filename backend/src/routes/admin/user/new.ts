@@ -33,8 +33,6 @@ adminNewUserRouter.get('/', (_request, response) => {
 });
 
 adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
-	const requestUser = response.locals.user!;
-
 	if (!csrf.validate(request, response)) {
 		response
 			.status(403)
@@ -57,6 +55,7 @@ adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 		}
 	}
 
+	const requestUser = response.locals.user!;
 	let role = UserRoles.User;
 	if (requestUser.role === UserRoles.Owner) {
 		try {

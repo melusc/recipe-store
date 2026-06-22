@@ -52,7 +52,6 @@ accountDeleteRouter.post(
 
 		const body = (request.body ?? {}) as Record<string, unknown>;
 		const password = body['password'];
-		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
 
 		if (typeof password !== 'string' || !password) {
 			response
@@ -74,8 +73,11 @@ accountDeleteRouter.post(
 			return;
 		}
 
+		const shouldDeleteRecipes = body['delete-recipes'] === 'on';
+
 		try {
 			await response.locals.user?.deleteUser(
+				// eslint-disable-next-line unicorn/prefer-minimal-ternary
 				shouldDeleteRecipes
 					? UserDeletion.DeleteRecipes
 					: UserDeletion.KeepRecipes,

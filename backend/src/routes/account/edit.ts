@@ -40,10 +40,6 @@ accountEditRouter.post(
 	session.guard(UserRoles.User),
 	formdataMiddleware.none(),
 	(request, response) => {
-		const user = response.locals.user!;
-		const body = (request.body ?? {}) as Record<string, unknown>;
-		const errors = [];
-
 		if (!csrf.validate(request, response)) {
 			response
 				.send(400)
@@ -52,6 +48,10 @@ accountEditRouter.post(
 				]);
 			return;
 		}
+
+		const user = response.locals.user!;
+		const body = (request.body ?? {}) as Record<string, unknown>;
+		const errors = [];
 
 		try {
 			const username = readAccountForm.username(body);

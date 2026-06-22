@@ -116,10 +116,10 @@ async function uploadImage(
 			response.headers.get('X-CSRF-Token') || csrfTokenInput.value;
 
 		const json = (await response.json()) as
+			| UploadedImage
 			| {
 					error: string;
-			  }
-			| UploadedImage;
+			  };
 		if ('error' in json) {
 			uploadedImage = undefined;
 			return json['error'];
@@ -164,9 +164,6 @@ function setImagePreviewVisibilities(type: 'success' | 'uploading' | 'error') {
 	imagePreview.classList.toggle('d-none', type !== 'success');
 }
 
-/**
- * @param {string} url
- */
 function showUploadSuccess() {
 	setImagePreviewVisibilities('success');
 	imagePreview.src = uploadedImage!.url;

@@ -31,7 +31,7 @@ deleteRecipeRouter.get<{id: string}>(
 	'/:id/delete',
 	session.guard(UserRoles.User),
 	async (request, response, next) => {
-		const recipeId = Number.parseInt(request.params.id, 10);
+		const recipeId = Math.trunc(Number(request.params.id));
 		const recipe = await response.locals.api.Recipe.fromRecipeId(recipeId);
 
 		if (!recipe) {
@@ -57,7 +57,7 @@ deleteRecipeRouter.post<{id: string}>(
 	session.guard(UserRoles.User),
 	formdataMiddleware.none(),
 	async (request, response, next) => {
-		const recipeId = Number.parseInt(request.params.id, 10);
+		const recipeId = Math.trunc(Number(request.params.id));
 		const recipe = await response.locals.api.Recipe.fromRecipeId(recipeId);
 
 		if (!recipe) {

@@ -35,7 +35,7 @@ newRecipeRouter.post(
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		if (!csrf.validate(request, response)) {
-			// Don't save image for csrf violation
+			// Don't save image for CSRF violation
 			response
 				.status(403)
 				.send$.newRecipe(body, [
@@ -63,8 +63,6 @@ newRecipeRouter.post(
 		} catch (error: unknown) {
 			errors.push((error as Error).message);
 		}
-		const duration = readForm.duration(body);
-		const source = readForm.source(body);
 
 		if (errors.length > 0) {
 			response.status(400).send$.newRecipe(
@@ -78,6 +76,9 @@ newRecipeRouter.post(
 			);
 			return;
 		}
+
+		const duration = readForm.duration(body);
+		const source = readForm.source(body);
 
 		const recipe = await response.locals.api.Recipe.create(
 			title,

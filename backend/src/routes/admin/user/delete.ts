@@ -27,7 +27,7 @@ import {formdataMiddleware} from '../../../upload.ts';
 export const adminUserDeleteRouter = Router();
 
 adminUserDeleteRouter.get('/:id/delete', (request, response, next) => {
-	const id = Number.parseInt(request.params.id, 10);
+	const id = Math.trunc(Number(request.params.id));
 	const user = response.locals.api.User.fromUserid(id);
 	if (!user) {
 		next();
@@ -41,7 +41,7 @@ adminUserDeleteRouter.post<{id: string}>(
 	'/:id/delete',
 	formdataMiddleware.none(),
 	async (request, response, next) => {
-		const id = Number.parseInt(request.params.id, 10);
+		const id = Math.trunc(Number(request.params.id));
 		const user = response.locals.api.User.fromUserid(id);
 		if (!user) {
 			next();
@@ -64,6 +64,7 @@ adminUserDeleteRouter.post<{id: string}>(
 
 		try {
 			await user.deleteUser(
+				// eslint-disable-next-line unicorn/prefer-minimal-ternary
 				shouldDeleteRecipes
 					? UserDeletion.DeleteRecipes
 					: UserDeletion.KeepRecipes,

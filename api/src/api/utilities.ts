@@ -21,9 +21,9 @@
 export type ReadonlyDate = Readonly<Omit<Date, `set${string}`>>;
 
 export class DynamicPaginationResult<T> {
+	private readonly hasNextPage: boolean;
 	public readonly page: number;
 	public readonly items: readonly T[];
-	private readonly hasNextPage: boolean;
 	public readonly lastPage: number | undefined;
 	public readonly perPageLimit: number;
 

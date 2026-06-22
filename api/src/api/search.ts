@@ -244,17 +244,15 @@ const filterMatchers = {
 			filterMatchers.contains(filterValue, recipe)
 		);
 	},
-	title(filterValue: string, recipe: Recipe) {
-		return searchContains(filterValue, recipe.title);
-	},
-	tagged(filterValue: string, recipe: Recipe) {
-		return recipe.tags.some(
+	title: (filterValue: string, recipe: Recipe) =>
+		searchContains(filterValue, recipe.title),
+	tagged: (filterValue: string, recipe: Recipe) =>
+		recipe.tags.some(
 			tag =>
 				makeSlug(tag, {
 					appendRandomHex: false,
 				}) === filterValue || searchContains(filterValue, tag),
-		);
-	},
+		),
 	author(filterValue: string, recipe: Recipe) {
 		if (!recipe.author) {
 			return false;
@@ -284,11 +282,8 @@ const filterMatchers = {
 
 		return false;
 	},
-	source(filterValue: string, recipe: Recipe) {
-		return (
-			recipe.source !== undefined && searchContains(filterValue, recipe.source)
-		);
-	},
+	source: (filterValue: string, recipe: Recipe) =>
+		recipe.source !== undefined && searchContains(filterValue, recipe.source),
 } as const;
 
 export function recipeMatchesFilter(

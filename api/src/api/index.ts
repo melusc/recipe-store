@@ -122,31 +122,31 @@ export function createApi(options: ApiOptions): Api {
 	};
 
 	class RecipeInjected extends Recipe {
-		override get apiOptions(): InternalApiOptions {
+		static override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 
-		static override get apiOptions(): InternalApiOptions {
+		override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 	}
 
 	class UserInjected extends User {
-		override get apiOptions(): InternalApiOptions {
+		static override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 
-		static override get apiOptions(): InternalApiOptions {
+		override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 	}
 
 	class ImageInjected extends Image {
-		override get apiOptions(): InternalApiOptions {
+		static override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 
-		static override get apiOptions(): InternalApiOptions {
+		override get apiOptions(): InternalApiOptions {
 			return internalApiOptions;
 		}
 	}
