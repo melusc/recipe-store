@@ -40,12 +40,42 @@ after quick googling.
 
 export class InjectableApi {
 	/** @internal */
-	get apiOptions(): InternalApiOptions {
+	static get apiOptions(): InternalApiOptions {
 		throw new Error('API Options not injected.');
 	}
 
 	/** @internal */
-	static get apiOptions(): InternalApiOptions {
+	static get User() {
+		return this.apiOptions.User;
+	}
+
+	/** @internal */
+	static get Recipe() {
+		return this.apiOptions.Recipe;
+	}
+
+	/** @internal */
+	static get Image() {
+		return this.apiOptions.Image;
+	}
+
+	/** @internal */
+	static get imageDirectory() {
+		return this.apiOptions.imageDirectory;
+	}
+
+	/** @internal */
+	static get temporaryImageDirectory() {
+		return this.apiOptions.temporaryImageDirectory;
+	}
+
+	/** @internal */
+	static get database() {
+		return this.apiOptions.database;
+	}
+
+	/** @internal */
+	get apiOptions(): InternalApiOptions {
 		throw new Error('API Options not injected.');
 	}
 
@@ -55,17 +85,7 @@ export class InjectableApi {
 	}
 
 	/** @internal */
-	static get User() {
-		return this.apiOptions.User;
-	}
-
-	/** @internal */
 	get Recipe() {
-		return this.apiOptions.Recipe;
-	}
-
-	/** @internal */
-	static get Recipe() {
 		return this.apiOptions.Recipe;
 	}
 
@@ -75,17 +95,7 @@ export class InjectableApi {
 	}
 
 	/** @internal */
-	static get Image() {
-		return this.apiOptions.Image;
-	}
-
-	/** @internal */
 	get imageDirectory() {
-		return this.apiOptions.imageDirectory;
-	}
-
-	/** @internal */
-	static get imageDirectory() {
 		return this.apiOptions.imageDirectory;
 	}
 
@@ -95,17 +105,7 @@ export class InjectableApi {
 	}
 
 	/** @internal */
-	static get temporaryImageDirectory() {
-		return this.apiOptions.temporaryImageDirectory;
-	}
-
-	/** @internal */
 	get database() {
-		return this.apiOptions.database;
-	}
-
-	/** @internal */
-	static get database() {
 		return this.apiOptions.database;
 	}
 }

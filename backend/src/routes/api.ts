@@ -65,7 +65,7 @@ apiRouter.post(
 		}
 
 		if (image) {
-			const deletionKey = randomBytes(256).toString('base64url');
+			const deletionKey = randomBytes(256).toBase64({alphabet: 'base64url'});
 			deletionKeys.set(deletionKey, image);
 
 			response.json({

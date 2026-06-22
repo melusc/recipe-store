@@ -20,11 +20,13 @@
 
 const form = document.querySelector<HTMLFormElement>('#account-form')!;
 const passwordInputs = [
-	...form.querySelectorAll<HTMLInputElement>('input[type="password"]'),
+	...form.querySelectorAll<HTMLInputElement>(':scope input[type="password"]'),
 ];
-const newPasswordInput = form.querySelector<HTMLInputElement>('#new-password')!;
+const newPasswordInput = form.querySelector<HTMLInputElement>(
+	':scope #new-password',
+)!;
 const newPasswordRepeatInput = form.querySelector<HTMLInputElement>(
-	'#new-password-repeat',
+	':scope #new-password-repeat',
 )!;
 
 const allPasswordsRequired = passwordInputs.every(input => input.required);

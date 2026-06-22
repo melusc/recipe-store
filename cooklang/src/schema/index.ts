@@ -27,6 +27,8 @@ import {
 } from './cooking-items.js';
 import {stepItems, stepSchema} from './section.js';
 
+/* eslint-disable unicorn/max-nested-calls */
+
 /* @__PURE__ */
 const cooklangSectionBase = object({
 	ingredients: array(ingredientSchema).readonly(),
@@ -68,3 +70,5 @@ export const cooklangSectionSchema = cooklangSectionRoundtrip.or(
 );
 
 export type CooklangSection = z.infer<typeof cooklangSectionSchema>;
+
+/* eslint-enable unicorn/max-nested-calls */

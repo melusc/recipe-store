@@ -85,7 +85,7 @@ describe('Image', () => {
 	apiTest('Rejects too large images', async ({api: {Image}}) => {
 		let buffer = await readFile(sampleImagePaths.png);
 
-		// This keeps it a valid png per `file-type`
+		// This keeps it a valid PNG per `file-type`
 		// as headers are unchanged
 		while (buffer.byteLength < 11e6) {
 			buffer = Buffer.concat([buffer, buffer]);

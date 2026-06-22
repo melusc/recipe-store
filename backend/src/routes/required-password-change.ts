@@ -49,9 +49,6 @@ requiredPasswordChangeRouter.post(
 	'/',
 	formdataMiddleware.none(),
 	(request, response) => {
-		const user = response.locals.user!;
-		const body = (request.body ?? {}) as Record<string, unknown>;
-
 		if (!csrf.validate(request, response)) {
 			response
 				.send(400)
@@ -60,6 +57,9 @@ requiredPasswordChangeRouter.post(
 				]);
 			return;
 		}
+
+		const user = response.locals.user!;
+		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		try {
 			const newPassword = readAccountForm.newPasswords(body);

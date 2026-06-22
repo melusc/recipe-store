@@ -81,8 +81,8 @@ export const readAccountForm = {
 		const displayName = body['displayname'];
 		if (typeof displayName !== 'string' || displayName.trim().length < 4) {
 			throw new Error('Display Name is too short.');
-		} else {
-			return displayName.trim();
 		}
+
+		return displayName.trim();
 	},
 };

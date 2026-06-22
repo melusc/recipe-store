@@ -23,7 +23,7 @@ import {Router} from 'express';
 export const viewRecipeRouter = Router();
 
 viewRecipeRouter.get('/:id', async (request, response, next) => {
-	const requestId = Number.parseInt(request.params.id, 10);
+	const requestId = Math.trunc(Number(request.params.id));
 	const recipe = await response.locals.api.Recipe.fromRecipeId(requestId);
 
 	if (!recipe) {

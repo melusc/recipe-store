@@ -63,17 +63,17 @@ export function Pagination({
 	let high = nextPage || currentPage;
 	high = Math.min(high + 1, dynamicLastPage);
 
-	const pages = Array.from(
-		{length: high - low + 1},
-		(_v, index) => low + index,
-	);
-
 	// Don't show pagination if it is just going
 	// to show only Previous and Next with both disabled
 	// Though do show pagination even if it is the only page
 	if (paginationResult.items.length === 0 && !previousPage && !nextPage) {
 		return;
 	}
+
+	const pages = Array.from(
+		{length: high - low + 1},
+		(_v, index) => low + index,
+	);
 
 	return (
 		<nav aria-label="Page navigation">

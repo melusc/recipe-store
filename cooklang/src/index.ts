@@ -78,18 +78,22 @@ export function sectionToText(section: CooklangSection) {
 		switch (item.type) {
 			case 'text': {
 				result.push(item.value);
+				// eslint-disable-next-line unicorn/no-break-in-nested-loop
 				break;
 			}
 			case 'cookware': {
 				result.push(cookwareToText(cookware[item.index]!, true));
+				// eslint-disable-next-line unicorn/no-break-in-nested-loop
 				break;
 			}
 			case 'timer': {
 				result.push(timerToText(timers[item.index]!));
+				// eslint-disable-next-line unicorn/no-break-in-nested-loop
 				break;
 			}
 			case 'ingredient': {
 				result.push(ingredientToText(ingredients[item.index]!, true));
+				// eslint-disable-next-line unicorn/no-break-in-nested-loop
 				break;
 			}
 		}

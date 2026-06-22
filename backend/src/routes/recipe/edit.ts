@@ -36,14 +36,15 @@ editRecipeRouter.post<{id: string}>(
 	async (request, response, next) => {
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
-		const id = Number.parseInt(request.params.id, 10);
+		const id = Math.trunc(Number(request.params.id));
 		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
-		const requestUser = response.locals.user;
 
 		if (!recipe) {
 			next();
 			return;
 		}
+
+		const requestUser = response.locals.user;
 
 		if (!recipe.permissionToModifyRecipe(requestUser!)) {
 			next(new UnauthorisedError());
@@ -51,7 +52,7 @@ editRecipeRouter.post<{id: string}>(
 		}
 
 		if (!csrf.validate(request, response)) {
-			// Don't save image for csrf violation
+			// Don't save image for CSRF violation
 			response
 				.status(403)
 				.send$.editRecipe(recipe, body, [
@@ -79,8 +80,6 @@ editRecipeRouter.post<{id: string}>(
 		} catch (error: unknown) {
 			errors.push((error as Error).message);
 		}
-		const duration = readForm.duration(body);
-		const source = readForm.source(body);
 
 		if (errors.length > 0) {
 			response.status(400).send$.editRecipe(
@@ -95,6 +94,9 @@ editRecipeRouter.post<{id: string}>(
 			);
 			return;
 		}
+
+		const duration = readForm.duration(body);
+		const source = readForm.source(body);
 
 		// All the methods check if it has actually changed
 		// so no need to check here
@@ -118,15 +120,15 @@ editRecipeRouter.get<{id: string}>(
 	'/:id/edit',
 	session.guard(UserRoles.User),
 	async (request, response, next) => {
-		const id = Number.parseInt(request.params.id, 10);
+		const id = Math.trunc(Number(request.params.id));
 		const recipe = await response.locals.api.Recipe.fromRecipeId(id);
-		const requestUser = response.locals.user;
 
 		if (!recipe) {
 			next();
 			return;
 		}
 
+		const requestUser = response.locals.user;
 		if (!recipe.permissionToModifyRecipe(requestUser!)) {
 			next(new UnauthorisedError());
 			return;

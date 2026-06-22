@@ -32,11 +32,7 @@ import JSZip from 'jszip';
 export async function createBackup(api: Api) {
 	const zip = new JSZip();
 
-	const users: JsonUser[] = [];
-
-	for (const user of api.User.all()) {
-		users.push(user.toJson());
-	}
+	const users: JsonUser[] = Array.from(api.User.all(), user => user.toJson());
 
 	zip.file('users.json', JSON.stringify(users, undefined, '\t'));
 
@@ -51,7 +47,8 @@ export async function createBackup(api: Api) {
 
 	zip.file('recipes.json', JSON.stringify(recipes, undefined, '\t'));
 
-	const filenameDate = new Date().toISOString().replaceAll(':', '.');
+	const now = new Date();
+	const filenameDate = now.toISOString().replaceAll(':', '.');
 	const filename = `recipe-store-backup-${filenameDate}.zip`;
 
 	return {

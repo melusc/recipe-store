@@ -24,7 +24,7 @@ noJsInput.classList.add('d-none');
 // Don't even send it to the server
 // Scenario in mind: User wants to remove all tags,
 // server sees no `tags-js` so it uses `tags-nojs`
-noJsInput.querySelector('input')!.name = '';
+noJsInput.querySelector<HTMLInputElement>(':scope input')!.name = '';
 
 const jsInput = document.querySelector<HTMLElement>('#js-tags')!;
 jsInput.classList.remove('d-none');
@@ -54,8 +54,9 @@ function splitIntoTags(shouldAddAll: boolean) {
 			}
 
 			const tag = tagTemplate.content.cloneNode(true) as HTMLElement;
-			tag.querySelector<HTMLInputElement>('input[name="tags-js"]')!.value =
-				item;
+			tag.querySelector<HTMLInputElement>(
+				':scope input[name="tags-js"]',
+			)!.value = item;
 			tagsInput.before(tag);
 		}
 
@@ -69,11 +70,13 @@ function splitIntoTags(shouldAddAll: boolean) {
 }
 
 tagsInput.addEventListener('keydown', event => {
-	if (event.code && event.code.toLowerCase() === 'enter') {
-		event.stopImmediatePropagation();
-		event.preventDefault();
-		splitIntoTags(true);
+	if (!event.code || event.code.toLowerCase() !== 'enter') {
+		return;
 	}
+
+	event.stopImmediatePropagation();
+	event.preventDefault();
+	splitIntoTags(true);
 });
 
 function handleButton(event: Event) {

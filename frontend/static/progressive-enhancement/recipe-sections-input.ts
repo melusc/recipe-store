@@ -24,7 +24,7 @@ const noJsSections = document.querySelector<HTMLElement>(
 // noJs-textarea won't be updated
 // noJs content gets prioritised serverside, so don't submit it
 // so it doesn't get used
-noJsSections.querySelector('textarea')!.name = '';
+noJsSections.querySelector<HTMLTextAreaElement>(':scope textarea')!.name = '';
 noJsSections.classList.add('d-none');
 
 const jsSections = document.querySelector<HTMLElement>('#js-sections')!;

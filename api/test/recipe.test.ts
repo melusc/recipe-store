@@ -551,7 +551,7 @@ apiTest('Recipe search pagination', async ({api: {Recipe, User}}) => {
 	const user = User.create('xdshb', 'dcuml', 'rkkec', UserRoles.User, false);
 
 	await Promise.all(
-		Array.from({length: 50}).map((_v, index) =>
+		Array.from({length: 50}, (_v, index) =>
 			Recipe.create(
 				`Banana Cake ${index}`,
 				user,
