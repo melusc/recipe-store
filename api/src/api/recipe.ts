@@ -36,6 +36,8 @@ import {
 	type ReadonlyDate,
 } from './utilities.js';
 
+/* eslint-disable unicorn/consistent-class-member-order */
+
 export type RecipeSection = {
 	source: string;
 	parsed: CooklangSection;
@@ -184,7 +186,6 @@ export class Recipe extends InjectableApi {
 				duration: duration ?? null,
 			}) as {recipe_id: number};
 
-		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		const recipe = new this.Recipe(
 			recipeId,
 			title,
@@ -462,7 +463,6 @@ export class Recipe extends InjectableApi {
 
 		const image = row.image ? await this.Image.fromName(row.image) : undefined;
 
-		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		const recipe = new this.Recipe(
 			row.recipe_id,
 			row.title,
@@ -799,3 +799,5 @@ export class Recipe extends InjectableApi {
 		return other.role >= UserRoles.Admin;
 	}
 }
+
+/* eslint-enable unicorn/consistent-class-member-order */

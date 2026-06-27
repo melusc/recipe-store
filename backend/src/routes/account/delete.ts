@@ -77,7 +77,6 @@ accountDeleteRouter.post(
 
 		try {
 			await response.locals.user?.deleteUser(
-				// eslint-disable-next-line unicorn/prefer-minimal-ternary
 				shouldDeleteRecipes
 					? UserDeletion.DeleteRecipes
 					: UserDeletion.KeepRecipes,

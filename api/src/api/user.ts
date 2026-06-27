@@ -25,6 +25,8 @@ import {InjectableApi} from './injectable.js';
 import type {Recipe} from './recipe.js';
 import {PaginationResult, type ReadonlyDate} from './utilities.js';
 
+/* eslint-disable unicorn/consistent-class-member-order */
+
 // Use integers to indicate hierarchy
 // Allows comparison of level using lt and gt operator
 // Allow for theoretical future roles with fewer permissions
@@ -177,7 +179,6 @@ export class User extends InjectableApi {
 				passwordLastChanged: passwordLastChanged.getTime(),
 			}) as {user_id: number};
 
-		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		return new this.User(
 			userId,
 			username,
@@ -258,7 +259,6 @@ export class User extends InjectableApi {
 			return;
 		}
 
-		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		return new this.User(
 			row.user_id,
 			row.username,
@@ -430,11 +430,7 @@ export class User extends InjectableApi {
 			return true;
 		}
 
-		if (this.role === UserRoles.Admin && other.role < UserRoles.Admin) {
-			return true;
-		}
-
-		return false;
+		return this.role === UserRoles.Admin && other.role < UserRoles.Admin;
 	}
 
 	permissionToChangeRole(other: User): boolean {
@@ -631,3 +627,5 @@ export class User extends InjectableApi {
 			});
 	}
 }
+
+/* eslint-enable unicorn/consistent-class-member-order */

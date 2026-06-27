@@ -26,13 +26,15 @@ import type {Api} from 'api';
 export async function cleanImages(api: Api, imageDirectory: URL) {
 	const imagesToKeep = new Set();
 
+	// eslint-disable-next-line unicorn/no-unreadable-for-of-expression
 	for (const recipe of await api.Recipe.all()) {
 		if (recipe.image) {
 			imagesToKeep.add(recipe.image.name);
 		}
 	}
 
-	for (const file of await readdir(imageDirectory, {withFileTypes: true})) {
+	const files = await readdir(imageDirectory, {withFileTypes: true});
+	for (const file of files) {
 		if (!file.isFile()) {
 			continue;
 		}
