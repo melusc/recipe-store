@@ -64,7 +64,6 @@ adminUserDeleteRouter.post<{id: string}>(
 
 		try {
 			await user.deleteUser(
-				// eslint-disable-next-line unicorn/prefer-minimal-ternary
 				shouldDeleteRecipes
 					? UserDeletion.DeleteRecipes
 					: UserDeletion.KeepRecipes,

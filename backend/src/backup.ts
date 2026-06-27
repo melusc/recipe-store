@@ -38,6 +38,7 @@ export async function createBackup(api: Api) {
 
 	const recipes: JsonRecipe[] = [];
 
+	// eslint-disable-next-line unicorn/no-unreadable-for-of-expression
 	for (const recipe of await api.Recipe.all()) {
 		recipes.push(recipe.toJson());
 		if (recipe.image) {

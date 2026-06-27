@@ -31,6 +31,8 @@ import {fileTypeFromBuffer} from 'file-type';
 import {ApiError} from './error.js';
 import {InjectableApi} from './injectable.js';
 
+/* eslint-disable unicorn/consistent-class-member-order */
+
 async function detectExiftoolSupport(): Promise<boolean> {
 	const childProcess = spawn('exiftool', ['--help'], {
 		env: {
@@ -128,7 +130,7 @@ export class Image extends InjectableApi {
 		const permanentPath = this._resolvePath(name, ImageSaveType.PermanentImage);
 		try {
 			await stat(permanentPath);
-			// eslint-disable-next-line unicorn/no-unreadable-new-expression
+
 			return new this.Image(
 				name,
 				ImageSaveType.PermanentImage,
@@ -139,7 +141,7 @@ export class Image extends InjectableApi {
 		const temporaryPath = this._resolvePath(name, ImageSaveType.TemporaryImage);
 		try {
 			await stat(temporaryPath);
-			// eslint-disable-next-line unicorn/no-unreadable-new-expression
+
 			return new this.Image(
 				name,
 				ImageSaveType.TemporaryImage,
@@ -174,14 +176,12 @@ export class Image extends InjectableApi {
 			}
 		}
 
-		// eslint-disable-next-line unicorn/no-unreadable-new-expression
 		return new this.Image(fileName, saveType, privateConstructorKey);
 	}
 
 	private static _resolvePath(name: string, saveType: ImageSaveType) {
 		return new URL(
 			name,
-			// eslint-disable-next-line unicorn/prefer-minimal-ternary
 			saveType === ImageSaveType.PermanentImage
 				? this.imageDirectory
 				: this.temporaryImageDirectory,
@@ -220,3 +220,5 @@ export class Image extends InjectableApi {
 		return newImage;
 	}
 }
+
+/* eslint-enable unicorn/consistent-class-member-order */
