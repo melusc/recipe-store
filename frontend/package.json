@@ -12,7 +12,7 @@
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.13.2",
 		"esbuild": "^0.28.1",
-		"eslint": "^10.5.0",
+		"eslint": "^10.6.0",
 		"typescript": "^6.0.3"
 	},
 	"engines": {
@@ -27,7 +27,7 @@
 		"@lusc/util": "^2.1.1",
 		"api": "workspace:^",
 		"cooklang": "workspace:^",
-		"preact": "^10.29.2",
+		"preact": "^10.29.3",
 		"preact-render-to-string": "^6.7.0"
 	}
 }
