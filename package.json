@@ -1,8 +1,8 @@
 {
 	"type": "module",
-	"packageManager": "pnpm@11.9.0",
+	"packageManager": "pnpm@11.10.0",
 	"devDependencies": {
-		"prettier": "^3.9.1"
+		"prettier": "^3.9.4"
 	},
 	"private": true,
 	"scripts": {
