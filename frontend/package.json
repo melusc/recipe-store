@@ -7,7 +7,7 @@
 	},
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^15.0.2",
+		"@lusc/eslint-config": "^17.0.0",
 		"@lusc/tsconfig": "^7.2.1",
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.13.3",
