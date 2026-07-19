@@ -4,7 +4,7 @@
 	"exports": "./dist/index.js",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^17.0.0",
+		"@lusc/eslint-config": "^18.0.0",
 		"@lusc/tsconfig": "^7.2.1",
 		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^24.13.3",
