@@ -43,7 +43,7 @@ function splitIntoTags(shouldAddAll: boolean) {
 
 	const split = text.split(',');
 
-	if (split.length > 1 || shouldAddAll) {
+	if (shouldAddAll || split.length > 1) {
 		const relevantParts = shouldAddAll ? split : split.slice(0, -1);
 		for (let item of relevantParts) {
 			cursorLocation -= item.length + 1;

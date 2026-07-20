@@ -26,6 +26,7 @@ import {describe, expect} from 'vitest';
 import {ImageSaveType} from '../src/api/image.js';
 import {ApiError} from '../src/index.js';
 
+// eslint-disable-next-line node-test/no-import-test-files
 import {apiTest, sampleImagePaths} from './utilities.js';
 
 describe('Image', () => {
