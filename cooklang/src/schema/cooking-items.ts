@@ -56,13 +56,13 @@ function ingredientOrCookwareToText(
 ) {
 	const result: string[] = [];
 
-	if (item.alias && !inline) {
+	if (!inline && item.alias) {
 		result.push(item.alias);
 	} else if (item.name) {
 		result.push(item.name);
 	}
 
-	if (item.note && inline) {
+	if (inline && item.note) {
 		result.push(' (', item.note, ')');
 	}
 

@@ -23,6 +23,7 @@ import {describe, expect, test} from 'vitest';
 import {QueryParser, recipeMatchesFilter} from '../src/api/search.js';
 import {UserRoles} from '../src/index.js';
 
+// eslint-disable-next-line node-test/no-import-test-files
 import {apiTest} from './utilities.js';
 
 describe('QueryParser', () => {

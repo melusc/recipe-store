@@ -66,7 +66,7 @@ export function Pagination({
 	// Don't show pagination if it is just going
 	// to show only Previous and Next with both disabled
 	// Though do show pagination even if it is the only page
-	if (paginationResult.items.length === 0 && !previousPage && !nextPage) {
+	if (!previousPage && !nextPage && paginationResult.items.length === 0) {
 		return;
 	}
 
