@@ -7,12 +7,12 @@
 	},
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^18.0.0",
+		"@lusc/eslint-config": "^18.1.0",
 		"@lusc/tsconfig": "^7.2.1",
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.13.3",
 		"esbuild": "^0.28.1",
-		"eslint": "^10.6.0",
+		"eslint": "^10.8.1",
 		"typescript": "^6.0.3"
 	},
 	"engines": {
@@ -27,7 +27,7 @@
 		"@lusc/util": "^2.1.1",
 		"api": "workspace:^",
 		"cooklang": "workspace:^",
-		"preact": "^10.29.7",
+		"preact": "^10.29.8",
 		"preact-render-to-string": "^6.7.0"
 	}
 }
