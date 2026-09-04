@@ -4,7 +4,7 @@
 	"exports": "./dist/index.js",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^18.1.0",
+		"@lusc/eslint-config": "^18.2.0",
 		"@lusc/tsconfig": "^7.2.1",
 		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^24.13.3",
@@ -27,6 +27,6 @@
 		"@node-rs/bcrypt": "^1.10.8",
 		"cooklang": "workspace:^",
 		"file-type": "^22.0.2",
-		"zod": "^4.4.3"
+		"zod": "^4.5.4"
 	}
 }
