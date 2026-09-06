@@ -61,7 +61,7 @@ adminUserEditRouter.post<{id: string}>(
 		const body = (request.body ?? {}) as Record<string, unknown>;
 
 		let role = user.role;
-		if (requestUser.permissionToChangeRole(user)) {
+		if (requestUser.permissionToChangeRole()) {
 			try {
 				role = readAccountForm.role(body);
 			} catch (error: unknown) {
@@ -121,7 +121,7 @@ adminUserEditRouter.post<{id: string}>(
 			user.updateRequirePasswordChange(true);
 		}
 
-		if (requestUser.permissionToChangeRole(user)) {
+		if (requestUser.permissionToChangeRole()) {
 			user.changeRole(role);
 		}
 		user.changeDisplayName(displayName);
