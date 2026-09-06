@@ -424,18 +424,11 @@ apiTest('User permissions', ({api: {User}}) => {
 	// =========== permissionToChangeRole ===========
 
 	// Only owner is allowed to modify any roles
-	// to allow owner to keep overview and some control
-	expect(owner1.permissionToChangeRole(owner2)).toStrictEqual(true);
-	expect(owner1.permissionToChangeRole(admin2)).toStrictEqual(true);
-	expect(owner1.permissionToChangeRole(user2)).toStrictEqual(true);
+	expect(owner1.permissionToChangeRole()).toStrictEqual(true);
 
-	expect(admin1.permissionToChangeRole(owner2)).toStrictEqual(false);
-	expect(admin1.permissionToChangeRole(admin2)).toStrictEqual(false);
-	expect(admin1.permissionToChangeRole(user2)).toStrictEqual(false);
+	expect(admin1.permissionToChangeRole()).toStrictEqual(false);
 
-	expect(user1.permissionToChangeRole(owner2)).toStrictEqual(false);
-	expect(user1.permissionToChangeRole(admin2)).toStrictEqual(false);
-	expect(user1.permissionToChangeRole(user2)).toStrictEqual(false);
+	expect(user1.permissionToChangeRole()).toStrictEqual(false);
 
 	// =========== permissionToCreateUser ===========
 

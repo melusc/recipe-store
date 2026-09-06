@@ -433,10 +433,7 @@ export class User extends InjectableApi {
 		return this.role === UserRoles.Admin && other.role < UserRoles.Admin;
 	}
 
-	permissionToChangeRole(other: User): boolean {
-		// Doesn't matter who other person is
-		// Only owner
-		void other;
+	permissionToChangeRole(): boolean {
 		return this.role === UserRoles.Owner;
 	}
 

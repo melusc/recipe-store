@@ -85,7 +85,7 @@ export function AccountEditForm({
 				/>
 			</div>
 
-			{adminForm && requestUser.permissionToChangeRole(user) && (
+			{adminForm && requestUser.permissionToChangeRole() && (
 				<>
 					<div>
 						<label for="role" class="form-label">

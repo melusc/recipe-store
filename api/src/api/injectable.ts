@@ -39,72 +39,100 @@ after quick googling.
 */
 
 export class InjectableApi {
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get apiOptions(): InternalApiOptions {
 		throw new Error('API Options not injected.');
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get User() {
 		return this.apiOptions.User;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get Recipe() {
 		return this.apiOptions.Recipe;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get Image() {
 		return this.apiOptions.Image;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get imageDirectory() {
 		return this.apiOptions.imageDirectory;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get temporaryImageDirectory() {
 		return this.apiOptions.temporaryImageDirectory;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	static get database() {
 		return this.apiOptions.database;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get apiOptions(): InternalApiOptions {
 		throw new Error('API Options not injected.');
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get User() {
 		return this.apiOptions.User;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get Recipe() {
 		return this.apiOptions.Recipe;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get Image() {
 		return this.apiOptions.Image;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get imageDirectory() {
 		return this.apiOptions.imageDirectory;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get temporaryImageDirectory() {
 		return this.apiOptions.temporaryImageDirectory;
 	}
 
-	/** @internal */
+	/**
+	 * @internal
+	 */
 	get database() {
 		return this.apiOptions.database;
 	}
