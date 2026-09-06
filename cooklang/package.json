@@ -22,7 +22,7 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@lusc/eslint-config": "^18.1.0",
+		"@lusc/eslint-config": "^18.2.0",
 		"@lusc/tsconfig": "^7.2.1",
 		"@types/node": "^24.13.3",
 		"eslint": "^10.9.1",
@@ -32,6 +32,6 @@
 		"wasm-pack": "^0.15.0"
 	},
 	"dependencies": {
-		"zod": "^4.4.3"
+		"zod": "^4.5.4"
 	}
 }
