@@ -23,7 +23,6 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 COPY . .
 
-RUN pnpm ci
 # Cache cargo registry and output
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
 	--mount=type=cache,target=/app/target \
