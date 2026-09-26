@@ -597,10 +597,12 @@ export class Recipe extends InjectableApi {
 				tagName: tag,
 			});
 
-		if (result.changes > 0) {
-			this._triggerUpdated();
-			this._syncTags();
+		if (result.changes === 0) {
+			return;
 		}
+
+		this._triggerUpdated();
+		this._syncTags();
 	}
 
 	removeTag(tag: string) {
@@ -615,10 +617,12 @@ export class Recipe extends InjectableApi {
 				tagName: tag,
 			});
 
-		if (result.changes > 0) {
-			this._triggerUpdated();
-			this._syncTags();
+		if (result.changes === 0) {
+			return;
 		}
+
+		this._triggerUpdated();
+		this._syncTags();
 	}
 
 	clearTags() {
@@ -792,11 +796,9 @@ export class Recipe extends InjectableApi {
 	}
 
 	permissionToModifyRecipe(other: User) {
-		if (other.userId === this.author?.userId) {
-			return true;
-		}
-
-		return other.role >= UserRoles.Admin;
+		return other.userId === this.author?.userId
+			? true
+			: other.role >= UserRoles.Admin;
 	}
 }
 

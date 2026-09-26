@@ -255,21 +255,19 @@ export class User extends InjectableApi {
 	private static _fromRow(row: SqlUserRow): User;
 	private static _fromRow(row: SqlUserRow | undefined): User | undefined;
 	private static _fromRow(row: SqlUserRow | undefined) {
-		if (!row) {
-			return;
-		}
-
-		return new this.User(
-			row.user_id,
-			row.username,
-			row.displayname,
-			row.role,
-			row.require_pw_change,
-			new Date(row.created_at),
-			new Date(row.updated_at),
-			new Date(row.password_last_changed),
-			privateUsageKey,
-		);
+		return row
+			? new this.User(
+					row.user_id,
+					row.username,
+					row.displayname,
+					row.role,
+					row.require_pw_change,
+					new Date(row.created_at),
+					new Date(row.updated_at),
+					new Date(row.password_last_changed),
+					privateUsageKey,
+				)
+			: undefined;
 	}
 
 	static all(): readonly User[] {
@@ -422,15 +420,11 @@ export class User extends InjectableApi {
 		// Admin can modify lower than admins
 		// Owner can do anything
 
-		if (other.userId === this.userId) {
-			return true;
-		}
-
-		if (this.role === UserRoles.Owner) {
-			return true;
-		}
-
-		return this.role === UserRoles.Admin && other.role < UserRoles.Admin;
+		return (
+			other.userId === this.userId ||
+			this.role === UserRoles.Owner ||
+			(this.role === UserRoles.Admin && other.role < UserRoles.Admin)
+		);
 	}
 
 	permissionToChangeRole(): boolean {

@@ -23,11 +23,9 @@ import {ImageSaveType, type Api, type Image} from 'api';
 function getOptionalField(name: string) {
 	return (body: Record<string, unknown>) => {
 		const value = body[name];
-		if (typeof value !== 'string' || value.trim().length === 0) {
-			return;
-		}
-
-		return value.trim();
+		return typeof value !== 'string' || value.trim().length === 0
+			? undefined
+			: value.trim();
 	};
 }
 
@@ -96,11 +94,9 @@ export const readForm = {
 
 		const uploadedImage = body['uploaded-image'];
 
-		if (typeof uploadedImage !== 'string' || !uploadedImage) {
-			return;
-		}
-
-		return api.Image.fromName(uploadedImage);
+		return typeof uploadedImage !== 'string' || !uploadedImage
+			? undefined
+			: api.Image.fromName(uploadedImage);
 	},
 	title(body: Record<string, unknown>) {
 		const title = body['title'];

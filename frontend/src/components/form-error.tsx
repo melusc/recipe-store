@@ -27,11 +27,7 @@ export function FormError({
 		errors = [errors];
 	}
 
-	if (!errors || errors.length === 0) {
-		return;
-	}
-
-	return (
+	return !errors || errors.length === 0 ? undefined : (
 		<div class="alert alert-danger" role="alert">
 			{errors.length === 1 && errors[0]!}
 			{errors.length > 1 && (

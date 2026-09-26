@@ -26,11 +26,7 @@ function formatDateTime(date: Date, display: string | undefined) {
 		return date.toLocaleDateString();
 	}
 
-	if (display === 'time') {
-		return date.toLocaleTimeString();
-	}
-
-	return date.toLocaleString();
+	return display === 'time' ? date.toLocaleTimeString() : date.toLocaleString();
 }
 
 for (const timeElement of timeElements) {

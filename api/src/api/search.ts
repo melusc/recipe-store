@@ -104,11 +104,9 @@ export class QueryParser {
 
 	resolveQualifier(inputQualifier: string): Qualifier | undefined {
 		inputQualifier = inputQualifier.toLowerCase();
-		if (Object.hasOwn(qualifiers, inputQualifier)) {
-			return qualifiers[inputQualifier]!;
-		}
-
-		return;
+		return Object.hasOwn(qualifiers, inputQualifier)
+			? qualifiers[inputQualifier]!
+			: undefined;
 	}
 
 	readQualifierFilter() {
@@ -132,19 +130,17 @@ export class QueryParser {
 		if (filter.includes(':')) {
 			const [left, ...search] = filter.split(':');
 			const qualifier = this.resolveQualifier(left!);
-			if (qualifier === undefined) {
-				return {
-					qualifier: 'any',
-					filterValue: filter,
-					invert,
-				};
-			}
-
-			return {
-				qualifier,
-				filterValue: search.join(':'),
-				invert,
-			};
+			return qualifier === undefined
+				? {
+						qualifier: 'any',
+						filterValue: filter,
+						invert,
+					}
+				: {
+						qualifier,
+						filterValue: search.join(':'),
+						invert,
+					};
 		}
 
 		return {
@@ -258,13 +254,11 @@ const filterMatchers = {
 			return false;
 		}
 
-		// author:32
 		const asUserId = Number.parseInt(filterValue);
-		if (asUserId === recipe.author.userId) {
-			return true;
-		}
 
 		return (
+			// author:32
+			asUserId === recipe.author.userId ||
 			// author:Michael Caine
 			searchContains(filterValue, recipe.author.displayName) ||
 			// author:michaelcaine33

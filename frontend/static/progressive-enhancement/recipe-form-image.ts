@@ -134,25 +134,25 @@ async function uploadImage(
 
 async function deleteImage() {
 	const deletionKey = uploadedImage?.deletionKey;
-	if (deletionKey) {
-		uploadedImage!.deletionKey = undefined;
+	if (!deletionKey) return;
 
-		const body = new FormData();
-		body.set('deletion-key', deletionKey);
-		body.set('csrf-token', csrfTokenInput.value);
+	uploadedImage!.deletionKey = undefined;
 
-		try {
-			const response = await fetch('/api/temp-image/delete', {
-				body,
-				method: 'POST',
-			});
-			csrfTokenInput.value =
-				response.headers.get('X-CSRF-Token') || csrfTokenInput.value;
-			await response.text();
-		} catch {
-			// Doesn't matter if it couldn't be deleted
-			// server will just delete it another time
-		}
+	const body = new FormData();
+	body.set('deletion-key', deletionKey);
+	body.set('csrf-token', csrfTokenInput.value);
+
+	try {
+		const response = await fetch('/api/temp-image/delete', {
+			body,
+			method: 'POST',
+		});
+		csrfTokenInput.value =
+			response.headers.get('X-CSRF-Token') || csrfTokenInput.value;
+		await response.text();
+	} catch {
+		// Doesn't matter if it couldn't be deleted
+		// server will just delete it another time
 	}
 }
 

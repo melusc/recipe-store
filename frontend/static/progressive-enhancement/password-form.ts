@@ -48,11 +48,7 @@ function checkPasswordValidity(password: string) {
 		return 'no uppercase letter';
 	}
 
-	if (!/[^a-z\d]/i.test(password)) {
-		return 'no special character';
-	}
-
-	return true;
+	return /[^a-z\d]/i.test(password) ? true : 'no special character';
 }
 
 for (const input of passwordInputs) {

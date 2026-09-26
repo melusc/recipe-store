@@ -67,11 +67,7 @@ function stringifyNumberQuantity(quantity: NumberQuantity) {
 
 	const {whole, num, den} = quantity.value.value;
 
-	if (whole) {
-		return `${whole} ${num}/${den}`;
-	}
-
-	return `${num}/${den}`;
+	return whole ? `${whole} ${num}/${den}` : `${num}/${den}`;
 }
 
 export function stringifyQuantity(quantity: Quantity): string {

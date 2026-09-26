@@ -27,22 +27,22 @@ function handleCopy(targetButton: HTMLElement) {
 		targetButton.dataset['target']!,
 	);
 
-	if (targetInput) {
-		// Visual feedback by selecting the text
-		const selection = getSelection()!;
-		const range = document.createRange();
-		range.selectNodeContents(targetInput);
-		selection.empty();
-		selection.addRange(range);
+	if (!targetInput) return;
 
-		const copyValue =
-			targetInput instanceof HTMLInputElement
-				? targetInput.value
-				: targetInput.textContent;
+	// Visual feedback by selecting the text
+	const selection = getSelection()!;
+	const range = document.createRange();
+	range.selectNodeContents(targetInput);
+	selection.empty();
+	selection.addRange(range);
 
-		// eslint-disable-next-line n/no-unsupported-features/node-builtins
-		void navigator.clipboard.writeText(copyValue);
-	}
+	const copyValue =
+		targetInput instanceof HTMLInputElement
+			? targetInput.value
+			: targetInput.textContent;
+
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
+	void navigator.clipboard.writeText(copyValue);
 }
 
 for (const copyButton of copyButtons) {

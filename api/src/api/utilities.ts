@@ -48,13 +48,11 @@ export class DynamicPaginationResult<T> {
 	}
 
 	getNextPage() {
-		if (!this.hasNextPage) {
-			return false;
-		}
-
-		// If page is negative for some reason,
-		// skip to page 1
-		return Math.max(1, this.page + 1);
+		return this.hasNextPage
+			? // If page is negative for some reason,
+				// skip to page 1
+				Math.max(1, this.page + 1)
+			: false;
 	}
 
 	getPreviousPage() {
@@ -62,14 +60,11 @@ export class DynamicPaginationResult<T> {
 			return false;
 		}
 
-		// If page is way too high
-		// skip to last page
-
-		if (this.lastPage !== undefined) {
-			return Math.min(this.lastPage, this.page - 1);
-		}
-
-		return this.page - 1;
+		return this.lastPage === undefined
+			? this.page - 1
+			: // If page is way too high
+				// skip to last page
+				Math.min(this.lastPage, this.page - 1);
 	}
 }
 
@@ -97,12 +92,10 @@ export class PaginationResult<T> extends DynamicPaginationResult<T> {
 	}
 
 	override getPreviousPage() {
-		if (this.page <= 1) {
-			return false;
-		}
-
-		// If page is way too high
-		// skip to last page
-		return Math.min(this.lastPage, this.page - 1);
+		return this.page <= 1
+			? false
+			: // If page is way too high
+				// skip to last page
+				Math.min(this.lastPage, this.page - 1);
 	}
 }

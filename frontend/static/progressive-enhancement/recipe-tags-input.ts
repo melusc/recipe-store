@@ -43,30 +43,31 @@ function splitIntoTags(shouldAddAll: boolean) {
 
 	const split = text.split(',');
 
-	if (shouldAddAll || split.length > 1) {
-		const relevantParts = shouldAddAll ? split : split.slice(0, -1);
-		for (let item of relevantParts) {
-			cursorLocation -= item.length + 1;
-			item = item.trim();
+	if (!shouldAddAll && split.length <= 1) {
+		return;
+	}
 
-			if (!item) {
-				continue;
-			}
+	const relevantParts = shouldAddAll ? split : split.slice(0, -1);
+	for (let item of relevantParts) {
+		cursorLocation -= item.length + 1;
+		item = item.trim();
 
-			const tag = tagTemplate.content.cloneNode(true) as HTMLElement;
-			tag.querySelector<HTMLInputElement>(
-				':scope input[name="tags-js"]',
-			)!.value = item;
-			tagsInput.before(tag);
+		if (!item) {
+			continue;
 		}
 
-		tagsInput.value = shouldAddAll ? '' : split.at(-1)!;
-
-		tagsInput.selectionStart = tagsInput.selectionEnd = Math.max(
-			cursorLocation,
-			0,
-		);
+		const tag = tagTemplate.content.cloneNode(true) as HTMLElement;
+		tag.querySelector<HTMLInputElement>(':scope input[name="tags-js"]')!.value =
+			item;
+		tagsInput.before(tag);
 	}
+
+	tagsInput.value = shouldAddAll ? '' : split.at(-1)!;
+
+	tagsInput.selectionStart = tagsInput.selectionEnd = Math.max(
+		cursorLocation,
+		0,
+	);
 }
 
 tagsInput.addEventListener('keydown', event => {
@@ -81,15 +82,16 @@ tagsInput.addEventListener('keydown', event => {
 
 function handleButton(event: Event) {
 	const target = event.target;
-	if (!(target instanceof Element)) {
+	if (
+		!(target instanceof Element) ||
+		!target.matches('#btn-remove-tag, #btn-remove-tag *')
+	) {
 		return;
 	}
 
-	if (target.matches('#btn-remove-tag, #btn-remove-tag *')) {
-		target.closest('#tag-parent')!.remove();
-		event.stopImmediatePropagation();
-		event.preventDefault();
-	}
+	target.closest('#tag-parent')!.remove();
+	event.stopImmediatePropagation();
+	event.preventDefault();
 }
 
 tagsInput.addEventListener('input', () => {
