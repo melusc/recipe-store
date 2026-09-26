@@ -44,11 +44,12 @@ function checkPasswordValidity(password: string) {
 		return 'no lowercase letter';
 	}
 
+	// eslint-disable-next-line unicorn/prefer-ternary
 	if (!/[A-Z]/.test(password)) {
 		return 'no uppercase letter';
 	}
 
-	return /[^a-z\d]/i.test(password) ? true : 'no special character';
+	return /[^a-z\d]/i.test(password) || 'no special character';
 }
 
 for (const input of passwordInputs) {

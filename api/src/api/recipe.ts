@@ -796,9 +796,9 @@ export class Recipe extends InjectableApi {
 	}
 
 	permissionToModifyRecipe(other: User) {
-		return other.userId === this.author?.userId
-			? true
-			: other.role >= UserRoles.Admin;
+		return (
+			other.userId === this.author?.userId || other.role >= UserRoles.Admin
+		);
 	}
 }
 
