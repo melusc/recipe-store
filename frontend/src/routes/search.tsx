@@ -48,29 +48,16 @@ export const renderSearch = createRoute<
 		<Pagination baseUrl={paginationBaseUrl} paginationResult={recipes!} />
 	);
 
-	if (recipes!.items.length === 0) {
-		return {
-			title: query,
-			body: (
-				<>
-					<main>
-						<SearchForm location="inline" prefillQuery={query} />
-					</main>
-
-					{paginationButtons}
-				</>
-			),
-		};
-	}
+	const items = recipes!.items;
 
 	return {
 		title: query,
 		body: (
 			<>
-				<main class="row g-3">
+				<main class={items.length > 0 ? 'row g-3' : ''}>
 					<SearchForm location="inline" prefillQuery={query} />
 
-					{recipes!.items.map(recipe => (
+					{items.map(recipe => (
 						<RecipeCard recipe={recipe} />
 					))}
 				</main>
