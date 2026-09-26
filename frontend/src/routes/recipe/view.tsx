@@ -40,7 +40,6 @@ export const renderViewRecipe = createRoute(
 			],
 		];
 
-		// eslint-disable-next-line unicorn/no-immediate-mutation
 		if (recipe.duration) {
 			metadataTable.push(['Duration', <span>{recipe.duration}</span>]);
 		}
