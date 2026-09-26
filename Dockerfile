@@ -65,4 +65,5 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENV BIND_PORT=3000
 ENV BIND_HOST=0.0.0.0
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "/app/backend/dist/index.js"]
