@@ -87,9 +87,7 @@ export const apiTest = test.extend({
 	// eslint-disable-next-line no-empty-pattern
 	async api({}, use: Use<UtilityApi>) {
 		const permanentImageDirectory = new URL(
-			`${randomBytes(20).toBase64({
-				alphabet: 'base64url',
-			})}/`,
+			`${randomBytes(20).toString('base64url')}/`,
 			parentTemporaryDirectory,
 		);
 		const temporaryImageDirectory = new URL('temp/', permanentImageDirectory);

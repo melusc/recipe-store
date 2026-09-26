@@ -159,12 +159,9 @@ export class Image extends InjectableApi {
 	) {
 		const extension = await validateAndGetExtension(image);
 
-		const fileName = [
-			randomBytes(40).toBase64({
-				alphabet: 'base64url',
-			}),
-			extension,
-		].join('.');
+		const fileName = [randomBytes(40).toString('base64url'), extension].join(
+			'.',
+		);
 		const filePath = this._resolvePath(fileName, saveType);
 
 		await writeFile(filePath, image);
