@@ -52,6 +52,11 @@ jobs:
     name: Docker build and upload
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+
       - run: docker build -t lusc.ch/recipe-store . --progress=plain
 
       - name: Sync
