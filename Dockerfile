@@ -49,6 +49,8 @@ COPY --from=builder /app/frontend/package.json ./frontend/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 	CI=true pnpm install --prod --frozen-lockfile
 
+RUN rm -r /root/.cache
+
 COPY --from=builder /app/api/dist ./api/dist
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/bootstrap/dist ./bootstrap/dist
