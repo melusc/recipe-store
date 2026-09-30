@@ -47,7 +47,8 @@ COPY --from=builder /app/frontend/package.json ./frontend/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 	CI=true pnpm install --prod --frozen-lockfile
 
-RUN rm -r /root/.cache
+RUN apt-get clean
+RUN rm -r /root/.cache /tmp/*
 
 COPY --from=builder /app/api/dist ./api/dist
 COPY --from=builder /app/backend/dist ./backend/dist
@@ -62,7 +63,7 @@ RUN mkdir /app/data
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-FROM node:24.21.0-bookworm-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6 AS runner
+FROM scratch
 
 COPY --from=runner-intermediate / /
 
