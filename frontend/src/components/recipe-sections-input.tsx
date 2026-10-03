@@ -78,7 +78,7 @@ export function RecipeSectionsInput({
 					placeholder="Enter sections. Separate each section by two line breaks."
 					class="form-control"
 					style={{
-						minHeight: '500px',
+						minHeight: 500,
 					}}
 					autocomplete="off"
 				>
