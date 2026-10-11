@@ -20,7 +20,7 @@
 
 export function SearchForm({
 	location,
-	prefillQuery,
+	prefillQuery = '',
 }: {
 	location: 'header' | 'inline';
 	prefillQuery?: string;
@@ -32,7 +32,7 @@ export function SearchForm({
 			placeholder="Search"
 			aria-label="Search"
 			name="q"
-			value={prefillQuery || ''}
+			value={prefillQuery}
 		/>
 	);
 
