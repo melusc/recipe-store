@@ -31,9 +31,7 @@ import {test} from 'vitest';
 import {createApi, type Api} from '../src/index.js';
 
 const parentTemporaryDirectory = new URL('.tmp/', import.meta.url);
-// eslint-disable-next-line unicorn/no-top-level-side-effects
 await mkdir(parentTemporaryDirectory, {recursive: true});
-// eslint-disable-next-line unicorn/no-top-level-side-effects
 await writeFile(new URL('.gitignore', parentTemporaryDirectory), '*');
 
 type UtilityApi = Readonly<

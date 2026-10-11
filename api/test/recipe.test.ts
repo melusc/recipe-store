@@ -25,7 +25,6 @@ import {expect} from 'vitest';
 import {ImageSaveType} from '../src/api/image.js';
 import {UserRoles} from '../src/index.js';
 
-// eslint-disable-next-line node-test/no-import-test-files
 import {
 	apiTest,
 	hashFile,
