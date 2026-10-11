@@ -147,7 +147,9 @@ export class User extends InjectableApi {
 
 		const passwordHash =
 			typeof password === 'string'
-				? bcrypt.hashSync(password, HASH_ROUNDS)
+				? bcrypt.hashSync(password, {
+						cost: HASH_ROUNDS,
+					})
 				: password.passwordHash;
 		const createdAt = _internals?.internalCreatedAt ?? new Date();
 		const updatedAt = _internals?.internalUpdatedAt ?? createdAt;
@@ -459,7 +461,9 @@ export class User extends InjectableApi {
 	changePassword(oldPassword: string, newPassword: string) {
 		this.confirmPassword(oldPassword);
 
-		const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
+		const newHash = bcrypt.hashSync(newPassword, {
+			cost: HASH_ROUNDS,
+		});
 		this.database
 			.prepare(
 				`UPDATE users
@@ -479,7 +483,9 @@ export class User extends InjectableApi {
 	}
 
 	resetPassword(newPassword: string) {
-		const newHash = bcrypt.hashSync(newPassword, HASH_ROUNDS);
+		const newHash = bcrypt.hashSync(newPassword, {
+			cost: HASH_ROUNDS,
+		});
 
 		this.database
 			.prepare(
