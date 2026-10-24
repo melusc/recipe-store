@@ -3,10 +3,11 @@ FROM node:26.12.1-bookworm-slim@sha256:28147155d47dc31abe0a46e0d12b59b2fb3d0a2dc
 FROM rust:1.99.1-slim-bookworm@sha256:86234e857a413004348b471d11a4ebe1aa92d2eae2b6b143cac68fd1ac3c48be AS builder
 
 COPY --from=node-base /usr/local/bin/node /usr/local/bin/node
-COPY --from=node-base /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node-base /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
-RUN ln -s /usr/local/lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack \
-	&& corepack enable
+RUN npm install -g corepack
+RUN corepack enable
 
 WORKDIR /app
 
@@ -34,6 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libimage-exiftool-perl gosu \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g corepack
 RUN corepack enable
 
 WORKDIR /app
@@ -48,7 +50,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 	CI=true pnpm install --prod --frozen-lockfile
 
 RUN apt-get clean
-RUN rm -r /root/.cache /tmp/*
+RUN rm -r /root/.cache /tmp/* /usr/local/lib/node_modules/
 
 COPY --from=builder /app/api/dist ./api/dist
 COPY --from=builder /app/backend/dist ./backend/dist
