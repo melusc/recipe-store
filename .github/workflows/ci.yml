@@ -20,14 +20,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Use Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3.1.1
         with:
-          check-latest: true
-          node-version: 26.12.1
-
-      - name: Enable corepack
-        run: corepack enable
+          runtime: node@26.12.1
 
       - name: Install dependencies
         run: |
