@@ -5,7 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"@lusc/eslint-config": "^21.0.0",
-		"@lusc/tsconfig": "^7.2.1",
+		"@lusc/tsconfig": "^8.0.0",
 		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^26.6.5",
 		"@vitest/runner": "^4.1.11",
