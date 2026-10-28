@@ -19,7 +19,7 @@
 */
 
 import {Buffer} from 'node:buffer';
-import {createHash, randomBytes, type BinaryLike} from 'node:crypto';
+import {createHash, randomBytes} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {readdir, mkdir, rm, writeFile} from 'node:fs/promises';
 // eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -75,7 +75,7 @@ export async function hashFile(pathOrImage: URL | Buffer) {
 		const stream = createReadStream(pathOrImage);
 
 		for await (const chunk of stream) {
-			hash.update(chunk as BinaryLike);
+			hash.update(chunk as NodeJS.ArrayBufferView);
 		}
 	}
 	return hash.digest('hex');
