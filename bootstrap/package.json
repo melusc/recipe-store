@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"csso-cli": "^4.0.2",
 		"esbuild": "^0.28.2",
-		"sass": "^1.105.1"
+		"sass": "^1.106.1"
 	},
 	"engines": {
 		"node": "^26.13.0"

@@ -4,14 +4,14 @@
 	"exports": "./dist/index.js",
 	"private": true,
 	"devDependencies": {
-		"@lusc/eslint-config": "^21.0.0",
+		"@lusc/eslint-config": "^21.1.0",
 		"@lusc/tsconfig": "^8.0.0",
 		"@types/bcrypt": "^6.0.0",
-		"@types/node": "^26.6.5",
+		"@types/node": "^26.6.6",
 		"@vitest/runner": "^4.1.11",
-		"eslint": "^10.12.0",
+		"eslint": "^10.13.0",
 		"typescript": "^6.0.3",
-		"vitest": "^5.0.4"
+		"vitest": "^5.0.5"
 	},
 	"engines": {
 		"node": "^26.13.0"
