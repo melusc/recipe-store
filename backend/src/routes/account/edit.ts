@@ -57,22 +57,14 @@ accountEditRouter.post(
 			const username = readAccountForm.username(body);
 			user.changeUsername(username);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal error.');
-			}
+			errors.push(error instanceof Error ? error.message : 'Internal Error.');
 		}
 
 		try {
 			const displayName = readAccountForm.displayName(body);
 			user.changeDisplayName(displayName);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal error.');
-			}
+			errors.push(error instanceof Error ? error.message : 'Internal Error.');
 		}
 
 		if (body['new-password']) {
@@ -82,11 +74,7 @@ accountEditRouter.post(
 
 				user.changePassword(currentPassword, newPassword);
 			} catch (error: unknown) {
-				if (error instanceof Error) {
-					errors.push(error.message);
-				} else {
-					errors.push('Internal error.');
-				}
+				errors.push(error instanceof Error ? error.message : 'Internal Error.');
 			}
 		}
 

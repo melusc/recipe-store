@@ -94,9 +94,9 @@ export const readForm = {
 
 		const uploadedImage = body['uploaded-image'];
 
-		return typeof uploadedImage !== 'string' || !uploadedImage
-			? undefined
-			: api.Image.fromName(uploadedImage);
+		return typeof uploadedImage === 'string' && uploadedImage
+			? api.Image.fromName(uploadedImage)
+			: undefined;
 	},
 	title(body: Record<string, unknown>) {
 		const title = body['title'];

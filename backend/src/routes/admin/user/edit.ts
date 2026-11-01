@@ -65,11 +65,7 @@ adminUserEditRouter.post<{id: string}>(
 			try {
 				role = readAccountForm.role(body);
 			} catch (error: unknown) {
-				if (error instanceof Error) {
-					errors.push(error.message);
-				} else {
-					errors.push('Internal error.');
-				}
+				errors.push(error instanceof Error ? error.message : 'Internal Error.');
 			}
 		}
 
@@ -77,22 +73,14 @@ adminUserEditRouter.post<{id: string}>(
 		try {
 			username = readAccountForm.username(body);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal error.');
-			}
+			errors.push(error instanceof Error ? error.message : 'Internal Error.');
 		}
 
 		let displayName = user.displayName;
 		try {
 			displayName = readAccountForm.displayName(body);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal error.');
-			}
+			errors.push(error instanceof Error ? error.message : 'Internal Error.');
 		}
 
 		const userMustChangePassword = body['require-pw-change'] === 'on';
@@ -101,11 +89,7 @@ adminUserEditRouter.post<{id: string}>(
 			try {
 				user.changeUsername(username);
 			} catch (error: unknown) {
-				if (error instanceof Error) {
-					errors.push(error.message);
-				} else {
-					errors.push('Internal error.');
-				}
+				errors.push(error instanceof Error ? error.message : 'Internal Error.');
 			}
 		}
 
