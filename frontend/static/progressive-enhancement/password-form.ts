@@ -72,18 +72,16 @@ for (const input of passwordInputs) {
 		}
 
 		const validity = !input.value || checkPasswordValidity(input.value);
-		if (validity === true) {
-			input.setCustomValidity('');
-		} else {
-			input.setCustomValidity(
-				`Password does not match requirements (${validity}).`,
-			);
-		}
+		input.setCustomValidity(
+			validity === true
+				? ''
+				: `Password does not match requirements (${validity}).`,
+		);
 
-		if (newPasswordInput.value === newPasswordRepeatInput.value) {
-			newPasswordRepeatInput.setCustomValidity('');
-		} else {
-			newPasswordRepeatInput.setCustomValidity('Passwords do not match.');
-		}
+		newPasswordRepeatInput.setCustomValidity(
+			newPasswordInput.value === newPasswordRepeatInput.value
+				? ''
+				: 'Passwords do not match.',
+		);
 	});
 }

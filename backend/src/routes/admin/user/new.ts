@@ -48,11 +48,7 @@ adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 	try {
 		username = readAccountForm.username(body);
 	} catch (error: unknown) {
-		if (error instanceof Error) {
-			errors.push(error.message);
-		} else {
-			errors.push('Internal Error.');
-		}
+		errors.push(error instanceof Error ? error.message : 'Internal Error.');
 	}
 
 	const requestUser = response.locals.user!;
@@ -61,11 +57,7 @@ adminNewUserRouter.post('/', formdataMiddleware.none(), (request, response) => {
 		try {
 			role = readAccountForm.role(body);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				errors.push(error.message);
-			} else {
-				errors.push('Internal Error.');
-			}
+			errors.push(error instanceof Error ? error.message : 'Internal Error.');
 		}
 	}
 
