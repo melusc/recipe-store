@@ -34,7 +34,7 @@
 		"bootstrap-slim": "workspace:^",
 		"cookie-parser": "^1.4.7",
 		"express": "^5.3.0",
-		"express-rate-limit": "^8.7.3",
+		"express-rate-limit": "^8.7.4",
 		"frontend": "workspace:^",
 		"helmet": "^8.3.0",
 		"jsonwebtoken": "^9.0.3",
